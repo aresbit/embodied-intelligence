@@ -13,5 +13,5 @@ show_downloads: false
 google_analytics:
 
 # 构建
-markdown: GFM
+markdown: kramdown
 encoding: UTF-8
