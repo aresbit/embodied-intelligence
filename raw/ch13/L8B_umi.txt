@@ -1,0 +1,1081 @@
+                                                        Universal Manipulation Interface:
+                                             In-The-Wild Robot Teaching Without In-The-Wild Robots
+                                                  Cheng Chi∗1,2 , Zhenjia Xu∗1,2 , Chuer Pan1 , Eric Cousineau3 , Benjamin Burchfiel3 , Siyuan Feng3 ,
+                                                                                     Russ Tedrake3 , Shuran Song1,2
+                                                              1 Stanford University, 2 Columbia University, 3 Toyota Research Insititute
+
+                                                                                      https://umi-gripper.github.io
+
+
+                                            Human Demonstration             in Any Environment                         for Any Actions                  for Many Robots
+                                                                                (visual diversity)                      (action diversity)             (embodiment diversity)
+arXiv:2402.10329v3 [cs.RO] 6 Mar 2024
+
+
+
+
+                                                                                                         Dynamic                  Precise                    6DoF
+
+
+
+
+                                                                                                         Bimanual                 Long-Horizon               7DoF
+                                        Fig. 1: Universal Manipulation Interface (UMI) is a portable, intuitive, low-cost data collection and policy learning framework. This
+                                        framework allows us to transfer diverse human demonstrations to effective visuomotor policies. We showcase the framework for tasks that
+                                        would be difficult with traditional teleoperation, such as dynamic, precise, bimanual and long-horizon tasks.
+
+                                                                                                             is sufficient, as teleoperation requires high setup costs for
+                                           Abstract—We present Universal Manipulation Interface (UMI)        hardware and expert operators, while human videos exhibit
+                                        – a data collection and policy learning framework that allows        a large embodiment gap to robots.
+                                        direct skill transfer from in-the-wild human demonstrations
+                                        to deployable robot policies. UMI employs hand-held grippers            Recently, using sensorized hand-held grippers as a data
+                                        coupled with careful interface design to enable portable, low-       collection interface [41, 50, 36] has emerged as a promising
+                                        cost, and information-rich data collection for challenging bi-       middle-ground alternative – simultaneously minimizing the
+                                        manual and dynamic manipulation demonstrations. To facilitate        embodiment gap while remaining intuitive and flexible. De-
+                                        deployable policy learning, UMI incorporates a carefully designed
+                                        policy interface with inference-time latency matching and a          spite their potential, these approaches still struggle to balance
+                                        relative-trajectory action representation. The resulting learned     action diversity with transferability. While users can theoreti-
+                                        policies are hardware-agnostic and deployable across multiple        cally collect any actions with these hand-held devices, much
+                                        robot platforms. Equipped with these features, UMI framework         of that data can not be transferred to an effective robot policy.
+                                        unlocks new robot manipulation capabilities, allowing zero-          As a result, despite achieving impressive visual diversity
+                                        shot generalizable dynamic, bimanual, precise, and long-horizon
+                                        behaviors, by only changing the training data for each task. We      across hundreds of environments, the collected actions are
+                                        demonstrate UMI’s versatility and efficacy with comprehensive        constrained to simple grasping [41] or quasi-static pick-and-
+                                        real-world experiments, where policies learned via UMI zero-         place [50, 36], lacking action diversity.
+                                        shot generalize to novel environments and objects when trained          What prevents action transfer in previous work? We identi-
+                                        on diverse human demonstrations. UMI’s hardware and software
+                                        system is open-sourced at https://umi-gripper.github.io.             fied a few subtle yet critical issues:
+                                                                                                                • Insufficient visual context: While using a wrist-mounted
+                                                                  I. I NTRODUCTION                                camera is key for aligning the observation space and
+                                           How should we demonstrate complex manipulation skills                  enhancing device portability, it restricts the scene’s visual
+                                        for robots to learn from? Attempts in the field have approached           coverage. The camera’s proximity to the manipulated
+                                        this question primarily from two directions: collecting targeted          object often results in heavy occlusions, providing insuf-
+                                        in-the-lab robot datasets via teleoperation or leveraging un-             ficient visual context for action planning.
+                                        structured in-the-wild human videos. Unfortunately, neither             • Action imprecision: Most hand-held devices rely on
+                                                                                                                  monocular structure-from-motion (SfM) to recover robot
+                                          ∗ Indicates equal contribution                                          actions. However, such methods often struggle to recover
+  Human Demonstration Setup                            Observation Space                                         Robot Setup
+ ① Wrist-mounted                                            ② Wide-FoV
+    Camera                                                  Fisheye Lens
+
+
+  ✨                                                        ③ Side Mirrors
+                         ✨                                  for Implicit                                   ✨
+                                                              Stereo
+
+
+
+
+④ IMU-aware Pose Tracking       ⑤ Continuous Gripper Tracking                                     ⑥ Kinematic-based Data Filtering
+Fig. 2: UMI Demonstration Interface Design. Left: Hand-held grippers for data collection, with a GoPro as the only sensor and recording
+device. Middle: Image from the GoPro’s 155° Fisheye view. Note the physical side mirrors highlighted in green which provide implicit
+stereo information. Right: UMI-compatible robot gripper and camera setup make observation similar to hand-held gripper view.
+
+    precise global action due to scale ambiguity, motion blur,             multimodal action distributions.
+    or insufficient texture, which significantly restrict the           The final system, Universal Manipulation Interface
+    precision of tasks for which the system can be employed.         (UMI), provides a practical and accessible framework to
+  • Latency discrepancies: During hand-held data collec-             unlock new robot manipulation skills, allowing us to demon-
+    tion, observation and action recording occur without la-         strate any actions in any environment while maintaining high
+    tency. However, during inference, various latency sources,       transferability from human demonstration to robot policy.
+    including sensor, inference, and execution latencies, arise         With just a wrist-mounted camera on the hand-held gripper
+    within the system. Policies unaware of these latency dis-        (Fig. 2), we show that UMI is capable of achieving a wide
+    crepancies will encounter out-of-distribution input and in       range of manipulation tasks that involve dynamic, bimanual,
+    turn, generate out-of-sync actions. This issue is especially     precise and long-horizon actions by only changing the train-
+    salient for fast and dynamic actions.                            ing data for each task (Fig. 1). Furthermore, when trained
+  • Insufficient policy representation: Prior works often            with diverse human demonstrations, the final policy exhibits
+    use simple policy representations (e.g., MLPs) with ac-          zero-shot generalization to novel environments and objects,
+    tion regression loss, limiting their capacity to capture         achieving a remarkable 70% success rate in out-of-distribution
+    complex multimodal action distributions inherent in hu-          tests, a level of generalizabilty seldomly observed in other
+    man data. Consequently, even with precisely recovered            behavior cloning frameworks. We open-source the hardware
+    demonstrated actions and all discrepancies removed, the          and software system at https://umi-gripper.github.io.
+    resulting policy could still struggle to fit the data ac-                             II. R ELATED W ORKS
+    curately. This further hampers large-scale, distributed
+    human data collection, as more demonstrators increase               A key enabler for any data-driven robotics system is the data
+    action multimodality.                                            itself. Here, we review a few typical data collection workflows
+                                                                     in the context of robotic manipulation.
+  In this paper, we address these issues with careful design
+of the demonstration and policy interface:                           A. Teleoperated Robot Data
+  • First, we aim to identify the right physical     interface          Imitation learning learns policies from expert demonstra-
+    for human demonstration that is intuitive and meanwhile          tions. Behavior cloning (BC), utilizing teleoperated robot
+    able to capture all the information necessary for policy         demonstrations, stands out for its direct transferability. How-
+    learning. Specifically, we use a Fisheye lens to increase        ever, teleoperating real robots for data collection poses signif-
+    the field of view and visual context, and add side mirrors       icant challenges. Previous approaches utilized interfaces such
+    on the gripper to provide implicit stereo observation.           as 3D spacemouse [9, 54], VR or AR controllers [35, 3, 13, 19,
+    When combined with the GoPro’s built-in IMU sensor,              31, 51, 12], smartphones [44, 45, 22], and haptic devices [38,
+    we can enable robust tracking under fast motion.                 47, 43, 26, 4] for teleoperation. These methods are either
+  • Second, we explore the right policy interface (i.e.,             very expensive or hard to use due to high latency and lack
+    observation and action representations) that could make          of user intuitiveness. While recent advancements in leader-
+    the policy hardware-agnostic and thereby enable effec-           follower (i.e. puppetting) devices such as ALOHA [53, 15]
+    tive skill transfer. Concretely, we employ inference-time        and GELLO [46] offer promise with intuitive and low-cost
+    latency matching to handle different sensor observation          interfaces, their reliance on real robots during data collection
+    and execution latency, use relative trajectory as action         limits the type and number of environments the system can
+    representation to remove the need for precise global             gain access to for “in-the-wild” data acquisition. Exoskele-
+    action, and finally, apply Diffusion Policy [9] to model         tons [14, 20] remove the dependence on real robots during data
+collection, however, require fine-tuning using teleoperated real
+robot data for deployment. Moreover, the resulting data and
+policy from aforementioned devices are embodiment-specific,
+preventing reusage for different robots.
+   In contrast, UMI eliminates the need for physical robots
+during data collection and offers a more portable interface for
+in-the-wild robot teaching, providing data and policies that
+are transferable to different robot embodiments (e.g., 6DoF or
+7DoF robot arms).                                                       (a) Raw Fisheye Image               (b) Rectiﬁed Image
+B. Visual Demonstrations from Human Video                           Fig. 3: Fisheye vs Rectilinear (a) UMI policies use raw Fisheye
+   There’s a distinct line of work dedicated to policy learning     image as observation. (b) Rectifying a large 155° FoV image to the
+                                                                    pin-hole model severely stretches the peripheral view (outside of blue
+from in-the-wild video data (e.g. YouTube videos). The most         line), while compresses the most important information at the center
+common way is to learn from diverse passive human demon-            to a small area (inside of red line).
+stration videos. Utilizing passive human demonstrations, pre-
+vious works learn task cost functions [37, 8, 1, 21], affordance    which is limited to lab settings. These devices, constrained
+functions [2], dense object descriptors [40, 24, 39], action        to quasi-static actions due to low EE tracking accuracy and
+correspondences [33, 28], and pre-trained visual representa-        robustness, often necessitate cumbersome onboard computer
+tions [23, 48].                                                     or external motion capture (MoCap) systems, diminishing
+   However, this approach encounters three major challenges.        their feasibility for in-the-wild data collection. In contrast,
+Firstly, most video demonstrations lack explicit action infor-      UMI integrates state-of-the-art SLAM [6] with built-in IMU
+mation, crucial for learning generalizable policies. To infer       data from GoPro, to accurately capture 6DoF actions at the
+action data from passive human video, previous works resort         global scale. The high-accuracy data enables trained BC policy
+to hand pose detectors [44, 1, 38, 28], or combining human          to learn bimanual tasks. With thorough latency matching,
+videos with in-domain teleoperated robot data to predict            UMI further enables real-world deployable policy for dynamic
+actions [33, 20, 34, 28]. Second, the evident embodiment gap        actions such as tossing.
+between humans and robots hinders action transfer. Efforts             Recently, Dobb-E [36] proposed a “reacher-grabber” tool
+to bridge the gap include learning human-to-robot action            mounted with an iPhone to collect single-arm demonstrations
+mapping with hand pose retargetting [38, 28] or extracting          for the Stretch robot. Yet, Dobb-E only demonstrates policy
+embodiment-agnostic keypoints [49]. Despite these attempts,         deployment for quasi-static tasks and requires environment-
+the inherent embodiment differences still complicate policy         specific policy fine-tuning. Conversely, using only data col-
+transfer from human video to physical robots. Thirdly, the          lected with UMI enables trained policy to zero-shot generalize
+inherent observation gap induced by the embodiment gap              to novel in-the-wild environments, unseen objects, multiple
+in this line of work introduces inevitable mismatch between         robot embodiments, for dynamic, bimanual, precise and long-
+train/inference time observation data, exacerbating the trans-      horizon tasks.
+ferability of the resulting policies, despite efforts in aligning
+demonstration observation with robot observation [20, 28].                                      III. M ETHOD
+   In contrast, data collected with UMI exhibit minimal em-
+bodiment gap both in action and observation spaces, en-                Universal Manipulation Interface (UMI) is hand-held data
+abled by precise manipulation action extraction via robust          collection and policy learning framework that allows direct
+visual-inertial camera tracking and the shared Fisheye wrist-       transfer from in-the-wild human demonstrations to deployable
+mounted cameras during teaching and testing. Consequently,          robot policies. It is designed with the following goals in mind:
+this enables in-the-wild zero-shot policy transfer for dynamic,     • Portable. The hand-held UMI grippers can be taken to
+bimanual, precise, and long-horizon manipulation tasks.               any environment and start data collection with close-to-zero
+C. Hand-Held Grippers for Quasi-static Actions                        setup time.
+                                                                    • Capable. The ability to capture and transfer natural and
+   Hand-held grippers [41, 50, 10, 32, 27, 25] minimize
+observation embodiment gaps in manipulation data collection,          complex human manipulation skills beyond pick-and-place.
+                                                                    • Sufficient. The collected data should contain sufficient
+offering portability and intuitive interfaces for efficient data
+collection in the wild. However, accurately and robustly ex-          information for learning effective robot policies and con-
+tracting 6DoF end-effector (EE) pose from these devices re-           tain minimal embodiment-specific information that would
+mains challenging, hindering the deployment of robot policies         prevent transfer.
+                                                                    • Reproducible: Researchers and enthusiasts should be able
+learned from these data on fine-grained manipulation tasks.
+   Prior works attempted to address this issue through various        to consistently build UMI grippers and use data to train
+approaches, such as SfM [50, 25] which suffers from scale             their own robots, even with different robot arms.
+ambiguity; RGB-D fusion [41] which requires expensive sen-            The following sections describe how we enable the above
+sors and onboard compute; external motion tracking [32, 27]         goals through our hardware and policy interface design.
+A. Demonstration Interface Design                                           Ultra-wide angle 155° FOV
+
+   UMI’s data collection hardware takes the form of a trigger-                                                ✨
+activated, handheld 3D printed parallel jaw gripper with soft
+fingers, mounted with a GoPro camera as the only sensor                                            Mirror
+and recording device (see HD1). For bimanual manipulation,
+UMI can be trivially extended with another gripper. The key                                                                        Extra view
+research question we need to address here is:                                                                                     from mirror
+                                                                         Left                        Right
+    How can we capture sufficient information for a wide               Virtual         Main         Virtual
+                                                                      Camera          Camera        Camera
+     variety of tasks with just a wrist-mounted camera?
+                                                                     (a)                                      (b)
+   Specifically, on the observation side, the device needs
+                                                                                                    Digital
+to capture sufficient visual context to infer action HD2 and                                       Reﬂection
+critical depth information HD3. On the action side, it needs
+to capture precise robot action under fast human motion
+HD4, detailed subtle adjustments on griping width HD5, and           (c)         Raw Image                          Policy Observation
+automatically check whether each demonstration is valid given       Fig. 4: UMI Side Mirrors. The ultra-wide-angle camera coupled
+the robot hardware kinematics HD6. The following sections           with strategically positioned mirrors, facilitates implicit stereo depth
+describe details on how we achieve these goals.                     estimation. (a): The view through each mirror effectively creates two
+                                                                    virtual cameras, whose poses are reflected along the mirror planes
+   HD1. Wrist-mounted cameras as input observation. We              with respect to the main camera. (b): Ketchup on the plate, occluded
+rely solely on wrist-mounted cameras, without the need for          from the main camera view, is visible inside the right mirror, proving
+any external camera setups. When deploying UMI on a robot,          that mirrors simulate cameras with different optical centers. (c): We
+we place GoPro cameras with the same location with respect          digitally reflect the content inside mirrors for policy observation. Note
+to the same 3D-printed fingers as on the hand-held gripper.         the orientation of the cup handle becomes consistent across all 3
+                                                                    views after reflection.
+This design provides the following benefits:
+1) Minimizing the observation embodiment gaps. Thanks               use raw Fisheye images without undistortion since Fisheye
+   to our hardware design, the videos observed in wrist-            effects conveniently preserve resolution in the center while
+   mount cameras are almost indistinguishable between human         compressing information in the peripheral view. In contrast,
+   demonstrations and robot deployment, making the policy           rectified pinhole image (Fig. 3 right) exhibits extreme distor-
+   input less sensitive to embodiment.                              tions, making it unsuitable for learning due to the wide FoV.
+2) Mechanical robustness. Because the camera is mechani-            Beyond improving SLAM robustness with increased visual
+   cally fixed relative to the fingers, mounting UMI on robots      features and overlap [52], our quantitative evaluation (Sec
+   does not require camera-robot-world calibration. Hence, the      V-A) shows that the Fisheye lens improves policy performance
+   system is much more robust to mechanical shocks, making          by providing the necessary visual context.
+   it easy to deploy.                                                  HD3. Side mirrors for implicit stereo. To mitigate the
+3) Portable hardware setup. Without the need for an external        lack of direct depth perception from the monocular camera
+   static camera or additional onboard compute, we largely          view, we placed a pair of physical mirrors in the cameras’
+   simplify the data collection setup and make the whole            peripheral view which creates implicit stereo views all in
+   system highly portable.                                          the same image. As illustrated in Fig 4 (a), the images
+4) Camera motion for natural data diversification. A side           inside the mirrors are equivalent to what can be seen from
+   benefit we observed from experiments is that when training       additional cameras reflected along the mirror plane, without
+   with a moving camera, the policy learns to focus on task-        the additional cost and weight. To make use of these mirror
+   relevant objects or regions instead of background structures     views, we found that digitally reflecting the crop of the images
+   (similar in effect to random cropping). As a result, the final   in the mirrors, shown in Fig 4 (c), yields the best result for
+   policy naturally becomes more robust against distractors at      policy learning (Sec. V-A). Note that without digital reflection,
+   inference time.                                                  the orientation of objects seen through side mirrors is the
+   Avoiding use of external static cameras also introduce           opposite of that in the main camera view.
+additional challenges for downstream policy learning. For              HD4. IMU-aware tracking. UMI captures rapid move-
+example, the policy now needs to handle non-stationary and          ments with absolute scale by leveraging GoPro’s built-in
+partial observations. We mitigated these issues by leveraging       capability to record IMU data (accelerometer and gyroscope)
+wide-FoV Fisheye Lens HD2, and robust visual tracking HD4,          into standard mp4 video files [18]. By jointly optimizing visual
+described in the following sections.                                tracking and inertial pose constraints, our Inertial-monocular
+   HD2. Fisheye Lens for visual context. We use a 155-              SLAM system based on ORB-SLAM3 [7] maintains tracking
+degree Fisheye lens attachment on wrist-mounted GoPro cam-          for a short period of time even if visual tracking fails due to
+era, which provides sufficient visual context for a wide range      motion blur or a lack of visual features (e.g. looking down
+of tasks, as shown in Fig. 2. As the policy input, we directly      at a table). This allows UMI to capture and deploy highly
+               Synchronization                                        Synchronized Observations          Gripper Execution Latency=120ms
+                                   Signal received until tinput
+                                                                                                       Arm Execution Latency=100ms
+                                               Image
+                                             Obs Latency
+ 10 Hz                                                                                                             Actual Poses
+
+                                                Gripper
+                                                Obs Ltc                       Diffusion Policy
+ 30 Hz                                                                                                   Action Commands
+               Interpolation over raw signal
+                                                     Arm
+125 Hz                                               Obs
+                                                     Ltc                                                               Desired Poses
+                                                                  T                                   toutput   tact                   T
+                                      tobs              tinput        Desired EE pose & grp width
+         (a) Observation Latency Compensation                             (b) Policy Interface        (c) Execution Latency Compensation
+
+Fig. 5: UMI Policy Interface Design. (b) UMI policy takes in a sequence of synchronized observations (RGB image, relative EE pose,
+and gripper width) and outputs a sequence of desired relative EE pose and gripper width as action. (a) We synchronize different observation
+streams with physically measured latencies. (c) We send action commands ahead of time to compensate for robots’ execution latency.
+
+dynamic actions such as tossing (shown in Fig 7). In addition,              (b). In this paper, we use Diffusion Policy [9] for all of our
+the joint visual-inertial optimization allows direct recovery of            experiments, while other frameworks such as ACT [53] could
+real metric scale, important for action precision and inter-                potentially serve as a drop-in replacement.
+gripper pose proprioception PD2.3: a critical ingredient to                    An important goal of UMI’s policy interface design is
+enable bimanual policy.                                                     to ensure the interface is agnostic to underlying robotic
+   HD5. Continuous gripper control. In contrast to the                      hardware platforms such that the resulting policy, trained
+binary open-close action used in prior works [41, 44, 54], we               on one data source (i.e., hand-held gripper), could be directly
+found commanding gripper width continuously significantly                   deployed to different robot platforms. To do so, we aim to
+expands the range of tasks doable by parallel-jaw grippers.                 address the following two key challenges:
+For example, the tossing task (Fig. 7) requires precise timing                  • Hardware-specific latency. The latency of various hard-
+for releasing objects. Since objects have different widths,                       ware (streaming camera, robot controller, industrial grip-
+binary gripper actions will be unlikely to meet the precision                     per) is highly variable across system deployments, rang-
+requirement. On UMI gripper, finger width is continuously                         ing from single-digit to hundreds of milliseconds. In con-
+tracked via fiducial markers [16] (Fig. 2 left). Using series-                    trast, all information streams captured by UMI grippers
+elastic end effectors principle [42], UMI can implicitly record                   have zero latency with respect to the image observation,
+and control grasp forces by regulating the deformation of soft                    thanks to GoPro’s synchronized video, IMU measure-
+fingers through continuous gripper width control.                                 ments and the vision-based gripper width estimation.
+   HD6. Kinematic-based data filtering. While the data col-                     • Embodiment-specific proprioception. Commonly used
+lection process is robot-agnostic, we apply simple kinematic-                     proprioception observations such as joint angles and EE
+based data filtering to select valid trajectories for different                   pose are only well-defined with respect to a specific
+robot embodiments. Concretely, when the robot’s base lo-                          robot arm and robot base placement. In contrast, UMI
+cation and kinematics are known, the absolute end-effector                        needs to collect data across diverse environments and be
+pose recovered by SLAM allows kinematics and dynamics                             generalizable to multiple robot embodiments.
+feasibility filtering on the demonstration data. Training on
+the filtered dataset ensures policies comply with embodiment-               In the following sections, we will describe three policy inter-
+specific kinematic constraints.                                             face designs that address these challenges.
+   Putting everything together. The UMI gripper weighs                         PD1. Inference-time latency matching. While UMI’s
+780g, with an external dimension of L310mm × W 175mm ×                      policy interface assumes synchronized observation streams
+H210mm and finger stroke of 80mm. The 3D printed gripper                    and immediate action execution, physical robot systems do
+has a BoM cost of $73, while the GoPro camera and acces-                    not conform to this assumption. If not carefully handled,
+sories total $298. As shown in Fig. 2, we can equip any robot               the timing mismatch between training and testing can cause
+arms with a compatible gripper and camera setup.                            large performance drops on dynamic manipulation tasks that
+                                                                            require rapid movement and precise hand-eye coordination,
+B. Policy Interface Design                                                  demonstrated in Sec V-B. In this paper, we separately handle
+   With the collected demonstration data, we can train a                    timing discrepancies on the observation and action sides:
+visuomotor policy that takes in a sequence of synchronized                     PD1.1) Observation latency matching. On real robotic
+observations (RGB images, 6 degrees-of-freedom end-effector                 systems, different observation streams (RGB image, EE pose,
+pose, and gripper width) and produces a sequence of actions                 gripper width) are captured by distributed micro-controllers,
+(end-effector pose and gripper width) as shown in Fig. 5                    resulting in different observation latency.
+                                                                                  Pose
+   For each observation stream, we individually measure their                             Inference              Inference
+latency (details see §A1-A3). At inference time, we align all                            start at t=0           start at t=4
+observations with respect to the stream with the highest latency
+(usually the camera). Specifically, we first temporally down-
+sample the RGB camera observations to the desired frequency
+(often 10-20Hz), and then use the capture timestamp of each
+image tobs to linearly interpolate gripper and robot propriocep-
+tion streams. In bimanual systems, we soft-synchronize two                                                                 Relative
+cameras by finding the nearest neighbor frames, which can be                                                               Delta
+                           1                                                                                               Absolute
+off by a maximum of 60        seconds. The result is a sequence of                                                                    Time
+synchronized observations that conform to UMI policy, shown
+                                                                              0      1        2         3   4   5    6         7      8
+in Fig. 5 (a).
+   PD1.2) Action latency matching. UMI policy assumes the                Fig. 6: Relative Trajectory as Action Representation. Relative
+                                                                         trajectory, used by UMI, is a sequence of end-effector (EE) poses
+output as a sequence of synchronized EE poses and gripper                relative to the same current EE pose for each inference step.
+widths. However, in practice, robot arms and grippers can only           In contrast, Delta action represents each action step relative to its
+track the desired pose sequence up to an execution latency,              immediate previous action, therefore accumulates error. Absolute
+that varies across different robot hardware. To make sure the            action requires a global coordinate frame for all actions, which is
+robots and grippers reach the desired pose at the desired time           difficult to define for in-the-wild data collection.
+(given by the policy), we need to send commands ahead of
+time to compensate for execution latency, as shown in Fig. 5             in Sec. V-C. The effect of inter-gripper proprioception is par-
+(c). See §A4 for execution latency calibration details.                  ticularly large when the visual overlap between two cameras is
+   During execution, the UMI policy predicts the action se-              small. The inter-gripper proprioception is enabled by our map-
+quence starting at the last step of observation tobs . The first few     then-localize data collection scheme that constructs a scene-
+actions predicted are immediately outdated due to observation            level global coordinate system HD4. For each new scene, we
+latency tinput − tobs , policy inference latency tout put − tinput and   first collect a video that builds a map for the scene. Then,
+execution latency tact −tout put . We simply discard the outdated        all demonstrations collected in this scene are relocalized to
+actions and only execute actions with the desired timestamp              the same map, therefore sharing the same coordinate system.
+after tact for each hardware.                                            Despite the videos from each gripper being relocalized sep-
+   PD2. Relative end-effector pose. End-effector (EE) pose               arately, the relative pose between two grippers at each time
+is central to both UMI’s observation and action space. To avoid          step can be calculated using their shared coordinates.
+dependence on embodiment/deployment-specific coordinates,
+we represent all EE poses relative to gripper’s current EE pose.                                   IV. E VALUATIONS
+   PD2.1) Relative EE trajectory as action representation.                  In our experiment, we aim to evaluate the UMI framework’s
+  Prior works have shown the significant impact of action                effectiveness for deployable policy learning in three aspects:
+space selection on task performance [9], with experimental ev-              • Capability: How well can we transfer UMI demonstra-
+idence favoring absolute positional actions over delta actions.                tions to effective robot policy? Especially for complex,
+However, we found that a relative trajectory representation,                   dynamic, bimanual, and long-horizon manipulation skills.
+defined for an action sequence starting at t0 as a sequence of              • Generalization: Will data collected in the wild within
+SE(3) transforms denoting the desired pose at t relative to the                diverse environments help the policy to generalize to
+initial EE pose at t0 , allows the system to be more robust                    unseen environments and objects?
+against tracking errors during data collection and camera                   • Data collection efficiency: How fast can we collect
+displacements.                                                                 manipulation data with UMI? What’s the accuracy of the
+   PD2.2) Relative EE trajectory as proprioception. Simi-                      SLAM system?
+larly, we represent the proprioception of history EE poses as               To access capability and generalization, we evaluate UMI
+a relative trajectory. When observation horizon is set to 2, this        on 4 real-world robotic tasks across both narrow domain and
+representation effectively provides velocity information to the          in-the-wild environments, shown in Fig. 7. To measure data
+policy. Combined with our wrist-mounted camera observation               collection efficiency, we compare the UMI gripper with human
+space, relative trajectory allows our system to be calibration-          hand demonstration and a typical teleop interface. See §B for
+free. Moving the robot base during execution will not affect             detailed data collection protocol.
+task performance (Fig. 10 (a)), as long as the objects are still
+within reach range, making the UMI framework applicable to                                 V. C APABILITY E XPERIMENTS
+mobile manipulators as well.                                                We study UMI’s ability to capture and transfer single-hand,
+   PD2.3) Relative inter-gripper proprioception. When                    bimanual, dynamic, and long-horizon manipulation skills with
+using UMI in a bimanual setup, we found that providing the               four tasks. For capability experiments, all tasks are evaluated
+policy with the relative pose between the two grippers to be             in the same environment as data collection but with random-
+critical for bimanual coordination and task success, as shown            ized robot and object initial states. To ensure a fair comparison,
+ Task 1. Cup Arrangement
+
+
+
+
+           Init            Reorient handle to the right         Grasp espresso cup        Final: Place on the saucer         (G1) Other scene           (G2) Other embodiment
+ Task 2. Dynamic Tossing
+
+
+
+
+                                                                                                                                            …
+
+              Init                       Grasp lego block                 Toss lego to rectangle bin            Toss orange to round bin                       Final
+ Task 3. Bimanual Cloth Folding
+
+
+
+
+           Init                   Fold left sleeve               Fold right sleeve               Fold in half                Rotate 90 degrees             Final: fold in half
+ Task 4. Dish Washing
+
+
+
+
+                                                                                                                                                                            Final:
+           Init            Turn on faucet            Pick up dirty dish      Grasp sponge       Remove ketchup         Place clean dish on rack   Turn off faucet & return sponge
+
+Fig. 7: Policy Rollouts. We test UMI on a variety of challenging real-world tasks. Cup arrangement tests UMI’s ability to learn both
+prehensile and non-prehensile actions, and to capture multi-modal action distribution (clockwise and counter-clockwise rotation). This task
+is evaluated in both narrow-domain and unseen environments as well as two robot embodiments. Dynamic tossing tests UMI’s ability to
+capture and transfer rapid human motions as well as precise hand-eye coordination. Bimanual cloth folding tests UMI’s ability to synchronize
+two-arm coordination. Dish washing tests UMI’s ability to handle long-horizon tasks that involve multiple rigid, deformable, and articulated
+objects. Please check videos on our website for more details.
+
+we use exactly the same initial state across all methods for                                 Cross-robot generalization: To demonstrate UMI’s cross-
+both the robot and objects, by manually aligning the scene                                embodiment generality, we also deployed the same policy
+against pre-recorded images. See §C for detailed evaluation                               checkpoint on a Franka Emika FR2 robot, shown in Fig. 1
+protocol and videos for all experiments.                                                  and Fig. 8. This experiment achieves 18/20 = 90% success
+A. Cup Arrangement                                                                        rate, with the 2 failure cases being joint limit violations, which
+   Task Place an espresso cup on the saucer with its handle                               could have been avoided if we had mounted the FR2 robot at
+facing to the left of the robot, Fig. 7. We defined task success                          a different location.
+as when the cup is placed upright on the saucer with its handle                              No Fisheye lens [HD2]: To ablate the importance of
+within ±15° to the left.                                                                  having a wide field-of-view (FoV) Fisheye lens, we post-
+   Capability (what makes the task difficult?) This task                                  processed the dataset by rectifying and cropping each image
+tests the system’s ability to learn both prehensile (pick and                             to a square with 69° horizontal and vertical FoV. This is a
+place) and non-prehensile actions (i.e., pushing to reorientate                           generous analogy of RealSense D415 (69° HFoV, 42° VFoV)
+the cup). When the handle faces straight away from the                                    and iPhone wide camera (69° HFoV, 51° VFoV). This baseline
+robot, the two equally valid solutions: rotation clockwise and                            only achieves 11/20 = 55% success rate. Beyond the expected
+counter-clockwise form a multi-modal action distribution. This                            failure mode where the cup is outside of camera view, we
+task also tests UMI’s ability to sense relative depth through                             found this baseline policy to perform surprisingly poor even
+monocular camera observation and side mirrors.                                            if the object is visible, with often jittery motions. We suspect
+   Performance The training dataset contains 305 episodes                                 that during training, the poor object visibility forced the policy
+collected by 2 demonstrators, evaluation includes 20 test cases,                          to be unnecessarily multimodal.
+with the testing initial state distribution shown in Fig. 8 (a).                             Alternative action spaces [PD2]: As alternatives to our
+UMI can complete the task 20/20. The next paragraphs will                                 relative trajectory as action representation, we also consider
+discuss our ablation studies around our key design decisions.                             absolute and delta action spaces as illustrated in Fig 6. Since
+                    (a) All Initial States                 (b) Typical Failure Cases of Baselines                                                    (c) Quantitative Comparison
+Cup Rearrangement
+
+
+                                                                                                                                                                                                          1.0
+                                                                                                                                                                                          0.9     0.9
+                                                                                                                                                                              0.85
+                                                                                                                                                                      0.8
+
+                                                                                                                                                            0.55
+                                                                                                               Exceed
+                                                                                                               Joint Limit                         0.25
+                                                                                               Saucer
+                                                                                               not in view
+                                                                                                                         X
+                                                                                                                                                   on       ye      on         p         r         )         )
+                                                                                                                                                cti       he     cti         wa      rro        ka         R5
+                                             Absolute Action                 No Fisheye                          Ours (Franka)                 A       Fis lta A          rS       Mi         an        (U
+                                                                                                                                            te                       irro       No         (Fr       rs
+                                                                                                                                        olu         No    De       M                  urs        Ou
+                                                                                                                                     Abs                       No                   O
+                                                                         Elbow Joint Velocity
+                                                                                   Jitter
+                                                                                                                                                          Per-object Success Rate
+Dynamic Tossing
+
+
+
+
+                                                                                                                          0.875
+                                                                                                                                                                                   Green Red Orange
+                                                                                                                                                   Apple Baseball Orange                             Overall
+                                                                                                                                                                                   Block Block Block
+                                                                                                                 0.575
+                                                                                                                                      No
+                                                                                                                                    Latency        0.70     0.50       0.70        0.30    0.65    0.60    0.575
+                                                                                                                                    Matching
+                                                                                w/ Latency
+                                                                                Matching
+                                                                                w/o Latency                                          Ours          0.80     0.85       0.85        1.00    0.90    0.85    0.875
+                                                                                Matching                            cy         rs
+                                                                                                 Time            ten         Ou
+                                              No Latency Matching                                              La hing
+                                                                                                             No atc
+                                                                                                               M
+
+                                                  Poor Coordination
+                                                                                                                                                           Substep Success Rate
+Bimanual Folding
+
+
+
+
+                                                                                                                             0.7                   Right   Left   Fold                            Fold
+                                                                                                                                                                        Rotate                            Overall
+                                                                                                                                                   Sleeve Sleeve Bottom                           Final
+                                                                                                                                     No Rel
+                                                                                                                                                    0.90       0.70         0.35      0.40        0.30     0.30
+                                                                                                                  0.3                 Pose
+
+                                                                                                                                     Ours           0.90       0.90         0.90      1.00        0.80     0.70
+                                                                                                                   l        rs
+                                                                                                                 Re       Ou
+                                                 No Inter-gripper Pose                                         No ose
+                                                                                                                 P
+
+                                                                                              Miss
+                                                                                                                                                           Substep Success Rate
+Dish Washing
+
+
+
+
+                                                                                                                             0.7                    Turn      Grasp Grasp Wash                    Place
+                                                                                                                                                                                                        Overall
+                                                                                                                                                   Faucet     Dish Sponge Dish                    Dish
+                                                                                            Correct
+                                                                                                                                     ResNet         0.50       0.20         0.90      0.00        0.00     0.00
+
+                                                                                                                                     Ours
+                                                                                                                  0.0
+                                                                                                                                                    1.00       0.90         0.95      0.75        0.75     0.70
+                                                                                                                                     (ViT)
+                                                        ResNet                          ViT                       et       rs
+                                                                                                                sN       Ou iT)
+                                                                                                              Re            (V
+
+
+  Fig. 8: Narrow-domain Evaluation Results. (a) Initial states for all evaluation episodes overlayed together. For each task, all methods start
+  with the same set of initial states, matched manually with reference images. (b) Typical failure mode of the baseline/ablation policy. The
+  red arrow indicates failure behavior, green arrow indicates desired behavior. (c) Success rate over 20 evaluation episodes, best performance
+  for each column are bolded. Please check our website for more comparison videos.
+
+  the SLAM system outputs pose relative to the first frame of the                             that without digital reflection, the opposite motions observed in
+  mapping video (details in §D), we can only calculate relative                               the main and mirrored images might confuse vision encoders,
+  and delta actions directly using SLAM output. To compute                                    especially those with translational equivariance.
+  absolute actions in the robot base frame, we calibrate both
+  SLAM coordinates and the robot with respect to the same                                     B. Dynamic Tossing
+  fiducial markers [16] placed on the table.                                                     Task The robot is tasked to sort 6 objects from the YCB
+     The delta action baseline achieves 16/20 = 80% success                                   object set [5] randomly placed on a table by tossing them
+  rate. The absolute action baseline performs surprisingly poorly                             to the corresponding bin. The 3 spherical objects (baseball,
+  with only 5/20 = 25% success rate, demonstrating a noticeable                               orange, apple) should be tossed into the round bin, while the
+  bias in action selection, likely due to inaccurate calibration                              3 Lego Duplo pieces go into the rectangular bin (Fig. 7). The
+  between the SLAM and robot base coordinate frames (Fig. 8                                   bins are placed beyond the robot’s kinematic reach range to
+  (b)). While theoretically the performance of this baseline could                            highlight the necessity of dynamic action for this task.
+  approach that of relative trajectory with better calibration, this                             Capability: The dynamic tossing task demonstrates UMI’s
+  experiment underscores the difficulty of obtaining action data                              ability to capture and transfer fluid and rapid human motions,
+  with absolute coordinates, even in controlled lab settings.                                 precise hand-eye coordination (between RGB and propriocep-
+     Effect of side mirrors [HD3]: To our surprise, directly                                  tion) and timing alignment (between robot and gripper).
+  providing mirror images decreases the performance from                                         Performance: We collected 280 demonstration episodes for
+  18/20 = 90% (no mirror) to 17/20 = 85%. To fully take                                       this task, with mixed multi and single-object picking and
+  advantage of side mirrors, we need to digitally reflect the                                 tossing. Our policy (with inference time latency matching)
+  content inside mirrors and swap left and right mirror images,                               achieves 105/120 = 87.5% success rate, counted by the num-
+  which achieves a 20/20 = 100% success rate. We hypothesize                                  ber of objects successfully tossed to their corresponding bin.
+ Fountain
+                                                                                (b) Typical Failure Case of Policy using Narrow-domain data
+                                                                                                             Cafe        Water       Success
+                                                                                                             Table      Fountain      Rate
+                                                                                 CLIP ViT ﬁnetune with       0 / 10       0 / 10       0.0
+                                                                                   narrow-domain Data
+                                                                                             Training Cup    16 / 25     12 / 15       0.7
+                                                                               In-the-wild   Unseen Cup      6 / 10      9 / 10       0.75
+                                                                                   Data
+ Cafe Table                                                                                     Overall      22 / 35     21 / 25      0.72
+              (a) Generalization to novel environments and novel cups               (c) Quantitative Comparison in Unseen Environments
+
+Fig. 9: In-the-wild Cup Arrangement Evaluation. (a) The policy, trained with in-the-wild data, demonstrates strong generalization capability
+to novel environments and novel objects. (b) With only narrow-domain data, the policy struggles to generalize to new environments. (c)
+Comprehensive qualitative results are provided, and additional comparison videos can be found on our website.
+
+    No Latency Matching [PD1]: With the same trained                    synchronizes the grasp by first reaching the pre-grasp pose and
+policy, we disable inference-time latency matching by setting           waiting until both arms are in position before simultaneously
+the measured latencies for all observation and action streams           grasping and folding.
+to 0. We visually observe the policy’s movement is much more
+                                                                        D. Dish Washing
+jittery due to the out-of-sync observations and executions.
+    While the jitteriness minimally affects grasping, its impact           Task The robot needs to execute 7 steps of sequentially
+on tossing performance is notable as it disrupts the robot              dependent actions (turn on faucet, grasp plate, pick up sponge,
+motion to achieve the desired tossing velocity, as illustrated          wash and wipe plate until ketchups are removed, place plate,
+in the elbow joint velocity curve in Fig. 8. In addition, the           place the sponge and turn off faucet), shown in Fig. 7. See §C
+misalignment between the gripper and robot action (due to               for detailed evaluation protocol.
+their different execution latency) leads to suboptimal object              Capability This task pushes the boundaries of robot ma-
+release during tossing. As a result, the final success rate             nipulation capability from several fronts: 1) it is an ultra-
+decreased to 69/120 = 57.5%.                                            long horizon task where each step’s success depends on the
+                                                                        previous one; 2) the robot needs to perceive and manipulate
+C. Bimanual Cloth Folding                                               complex fluid including both Newtonian fluid (i.e., water)
+   Task Two robot arms need to coordinate and fold the                  and non-Newtonian fluid (i.e., ketchup). 3) the wiping mo-
+sweater’s sleeves inward, fold up the bottom hem, rotate 90             tion requires using a deformable tool (i.e., sponge) while
+degrees, and finally fold the sweater in half again (Fig. 7). See       coordinating both arms with reference to the water stream; 4)
+§C for detailed evaluation protocol.                                    manipulating constrained articulated object (i.e., turning on
+   Capability Manipulating high degrees of freedom de-                  and off faucet) requires mechanical compliance provided by
+formable objects is challenging due to their complex dynamics           soft fingers; 5) the policy also need to be semantically robust
+and underactuation. In addition, this task requires tight coor-         to the concept of “cleanliness”. When additional ketchup is
+dination between arms. For example, lifting the bottom hem              added during washing or even after the washing phase is done,
+requires two arms to pick it up at the same time, and if one            the robot needs to resume washing and wiping.
+of the arm is just slightly too fast or slow this step will fail.          Performance A single demonstrator collected 258 demon-
+   Performance We collected 250 demonstrations from two                 strations with randomized initial states including, ketchup
+demonstrators, with randomized initial states by translat-              patterns, position of the plate and sponge, along with wa-
+ing/rotating the shirt and folding the sleeves. We use a single         ter faucet angle. The collected demo also include explicit
+centralized policy to generate actions for both robot arms and          demonstrations of recovery behavior when additional ketchup
+grippers. Our policy achieves 14/20 = 70% success rate.                 is added. For this task, we train diffusion policy by fine-
+   No relative inter-gripper proprioception [PD2.3]: With-              tuning a CLIP [29] pretrained ViT-B/16 [11] vision encoder.
+out inter-gripper proprioception information (during both train-        Overall, UMI achieves 14/20 = 70% success rate. In addition,
+ing and eval), the coordination between the two arms becomes            we demonstrate the robustness of our policy against various
+significantly worse. The most salient failure case is when the          distractors, and types of sauce (mustard, chocolate syrup,
+two arms lift the bottom hem of the shirt, where the baseline           caramel syrup), as well as robustness against perturbations,
+policy often misses one of the grasps due to asynchronous               see Fig. 10 and video on our website for details.
+grasp action (Fig. 8 (b)). As a result, the baseline policy only           No CLIP-pretrained ViT vision encoder. For this visu-
+achieves success rate of 6/20 = 30%. In contrast, UMI policy            ally complex task, we found training ResNet-34 [17] from
+          Current Base             Previous Base
+
+                                                                          Pine Cone                                     Box
+                          (a) Base Movements                                                        (b) Novel Objects
+
+
+
+
+                                                                          Add different sauce         Add more sauce
+        0% light                  50% light                                                                                   Back to washing stage.
+                                                                           during washing.             after washing.
+        (c) Different Lighting Conditions                                               (d) Perturbations
+
+Fig. 10: Robustness Test. We test the policy robustness with different inference time perturbations such as moving robot base, novel objects,
+different lighting conditions, and adding different and more condiments for the dish-washing task. The learned policy is robust against these
+perturbations and completes the task. Please check the video on our website for more details.
+
+
+scratch to be insufficient. Specifically, the baseline policy with            tested 3 training and 2 testing cups, with 5 initial poses
+ResNet-34 learned an non-reactive behavior and ignored any                    each, 25 experiments in total.
+variation in plate or sponge position. As a result, it cannot           We selected the 2 testing cups such that one has an out-of-
+perform the task, 0/10 = 0%.                                            distribution color (dark blue), while the other has an unseen
+                                                                        texture (brown rings). For each test case, we vary the initial
+    VI. I N - THE - WILD G ENERALIZATION E XPERIMENTS                   pose of both the cup and the saucer.
+                                                                           Our UMI policy has 28/40 = 70% success rate on training
+   Prior works in behavior cloning typically only evaluate in
+                                                                        cups and 15/20 = 75% success rate on testing cups, with a
+the same environment as data collection, often limited by their
+                                                                        combined success rate of 43/60 = 71.7%. More qualitative
+inability to collect sufficiently diverse dataset to allow general-
+                                                                        and quantitative results are shown in Fig. 9.
+ization. By not relying on teleoperation with real robots, UMI
+                                                                           No in-the-wild data. To validate the generalization ability
+enables low-cost data collection in any environment, which we
+                                                                        comes from in-the-wild data, instead of pretrained vision
+refer to as in-the-wild data.
+                                                                        backbone, we trained another model that only uses data from
+   We evaluate UMI’s ability to produce generalizable visuo-
+                                                                        our narrow-domain experiment collected in the same lab
+motor policies by scaling up the cup arrangement task Sec.
+                                                                        environment (described in Sec. V-A) with the same pretrained
+V-A to novel environments and novel objects. Within 12
+                                                                        ViT vision backbone. In the same unseen environments, as
+person-hours, 3 demonstrators collected 1400 demonstrations
+                                                                        shown in Fig. 9(b), the robot with the baseline policy doesn’t
+for the cup arrangement task across 30 diverse physical
+                                                                        even move toward the cup. As a result, its success rate is 0%.
+locations, including homes, offices, restaurants, and outdoor
+                                                                           Takeaway. This result indicates that finetuning a large
+environments. The demonstrations involved 15 espresso cups
+                                                                        pre-trained model with narrow-domain data is insufficient
+of different colors, shapes (cylindrical and tapered), and mate-
+                                                                        for producing an in-the-wild deployable policy. Therefore
+rials (ceramic, glass, and metal). To ensure model capacity, we
+                                                                        collecting diverse, in-the-wild data is still critical for effective
+increased the vision encoder further to CLIP [30] pretrained
+                                                                        generalization to novel environments and objects.
+ViT-L/14 [11]. We evaluated our UMI policy in two unseen
+environments (Fig. 9 first column):                                      VII. DATA C OLLECTION T HROUGHPUT AND ACCURACY
+   • Cafe table is a metal table in the outdoor seating area               Throughput. UMI’s improved ergonomics and intuitiveness
+     of a busy cafe where a large number of pedestrians serve           over teleoperations also lead to improved data collection
+     as natural distractors. We tested 5 cups in the training set       throughput. To demonstrate this effect, we record the number
+     and 2 testing (unseen) cups, with 5 initial poses each, 35         of demonstrations that can be collected within 15 minutes by
+     experiments in total.                                              the same operation using 3 different methods (Fig. 11): 1)
+   • Water fountain is a black cubic water fountain, with               Human hand demonstration 2) UMI gripper 3) Spacemouse-
+     a thin film of water constantly flowing from the center,           based teleoperation, which is a typical teleoperation interface
+     covering the entire top surface. This environment is               used in many learning from demonstration works [9, 54]. We
+     notably out-of-distribution since all of our demonstrations        measure the data throughput on two tasks: 1) cup arrangement
+     are collected on non-black tables, not to mention changes          2) dynamic tossing. Note that the time taken to reset the
+     in surface dynamics due to the presence of water. We               environment, randomize objects, and handle robot faults (such
+                                                                                                                 CPH
+                                                                                                                                   231
+
+
+
+                                                                                                                           111
+
+                                                                                                                                             35
+
+
+ Bimanual Folding           Cup Arrangement
+
+                                                                                                Space            CPH
+                                                                                                                                   237
+                                                                                                Mouse
+
+                                                                                                                           149
+
+
+
+
+                                                                                                                                             0
+
+ Dish Washing               Dynamic Tossing
+                (a) UMI Demonstration                  (b) Bare Hand Demonstration       (c) Teleoperation             (d) Throughput Comparison
+Fig. 11: Data Collection Throughput Comparison among UMI, bare hand, and teleoperation with a space mouse. UMI is not only faster
+than traditional teleoperation but also able to perform tasks that were not possible with typical teleoperation interfaces (e.g., dynamic tossing).
+
+
+                                        SLAM Tracking Mean Error            on data filtering to ensure the kinematic feasibility of the
+                                                                            resulting policy. Future works could develop an embodiment-
+                MoCap                                 Position   Rotation   aware policy learning framework that can transfer skills from
+                Markers                                (mm)      (degree)
+                                                                            valid but hardware-infeasible actions.
+                                    Per-gripper ATE     6.1        3.5         Second, our SLAM-based action recovery system inherits
+                                  Inter-gripper RPE    10.1        0.8      visual SLAM’s requirement for sufficient texture in the envi-
+             OptiTrack Cameras                                              ronment. Future works could leverage static third-person-view
+Fig. 12: SLAM Accuracy. We evaluate the SLAM accuracy with a                cameras, coupled with additional fiducial markers on UMI
+MoCap benchmark including 7 single-gripper tasks and 7 bimanual             grippers to recover action even in texture-deficient environ-
+tasks. Overall, we can achieve less than 1 cm and 4° tracking error.        ments like rooms with pure white walls.
+                                                                               Third, collecting data with UMI grippers is still less efficient
+as self-collisions) are also counted in this experiment to                  than human hand demonstration, as shown in Sec. VII. This is
+accurately represent the real-world data collection throughput.             in part due to the gripper’s weight and bulkiness, and in part
+   On the cup arrangement task, the UMI gripper is more than                due to the reduced degrees of freedom compared to human
+3× faster than teleportation, at 48% speed of the human hand,               hands. Future works could explore lighter materials and further
+shown in Fig. 11 (d). Note that human is significantly faster on            improve UMI gripper’s mechanical design and ergonomics, or
+reset and randomization, due to their proximity to the objects.             alternatively, build sufficiently capable dexterous robotic hands
+On the dynamic tossing task, the UMI gripper is at 64% speed                and policies that can directly transfer from human motions.
+of the human hand, while the teleportation method failed to
+produce a single successful demonstration in 15 minutes.
+   Accuracy. To independently assess the accuracy of our                                            IX. C ONCLUSION
+SLAM-based tracking system, we collected a SLAM bench-
+mark dataset with MoCap ground truth. The dataset contains                     We present Universal Manipulation Interface (UMI), a
+7 single-gripper tasks and 7 bimanual tasks, all with a variety             framework that enables learning capable and generalizable
+of movable objects in view as well as natural and rapid human               manipulation policies directly from in-the-wild human demon-
+motion. As shown in Fig. 12, our SLAM system has a mean                     strations. The UMI gripper, a hand-held demonstration inter-
+Absolute Trajectory Error (ATE) of 6.1mm for position and                   face, captures sufficient information to learn some challenging
+3.5° for rotation. Since both grippers are localized with the               manipulation tasks, including washing a dirty dish, bimanual
+same map, we can also obtain the relative pose between two                  sweater folding, and dynamic object tossing and sorting.
+grippers (i.e. inter-gripper pose PD2.3). The mean Relative                 At the same time, UMI remains highly scalable for in-the-
+Pose Error (RPE) between two grippers is 10.1mm for position                wild data collection with its portability, cost-effectiveness,
+and 0.8° for rotation.                                                      and operational simplicity. By recording all information in
+                                                                            a single, standardized MP4 file, UMI’s data can be easily
+          VIII. L IMITATIONS AND F UTURE W ORKS                             shared over the Internet, allowing geographically distributed
+   While UMI demonstrates policy efficacy across a wide                     data collection from a large pool of nonexpert demonstrators.
+range of tasks and scenarios, a few limitations remain. First,              Our goal with UMI is to democratize robotic data collection,
+since the kinematics limits of the downstream deployment                    fostering a vast, diverse, and decentralized dataset to emerge
+robots are unknown at the time of data collection, we rely                  from the robotics community
+                   ACKNOWLEDGMENTS                                    Orb-slam3: An accurate open-source library for visual,
+   This work was supported in part by the Toyota Research             visual–inertial, and multimap slam. IEEE Transactions
+Institute, NSF Award #2037101, and #2132519. We want to               on Robotics, 37(6):1874–1890, 2021.
+thank Google and TRI for the UR5 robots, and IRIS and IPRL        [7] Carlos Campos, Richard Elvira, Juan J. Gómez
+lab for the Franka robot hardware. The views and conclusions          Rodrı́guez, José M. M. Montiel, and Juan D. Tardós.
+contained herein are those of the authors and should not be           Orb-slam3: An accurate open-source library for visual,
+interpreted as necessarily representing the official policies,        visual–inertial, and multimap slam. IEEE Transactions
+either expressed or implied, of the sponsors.                         on Robotics, 37(6):1874–1890, 2021. doi: 10.1109/TRO.
+   We would like to thank Andy Zeng, Pete Florance, Huy Ha,           2021.3075644.
+Yihuai Gao, Samir Gadre, Mandi Zhao, Mengda Xu, Alper             [8] Annie S Chen, Suraj Nair, and Chelsea Finn. Learn-
+Canberk, Kevin Zakka, Zeyi Liu, Dominik Bauer, Tony Zhao,             ing generalizable robotic reward functions from “in-the-
+Zipeng Fu and Lucy Shi for their thoughtful discussions. We           wild” human videos. In Proceedings of Robotics: Science
+thank Alex Alspach, Brandan Hathaway, Aimee Goncalves,                and Systems (RSS), 2021.
+Phoebe Horgan, and Jarod Wilson for their help on hardware        [9] Cheng Chi, Siyuan Feng, Yilun Du, Zhenjia Xu, Eric
+design and prototyping. We thank Naveen Kuppuswamy, Dale              Cousineau, Benjamin Burchfiel, and Shuran Song. Dif-
+McConachie, and Calder Phillips-Graffine for their help on            fusion policy: Visuomotor policy learning via action
+low-level controllers. We thank John Lenard, Frank Michel,            diffusion. In Proceedings of Robotics: Science and
+Charles Richter, and Xiang Li for their advice on SLAM.               Systems (RSS), 2023.
+We thank Eric Dusel, Nwabisi C., and Letica Priebe Rocha         [10] Kiran Doshi, Yijiang Huang, and Stelian Coros. On
+for their help on the MoCap dataset collection. We thank              hand-held grippers and the morphological gap in
+Chen Wang, Zhou Xian, Moo Jin Kim, and Marion Lepert for              human manipulation demonstration.         arXiv preprint
+their assistance with the Franka setup. We especially thank           arXiv:2311.01832, 2023.
+Steffen Urban for his open-source projects on GoPro SLAM         [11] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov,
+and Camera-IMU calibration, and John @ 3D printing world              Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner,
+for inspiration of the gripper mechanism.                             Mostafa Dehghani, Matthias Minderer, Georg Heigold,
+                                                                      Sylvain Gelly, Jakob Uszkoreit, and Neil Houlsby. An
+                        R EFERENCES                                   image is worth 16x16 words: Transformers for image
+ [1] Shikhar Bahl, Abhinav Gupta, and Deepak Pathak.                  recognition at scale. In International Conference on
+     Human-to-robot imitation in the wild. In Proceedings             Learning Representations, 2021.
+     of Robotics: Science and Systems (RSS), 2022.               [12] Jiafei Duan, Yi Ru Wang, Mohit Shridhar, Dieter Fox,
+ [2] Shikhar Bahl, Russell Mendonca, Lili Chen, Unnat Jain,           and Ranjay Krishna. Ar2-d2: Training a robot without a
+     and Deepak Pathak. Affordances from human videos as              robot. 2023.
+     a versatile representation for robotics. In Proceedings     [13] Frederik Ebert, Yanlai Yang, Karl Schmeckpeper,
+     of the IEEE/CVF Conference on Computer Vision and                Bernadette Bucher, Georgios Georgakis, Kostas Dani-
+     Pattern Recognition, pages 13778–13790, 2023.                    ilidis, Chelsea Finn, and Sergey Levine. Bridge data:
+ [3] Anthony Brohan, Noah Brown, Justice Carbajal, Yev-               Boosting generalization of robotic skills with cross-
+     gen Chebotar, Joseph Dabis, Chelsea Finn, Keerthana              domain datasets. In Proceedings of Robotics: Science
+     Gopalakrishnan, Karol Hausman, Alex Herzog, Jasmine              and Systems (RSS), 2022.
+     Hsu, et al. Rt-1: Robotics transformer for real-world       [14] Hongjie Fang, Hao-Shu Fang, Yiming Wang, Jieji Ren,
+     control at scale. In Proceedings of Robotics: Science            Jingjing Chen, Ruo Zhang, Weiming Wang, and Cewu
+     and Systems (RSS), 2023.                                         Lu. Low-cost exoskeletons for learning whole-arm ma-
+ [4] Anais Brygo, Ioannis Sarakoglou, Nadia Garcia-                   nipulation in the wild. arXiv preprint arXiv:2309.14975,
+     Hernandez, and Nikolaos Tsagarakis. Humanoid robot               2023.
+     teleoperation with vibrotactile based balancing feedback.   [15] Zipeng Fu, Tony Z Zhao, and Chelsea Finn. Mo-
+     In Haptics: Neuroscience, Devices, Modeling, and Ap-             bile aloha: Learning bimanual mobile manipulation with
+     plications: 9th International Conference, EuroHaptics            low-cost whole-body teleoperation.        arXiv preprint
+     2014, Versailles, France, June 24-26, 2014, Proceedings,         arXiv:2401.02117, 2024.
+     Part II 9, pages 266–275. Springer, 2014.                   [16] S. Garrido-Jurado, R. Muñoz-Salinas, F.J. Madrid-
+ [5] Berk Calli, Arjun Singh, Aaron Walsman, Siddhartha               Cuevas, and M.J. Marı́n-Jiménez. Automatic genera-
+     Srinivasa, Pieter Abbeel, and Aaron M. Dollar. The ycb           tion and detection of highly reliable fiducial markers
+     object and model set: Towards common benchmarks for              under occlusion. Pattern Recognition, 47(6):2280–2292,
+     manipulation research. In 2015 International Conference          2014. ISSN 0031-3203. doi: https://doi.org/10.1016/
+     on Advanced Robotics (ICAR), pages 510–517, 2015.                j.patcog.2014.01.005. URL https://www.sciencedirect.
+     doi: 10.1109/ICAR.2015.7251504.                                  com/science/article/pii/S0031320314000235.
+ [6] Carlos Campos, Richard Elvira, Juan J Gómez                [17] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian
+     Rodrı́guez, José MM Montiel, and Juan D Tardós.                Sun. Deep residual learning for image recognition. corr
+     abs/1512.03385 (2015), 2015.                                        guage supervision. In International conference on ma-
+[18] GoPro Inc. Gpmf introuction: Parser for gpmf™ format-               chine learning, pages 8748–8763. PMLR, 2021.
+     ted telemetry data used within gopro® cameras. https:          [30] Harish Ravichandar, Athanasios S Polydoros, Sonia
+     //gopro.github.io/gpmf-parser/. Accesssed: 2023-01-31.              Chernova, and Aude Billard. Recent advances in robot
+[19] Eric Jang, Alex Irpan, Mohi Khansari, Daniel Kappler,               learning from demonstration. Annual review of control,
+     Frederik Ebert, Corey Lynch, Sergey Levine, and Chelsea             robotics, and autonomous systems, 3:297–330, 2020.
+     Finn. Bc-z: Zero-shot task generalization with robotic         [31] Erick Rosete-Beas, Oier Mees, Gabriel Kalweit, Joschka
+     imitation learning. In Conference on Robot Learning                 Boedecker, and Wolfram Burgard. Latent plans for task-
+     (CoRL), volume 164, pages 991–1002. PMLR, 2022.                     agnostic offline reinforcement learning. In Proceedings
+[20] Moo Jin Kim, Jiajun Wu, and Chelsea Finn. Giv-                      of The 6th Conference on Robot Learning (CoRL), vol-
+     ing robots a hand: Broadening generalization via hand-              ume 205, pages 1838–1849. PMLR, 2023.
+     centric human video demonstrations. In Deep Reinforce-         [32] Felipe Sanches, Geng Gao, Nathan Elangovan, Ricardo V
+     ment Learning Workshop NeurIPS, 2022.                               Godoy, Jayden Chapman, Ke Wang, Patrick Jarvis, and
+[21] Yecheng Jason Ma, Shagun Sodhani, Dinesh Jayaraman,                 Minas Liarokapis. Scalable. intuitive human to robot
+     Osbert Bastani, Vikash Kumar, and Amy Zhang. VIP:                   skill transfer with wearable human machine interfaces:
+     Towards universal visual reward and representation via              On complex, dexterous tasks. In 2023 IEEE/RSJ Inter-
+     value-implicit pre-training. In The Eleventh International          national Conference on Intelligent Robots and Systems
+     Conference on Learning Representations, 2023.                       (IROS), pages 6318–6325. IEEE, 2023.
+[22] Ajay Mandlekar, Yuke Zhu, Animesh Garg, Jonathan               [33] Karl Schmeckpeper, Annie Xie, Oleh Rybkin, Stephen
+     Booher, Max Spero, Albert Tung, Julian Gao, John                    Tian, Kostas Daniilidis, Sergey Levine, and Chelsea
+     Emmons, Anchit Gupta, Emre Orbay, et al. Roboturk: A                Finn. Learning predictive models from observation and
+     crowdsourcing platform for robotic skill learning through           interaction. In European Conference on Computer Vision,
+     imitation. In Conference on Robot Learning (CoRL),                  pages 708–725. Springer, 2020.
+     volume 87, pages 879–893. PMLR, 2018.                          [34] Karl Schmeckpeper, Oleh Rybkin, Kostas Daniilidis,
+[23] Suraj Nair, Aravind Rajeswaran, Vikash Kumar, Chelsea               Sergey Levine, and Chelsea Finn. Reinforcement learn-
+     Finn, and Abhinav Gupta. R3m: A universal visual                    ing with videos: Combining offline observations with
+     representation for robot manipulation. In Proceedings of            interaction. In Proceedings of the 2020 Conference on
+     The 6th Conference on Robot Learning (CoRL), volume                 Robot Learning (CoRL), volume 155, pages 339–354.
+     205, pages 892–909. PMLR, 2022.                                     PMLR, 2021.
+[24] Chuer Pan, Brian Okorn, Harry Zhang, Ben Eisner,               [35] Mingyo Seo, Steve Han, Kyutae Sim, Seung Hyeon
+     and David Held. Tax-pose: Task-specific cross-pose                  Bang, Carlos Gonzalez, Luis Sentis, and Yuke Zhu.
+     estimation for robot manipulation. In Proceedings of The            Deep imitation learning for humanoid loco-manipulation
+     6th Conference on Robot Learning (CoRL), volume 205,                through human teleoperation. In 2023 IEEE-RAS 22nd
+     pages 1783–1792. PMLR, 2023.                                        International Conference on Humanoid Robots (Hu-
+[25] Jyothish Pari, Nur Muhammad Shafiullah, Sridhar Pan-                manoids), pages 1–8. IEEE, 2023.
+     dian Arunachalam, and Lerrel Pinto. The surprising ef-         [36] Nur Muhammad Mahi Shafiullah, Anant Rai, Haritheja
+     fectiveness of representation learning for visual imitation.        Etukuru, Yiqian Liu, Ishan Misra, Soumith Chintala, and
+     In Proceedings of Robotics: Science and Systems (RSS),              Lerrel Pinto. On bringing robots home. arXiv preprint
+     2022.                                                               arXiv:2311.16098, 2023.
+[26] Luka Peternel and Jan Babič. Learning of compliant            [37] Lin Shao, Toki Migimatsu, Qiang Zhang, Karen Yang,
+     human–robot interaction using full-body haptic interface.           and Jeannette Bohg. Concept2robot: Learning manipu-
+     Advanced Robotics, 27(13):1003–1012, 2013.                          lation concepts from instructions and human demonstra-
+[27] Pragathi Praveena, Guru Subramani, Bilge Mutlu, and                 tions. The International Journal of Robotics Research,
+     Michael Gleicher. Characterizing input methods for                  40(12-14):1419–1434, 2021.
+     human-to-robot demonstrations. In 2019 14th ACM/IEEE           [38] Kenneth Shaw, Shikhar Bahl, and Deepak Pathak.
+     International Conference on Human-Robot Interaction                 Videodex: Learning dexterity from internet videos. In
+     (HRI), pages 344–353. IEEE, 2019.                                   Proceedings of The 6th Conference on Robot Learning
+[28] Yuzhe Qin, Yueh-Hua Wu, Shaowei Liu, Hanwen Jiang,                  (CoRL), volume 205, pages 654–665. PMLR, 2023.
+     Ruihan Yang, Yang Fu, and Xiaolong Wang. Dexmv: Im-            [39] William Shen, Ge Yang, Alan Yu, Jansen Wong,
+     itation learning for dexterous manipulation from human              Leslie Pack Kaelbling, and Phillip Isola. Distilled feature
+     videos. In European Conference on Computer Vision,                  fields enable few-shot language-guided manipulation. In
+     pages 570–587. Springer, 2022.                                      Proceedings of The 7th Conference on Robot Learning
+[29] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya                  (CoRL), volume 229, pages 405–424. PMLR, 2023.
+     Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry,          [40] Anthony Simeonov, Yilun Du, Andrea Tagliasac-
+     Amanda Askell, Pamela Mishkin, Jack Clark, et al.                   chi, Joshua B Tenenbaum, Alberto Rodriguez, Pulkit
+     Learning transferable visual models from natural lan-               Agrawal, and Vincent Sitzmann. Neural descriptor fields:
+     Se (3)-equivariant object representations for manipula-           Xi Chen, Ken Goldberg, and Pieter Abbeel. Deep
+     tion. In 2022 International Conference on Robotics and            imitation learning for complex manipulation tasks from
+     Automation (ICRA), pages 6394–6400. IEEE, 2022.                   virtual reality teleoperation. In 2018 IEEE International
+[41] Shuran Song, Andy Zeng, Johnny Lee, and Thomas                    Conference on Robotics and Automation (ICRA), pages
+     Funkhouser. Grasping in the wild: Learning 6dof closed-           5628–5635. IEEE, 2018.
+     loop grasping from low-cost demonstrations. Robotics         [52] Zichao Zhang, Henri Rebecq, Christian Forster, and
+     and Automation Letters, 2020.                                     Davide Scaramuzza. Benefit of large field-of-view cam-
+[42] H.J. Terry Suh, Naveen Kuppuswamy, Tao Pang, Paul                 eras for visual odometry. In 2016 IEEE International
+     Mitiguy, Alex Alspach, and Russ Tedrake. SEED: Series             Conference on Robotics and Automation (ICRA), pages
+     elastic end effectors in 6d for visuotactile tool use. In         801–808, 2016. doi: 10.1109/ICRA.2016.7487210.
+     2022 IEEE/RSJ International Conference on Intelligent        [53] Tony Z Zhao, Vikash Kumar, Sergey Levine, and Chelsea
+     Robots and Systems (IROS), pages 4684–4691, 2022. doi:            Finn. Learning fine-grained bimanual manipulation with
+     10.1109/IROS47612.2022.9982092.                                   low-cost hardware. In Proceedings of Robotics: Science
+[43] Alexander Toedtheide, Xiao Chen, Hamid Sadeghian,                 and Systems (RSS), 2023.
+     Abdeldjallil Naceri, and Sami Haddadin. A force-             [54] Yifeng Zhu, Abhishek Joshi, Peter Stone, and Yuke Zhu.
+     sensitive exoskeleton for teleoperation: An application           Viola: Imitation learning for vision-based manipulation
+     in elderly care robotics. In 2023 IEEE International              with object proposal priors. In Proceedings of The 6th
+     Conference on Robotics and Automation (ICRA), pages               Conference on Robot Learning (CoRL), volume 205,
+     12624–12630. IEEE, 2023.                                          pages 1199–1210. PMLR, 2023.
+[44] Chen Wang, Linxi Fan, Jiankai Sun, Ruohan Zhang,
+     Li Fei-Fei, Danfei Xu, Yuke Zhu, and Anima Anand-
+     kumar. Mimicplay: Long-horizon imitation learning
+     by watching human play. In Proceedings of The 7th
+     Conference on Robot Learning (CoRL), volume 229,
+     pages 201–221. PMLR, 2023.
+[45] Josiah Wong, Albert Tung, Andrey Kurenkov, Ajay Man-
+     dlekar, Li Fei-Fei, Silvio Savarese, and Roberto Martı́n-
+     Martı́n. Error-aware imitation learning from teleoperation
+     data for mobile manipulation. In Proceedings of the
+     5th Conference on Robot Learning (CoRL), volume 164,
+     pages 1367–1378. PMLR, 2022.
+[46] Philipp Wu, Fred Shentu, Xingyu Lin, and Pieter Abbeel.
+     GELLO: A general, low-cost, and intuitive teleoperation
+     framework for robot manipulators. In Towards Generalist
+     Robots: Learning Paradigms for Scalable Skill Acquisi-
+     tion @ CoRL2023, 2023.
+[47] Keenan A Wyrobek, Eric H Berger, HF Machiel Van der
+     Loos, and J Kenneth Salisbury. Towards a personal
+     robotics development platform: Rationale and design of
+     an intrinsically safe personal robot. In 2008 IEEE
+     International Conference on Robotics and Automation,
+     pages 2165–2170. IEEE, 2008.
+[48] Tete Xiao, Ilija Radosavovic, Trevor Darrell, and Jitendra
+     Malik. Masked visual pre-training for motor control.
+     arXiv:2203.06173, 2022.
+[49] Haoyu Xiong, Quanzhou Li, Yun-Chun Chen, Homanga
+     Bharadhwaj, Samarth Sinha, and Animesh Garg. Learn-
+     ing by watching: Physical imitation of manipulation
+     skills from human videos. In 2021 IEEE/RSJ Inter-
+     national Conference on Intelligent Robots and Systems
+     (IROS), pages 7827–7834. IEEE, 2021.
+[50] Sarah Young, Dhiraj Gandhi, Shubham Tulsiani, Abhinav
+     Gupta, Pieter Abbeel, and Lerrel Pinto. Visual imitation
+     made easy. In Conference on Robot Learning (CoRL),
+     volume 155, pages 1992–2005. PMLR, 2021.
+[51] Tianhao Zhang, Zoe McCarthy, Owen Jow, Dennis Lee,
+                            A PPENDIX
+                                                                                                                     Timestamp
+   Please check out our website (https://umi-gripper.github.io)                                                      QR code
+                                                                            Camera Feed Playback
+for additional results and comparisons. In appendix, we present
+additional details on latency measurement §A, data collection
+protocol §B, evaluation protocol §C, SLAM §D, policy im-                                                              GoPro
+plementation §E, and hardware implementation §F.                                                                      HDMI out
+
+A. Latency Measurement
+   As depicted in the main manuscript, accurate calibration of
+various latencies in the robotic system is critical for deploying
+UMI policies, especially for tasks that require rapid and
+dynamic actions. In the following sections, we will describe                           HDMI-USB
+how we measure the latency for each component.                                       Capture Card
+   1) Camera Latency Measurement: For policy observation
+across both the UR5 and Franka FR2 platforms, we employ                         Fig. A1: Camera Latency Measurement
+each robot arm with a single wrist-mounted GoPro Hero 9
+camera. To obtain real-time video streams from the GoPro,              4) Robot Execution Latency Measurement: Similar to the
+we use a combination of GoPro Media Mod 1.0 (to convert             gripper, we also measure the execution latency of the robot
+usb-c to HDMI) and Elgato HD60X external capture card (to           (ether UR5 or Franka) by calculating le2e , as the optimal
+convert HDMI to USB-3.0 UVC interface). To measure the              alignment between a sequence of desired end-effector poses
+end-to-end latency of the camera pipeline, we record (with the      and the measured actual end-effector poses. Due to safety
+GoPro camera) a rolling QR code on the computer monitor that        concerns, we directly teleoperate the robot to generate the
+displays the current system timestamp for each video frame          desired end-effector pose sequences.
+tdisplay , as shown in Fig. A1. To prevent multiple detections
+of QR codes through overlay of camera streams, we masked            B. Data Collection Protocol
+out the QR code in camera playback, as shown on the left of            UMI enables in-the-wild data collection with close-to-zero
+the monitor. By subtracting the receiving timestamp for each        setup time. To start data collection in a new environment, the
+frame trecv and the decoded QR code timestamp tdisplay , and        demonstrator follows a 4-step process:
+subtracting the known latency of display refresh ldisplay , we         • Time Synchronization (optional). When utilizing UMI
+can obtain the end-to-end latency of camera system:                      in a bimanual confirmation, we synchronize the internal
+                                                                         clocks for the two GoPro cameras by scanning a rolling
+                lcamera = trecv − tdisplay − ldisplay                    QR code on a smartphone. “GoPro Labs” experimental
+   2) Proprioception Latency Measurement: When the                       firmware recognizes the global timestamp encoded in the
+                                                                                                                          1
+robotic hardware directly reports global timestamps, such is             QR code and calibrates its internal clock with ± 60 second
+the case for Franka FR2 robot, we measure the proprioception             accuracy. This step can be skipped for single-arm tasks.
+                                                                       • Gripper Calibration (optional). We calibrate the min-
+latency by subtracting the robot sending timestamp trobot from
+the policy-received timestamp trecv :                                    imum and maximum width between gripper fingers by
+                                                                         recording a video of opening and closing the gripper
+                        lobs = trecv − trobot                            for 5 times. While this step is only necessary once per
+                                                                         gripper to account for manufacturing inconsistencies, we
+When the robotic hardware timestamp is unavailable, such as              often do this for every data collection scene to avoid
+the UR5 robot and Schunk WSG-50 gripper, we approximate                  potential issues from accidentally mixing up between
+the proprioception latency with 21 of ICMP round-trip time               grippers between collection sessions.
+(i.e. ping).                                                           • Mapping. For each new scene, we scan the environment
+   3) Gripper Execution Latency Measurement: To obtain                   by slowly moving the gripper around, following a pattern
+the gripper execution latency laction , we subtract the end-to-          that first covers a sufficient part of the scene, then
+end latency le2e by the proprioception latency lobs . To measure         mimicking the likely motions for the desired task for
+le2e , we send a sequence of sinusoidal position commands                denser coverage on task-relevant parts of the scene. As
+to the gripper, and then record a sequence of gripper width              described in Sec. D, obtaining a high-quality map is crit-
+preconceptions. The le2e can be obtained by computing the                ical for precise and robust SLAM tracking, especially for
+optimal alignment between the desired gripper width signal               rapid motions during demonstrations. To further improve
+and the signal of actual received gripper widths through cross-          mapping robustness, we optionally place a fiducial marker
+convolution.                                                             on the table/ground which will be taken away during
+                       laction = le2e − lobs                             demonstration. The mapping process usually takes around
+                                                                         1 minute.
+ H-Param             I-To   P-To   Ta   Freq    Speed    ImgRes       V-Arch       V-Pretrain   D-Lr    V-Lr   Epochs    Batch    Compute
+ Cup Arrag.          2      2      6    10      0.5x     1x224x224    ViT-B/16     CLIP         3e-4    3e-5   250       512      4xA10g
+ Obj Tossing         2      2      6    20      1.0x     1x224x224    ResNet-34    No           3e-4    3e-4   350       1024     4xA10g
+ Cloth Folding       2      2      6    10      0.5x     2x224x224    ResNet-34    No           3e-4    3e-4   100       1024     4xA10g
+ Dish Washing        2      2      6    10      0.5x     2x224x224    ViT-B/16     CLIP         3e-4    3e-5   90        224      8xA10g
+ Cup (In-the-wild)   1      2      6    10      0.5x     1x224x224    ViT-L/14     CLIP         3e-4    3e-5   50        512      8xA100
+
+TABLE A1: Hyperparameters for Diffusion Policy I-To: image observation horizon. P-To: proprioception observatino horizon. Ta: action
+horizon. Freq: environment frequency (Hz, both observation and action). Speed: policy execution speed wrt data collection speed. ImgRes:
+environment observation resolution (Camera views x W x H). V-Arch: vision encoder architecture. V-Pretrain: pretraining method for vision
+encoder. D-Lr: learning rate for action diffusion model. V-Lr: learning rate for vision encoder. Epochs: training epochs. Batch: total batch
+size over all GPUs. Compute: number and type of GPUs used for training. All tasks uses DDIM scheduler with 50 training diffusion steps
+and 16 inference steps.
+
+   • Demonstration. In this step, the demonstrator performs                  or joint/speed limit violation, the episode is terminated
+      the desired task repeatedly, within the same scene. We                 automatically.
+      record one video per demonstration, with the video itself           • Timeout. We manually set a task-specific conservative
+      marks the start and end of each episode. Under single                  timeout, usually 3-5 times longer than the median task
+      gripper configuration, the demonstrator can press the                  duration, to automatically terminate the episode. This
+      recording button with the other hand on the GoPro,                     timeout is usually triggered when the policy is stuck and
+      or optionally a GoPro remote control, to start and end                 stops making progress.
+      each video recording. Under bimanual configuration, the             • Task Success. The operator manually terminates the
+      demonstrator uses GoPro’s built-in voice command (“Go-                 episode when the task is deemed to be successful.
+      Pro capture”, “GoPro stop capture”) to start and end                Since the termination criteria contain subjective elements,
+      video recording.                                                 we encourage readers to check out our complimentary video
+   At the end of each shift/day, the demonstrator uploads the          that contains all experiments reported.
+mp4 files on all grippers to cloud storage with one folder per            3) Success Criteria: It is difficult to define automatic
+scene. From there, we provide a single script that converts            and compact success metrics for complex manipulation tasks
+these mp4 files into a dataset that can be directly used to            reported in this paper. Therefore, the operator manually judges
+train diffusion policy. Under the hood, the script automatically       the success or failure of each episode using the rubric de-
+detects and disambiguates left/right grippers using GoPros’            scribed below. While we try to create a concise and objective
+serial numbers, matches the videos into synchronized pairs             rubric, it inevitability contains subjective elements. As a result,
+and recovers the robot actions using our SLAM pipeline and             viewing our complimentary video submission is still the best
+fiducial marker detection.                                             way to elucidate the relative performance between our method
+                                                                       and various baselines.
+C. Evaluation Protocol
+                                                                          Cup Arrangement. We define task success as when the cup
+   In this section, we explain the process of real world policy        is placed upright on the saucer with its handle within ±15° to
+evaluation in detail. Specifically, we will describe how we            the left of the robot.
+select initial states, how we terminate an experiment, and                Dynamic Tossing. We define task success as when the
+how we judge success and failures.                                     objects are tossed into their corresponding bins. Bouncing off
+   1) Initial State Selection: For all tasks, we manually select       from inside the bin is counted as success, as long as the object
+a set of initial states with diverse pose coverage across task         hits the bottom of the bin. If an object hits the sidewall of the
+scenes (for both the robot and the environment) that are shared        bin and bounces back to the table, then successfully tossed in
+across all evaluated methods. During evaluation, we manually           the bin later, it also counts as a success.
+match the initial states with a third-person camera to be close           Bimanual Cloth Folding. We define task success as when
+to pixel-perfect. We ensure the initial states to be kinematically     both sleeves are folded inside of the sweater, and the silhouette
+feasible by teleoperating the robot. For narrow-domain tasks,          (projected area) of the folded sweater resembles a square, sized
+we randomize the objects with roughly the same distribution            around a quarter of area of the sweater torso. A sleeve folded
+as data collection.                                                    in but not perfectly flat still counts as success. Even if the cloth
+   2) Termination Criteria: During evaluation, an operator             is not perfectly flat, the episode is still deemed successful as
+supervises the robot at all times. An evaluation episode can           long as the projected area resembles a square.
+be terminated due to:                                                     Dish Washing. An episode is deemed successful when the
+   • Safety Concern. When the operator deems the robot is              plate is clean and placed vertically back on the rack. Residual
+     about to perform dangerous actions that could potentially         spots of ketchup with a size ¡5mm are deemed clean. If the
+     break the setup/robot or do any other harm, the episode           sponge is placed on the edge of the sink and then slips inside
+     will be terminated immediately.                                   the sink, it does not affect task success as long as the plate is
+   • Robot Fault. When the robot enters a fault state, poten-          clean and placed back on the rack.
+     tially due to external or self-collisions, excessive force,          In-the-wild Cup Arrangement. The success criterion is
+                   Training Cups                Testing Cups            1) Vision encoder: We utilize the Vision Transformer
+                                                                     (ViT) [11] as the vision encoder due to its substantial ca-
+                                                                     pacity in comparison to ResNet [17], which proves crucial
+                                                                     for tasks demanding intricate perceptual capabilities. Notably,
+                                                                     the dataset collected for each task lacks the scale required
+                                                                     for training ViT from scratch. To address this limitation, we
+                                                                     employ the pre-trained CLIP ViT and implement a reduced
+                                                                     learning rate, set at 10 times smaller during the fine-tuning
+Fig. A2: Cup Selections. For the in-the-wild cup arrangement task,   process. While ViT-B suffices for most in-domain tasks, ViT-
+we purchased 20 different styles of “espresso cup with saucer” on    L can further enhance the performance of the in-the-wild cup
+Amazon, of which 18 are used for training and 2 are reserved for     arrangement task, which involves diverse environments and
+testing.
+                                                                     objects. To expedite the training and inference of ViT-L, we
+                                                                     exclusively use a one-step observation as input, deviating from
+the same as the narrow-domain cup arrangement, except the            the two-step observation window approach employed in other
+concept of “left” is defined with respect to the initial pose of     tasks.
+the gripper for each episode. See Fig. A2 for our selection of          2) Frequency: For most quasi-static tasks, a frequency
+training and testing cups.                                           of 10Hz proves sufficient for both observation and action.
+                                                                     However, a frequency of 20Hz is employed for the dynamic
+D. SLAM System Details                                               tossing task, which requires highly reactive behaviors.
+   We found OBR-SLAM3’s [7] original monocular-inertial                 3) Speed: The output of Diffusion Policy is a sequence of
+SLAM system to be inadequate for our application. In partic-         actions, specifically the target pose, with an implicit dtout put
+ular, ORB-SLAM3 has an initialization process where the first        between two steps determined by the demonstration dataset.
+few map points and key frames, as well as IMU calibration            However, during execution, we are not bound to follow the
+parameters, are heuristically computed. We found this initial-       same dt. By adjusting the dtexecution , we can achieve different
+ization process to be particularly fragile and lengthy under fast    execution speeds compared to the human demonstration. In
+movements, during which no camera pose can be estimated,             the case of the dynamic tossing task, maintaining the original
+resulting in a large proportion of wasted data. To solve this        speed is essential to ensure the object attains sufficient releas-
+problem, we implemented two features: Map as Initialization          ing velocity. However, for other quasi-static tasks, we observed
+and Marker-enhanced Initialization.                                  that a 0.5x slower speed results in smoother behavior. This
+   Map as Initialization. The original ORB-SLAM3 has a               phenomenon may arise from imperfect latency compensation
+localization mode that localizes to an existing map without          and can potentially be mitigated through improved latency
+changing the map in any way, including creating more map             matching.
+points or performing any global optimization. We found the              4) Image Augmentation: We employ a set of image aug-
+existing localization mode to be insufficiently robust since         mentations to enhance the diversity of our training data,
+UMI manipulation dynamically changes the scene. To solve             thereby improving the robustness and generalization capa-
+this problem, we modified ORB-SLAM3 to continue normal               bilities of our policy. The augmentation pipeline includes a
+SLAM operation after relocalizing to an existing map loaded          RandomCrop operation with a ratio of 0.95, a RandomRotation
+from disk, effectively using the existing map as only initial-       operation with degrees ranging from -5.0 to 5.0, and a Color-
+ization for optimization.                                            Jitter operation, adjusting brightness by up to 0.3, contrast by
+   Marker-enhanced initialization. Due to inherent ambigu-           0.4, saturation by 0.5, and hue by 0.08. The specific parameter
+ities of the monocular SLAM formulation, ORB-SLAM3’s                 choices are informed by the distribution of our dataset.
+existing initialization struggles when features are far away
+(outdoor environment) or with large numbers of feature mis-          F. Hardware Implementaiton Details
+matches (repeated patterns, trees, etc.). We modified ORB-
+                                                                        1) Soft Compliant Fingers: We used the same soft fingers
+SLAM3 to optionally take advantage of fiducial markers
+                                                                     on both UMI data collection grippers as well as deployed
+[16] with known sizes to disambiguate possible explanations
+                                                                     robotic grippers. Printed with 95A TPU material, the rib-
+of feature matches. We found this feature to significantly
+                                                                     like pattern on the finger maintains rigidity on the fingertip
+increase mapping robustness in-the-wild. Note that demonstra-
+                                                                     while conforming to the object geometry for a more secure
+tion videos will not contain these fiducial markers, they are
+                                                                     grasp (Fig. A3). When deployed to robots that lack force-
+only used for mapping.
+                                                                     torque control such as UR5, the deformable nature of our soft
+                                                                     fingers provides passive mechanical compliance, critical for
+E. Policy Implementation Details
+                                                                     contact-rich tasks such as opening a water faucet and scooping
+  We use Diffusion Policy [9] for all tasks. Detailed hyper-         up thin clothes from a table. The soft fingers also provide
+parameters are listed in Tab. A1. Compared to the original           some implicit grasping force control when combined with
+Diffusion Policy, here are some key modifications:                   continuous gripper control.
+                                     Soft ﬁnger
+                        Raw egg
+Fig. A3: Soft Fingers printed with TPU material provides passive
+mechanical compliance, enabling a secure grip on a raw egg without
+causing breakage.
+
+   2) Franka Mount: Due to FR2’s limited end-effector pitch
+(FR2 is designed for top-down pick and place, while the UMI
+gripper is mostly held horizontally), we had to design and 3D
+print a custom mounting adapter that rotates WSG50 gripper
+90-degree rotation with respect to the robot’s end-effector
+flange.
+

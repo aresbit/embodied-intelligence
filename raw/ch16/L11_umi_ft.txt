@@ -1,0 +1,650 @@
+                                                             In-the-Wild Compliant Manipulation with UMI-FT
+                                                    Hojung Choi*1 , Yifan Hou*1 , Chuer Pan1 , Seongheon Hong2 , Austin Patel1 , Xiaomeng Xu1 ,
+                                                                             Mark R. Cutkosky2 , and Shuran Song1
+arXiv:2601.09988v1 [cs.RO] 15 Jan 2026
+
+
+
+
+                                         Fig. 1: UMI-FT design and capabilities. Left: UMI-FT uses coin-sized force/torque sensors to record the wrench at each
+                                         compliant fingertip. Right: we evaluated UMI-FT in three tasks: lightbulb insertion, skewering zucchini, and whiteboard
+                                         wiping. In each task, finger-level force sensing captures external contact forces and internal grasp forces, similar to forces
+                                         experienced by a human operator during demonstrations. We use the external force measurement in a standard compliance
+                                         controller to track a virtual spring target.
+
+                                            Abstract— Many manipulation tasks require careful force                modulation that is especially critical when handling soft or
+                                         modulation. With insufficient force the task may fail, while              fragile objects.
+                                         excessive force could cause damage. The high cost, bulky size                In this paper, we introduce UMI-FT, a novel force-sensing
+                                         and fragility of commercial force/torque (F/T) sensors have
+                                         limited large-scale, force-aware policy learning. We introduce            handheld data collection device. Our key improvement over
+                                         UMI-FT, a handheld data-collection platform that mounts                   UMI is the integration of CoinFT [5], a custom, compact
+                                         compact, six-axis force/torque sensors on each finger, enabling           force–torque sensor mounted at each finger. This design
+                                         finger-level wrench measurements alongside RGB, depth, and                captures the complete force information present during a
+                                         pose. Using the multimodal data collected from this device,               demonstration (both the external forces transmitted through
+                                         we train an adaptive compliance policy that predicts position
+                                         targets, grasp force, and stiffness for execution on standard             the device structure and the internal grasp forces exerted by
+                                         compliance controllers. In evaluations on three contact-rich,             the user), thereby providing an authentic representation of
+                                         force-sensitive tasks (whiteboard wiping, skewering zucchini,             what the human demonstrator experiences.
+                                         and lightbulb insertion), UMI-FT enables policies that reliably              Prior approaches to collecting force data can be broadly
+                                         regulate external contact forces and internal grasp forces,
+                                                                                                                   divided into two categories. The first employs a wrist-
+                                         outperforming baselines that lack compliance or force sensing.
+                                         UMI-FT offers a scalable path to learning compliant ma-                   mounted commercial six-axis F/T sensor (e.g., [6], [7]). In
+                                         nipulation from in-the-wild demonstrations. We open-source                contrast, UMI-FT offers two key advantages:
+                                         the hardware and software to facilitate broader adoption at:               • Finger-level force. The compact design of CoinFT en-
+                                         https://umi-ft.github.io/.
+                                                                                                                      ables a sensor to be mounted at each finger. This place-
+                                                                                                                      ment bypasses the gripper mass, providing more accurate
+                                                                I. I NTRODUCTION
+                                                                                                                      and low-latency contact force measurements, and allows
+                                            Handheld manipulation devices, such as UMI [1], are                       the robot to regulate internal grasp forces.
+                                         becoming increasingly popular for manipulation data col-                   • Scalability. CoinFT is low-cost ($10 BOM per sensor)
+                                         lection [2]–[4] due to their flexibility and natural haptic                  and resilient to impact, making it more scalable than
+                                         feedback. However, most existing handheld data collection                    expensive, fragile commercial F/T sensors.
+                                         systems focus only on position and visual information,                       The second category of prior sensing solutions is to
+                                         without considering force sensing. Yet force sensing is a                 install tactile sensors on fingers [2]–[4]. Here again, UMI-FT
+                                         key element of human manipulation, enabling careful contact               provides the following key advantages:
+                                                                                                                    • Standard and consistent measurements. The measure-
+                                           *Equal contribution.
+                                           1 Department of Electrical Engineering, Stanford University, CA, USA.      ments from UMI-FT can be directly calibrated using a
+                                           2 Department of Mechanical Engineering, Stanford University, CA, USA.      commercial F/T sensor, providing consistent data across
+   different units. Consistency is maintained regardless of     of data collection interfaces, including teleoperation [14],
+   installation location, since measured wrenches can be        [15], handheld devices [3], [4], wearable systems [16], and
+   transformed into any desired coordinate frame (typically     kinesthetic teaching [8], [17].
+   the robot tool frame).                                          These modalities have been shown to benefit policy learn-
+ • Compatibility with standard compliance control. The          ing at multiple levels. Contact microphones can capture
+   wrench measurements from UMI-FT can be used with             dynamic events and material properties [3]. High-resolution
+   standard compliance controllers (e.g., admittance or         tactile arrays and vision-based tactile sensors can infer object
+   impedance control) to implement a stable, accurate, and      pose and contact intensity [4], [14], [15], [18], [19]. Wearable
+   user-specified compliance profile.                           systems provide demonstrators with direct haptic feedback,
+ • Full finger sensing. Unlike tactile sensors which must       embedding fine-grained strategies that can transfer to robot
+   physically cover all potential contact regions, UMI-FT can   policies [16]. Direct F/T measurements through kinesthetic
+   measure contact forces anywhere along the finger body,       interfaces have likewise proven effective for learning com-
+   as long as the load path passes through the sensor.          pliant behaviors, both at the wrist [8] and fingertip level [17].
+   To showcase these advantages, we train an Adaptive Com-         Our objective is to approximate what a human user experi-
+pliance Policy (ACP) [8] using data collected through UMI-      ences while operating a hand-held gripper device. Primarily,
+FT, and demonstrate safe, yet forceful interactions. Ablation   this includes dynamic forces, transmitted through the struc-
+studies highlight the benefits of explicit finger-level force   ture of the device and a sense of the applied grasp force. For
+data, particularly for tasks requiring forceful manipulation,   this reason, miniature force/torque sensors at the fingertips
+such as wiping a whiteboard, skewering a zucchini and           (e.g. as in [20]) are particularly of interest. In particular,
+lightbulb insertion.                                            we choose CoinFT [5] for its small size (20 mm×3 mm
+   In summary, our main contributions are as follows.           thick) and low weight, robustness, and low cost—allowing
+                                                                replacement should damage occur.
+ • UMI with per-finger force/torque sensing. A portable
+   and scalable handheld device equipped with per-finger        B. Compliance and Compliance Control
+   F/T sensors, capturing both external contact forces and
+                                                                   Compliance refers to the elastic behavior of a physical
+   internal grasp force that human demonstrators naturally
+                                                                body under external force, commonly described by a combi-
+   exploit through haptic feedback.
+                                                                nation of stiffness, inertia and damping [21]. At low speed,
+ • A control architecture for compliant manipulation. We
+                                                                only stiffness remains significant. A suitable stiffness profile
+   augment ACP with the ability to regulate both external
+                                                                can improve the disturbance rejection capability of manipu-
+   contact forces and internal grasp force, enabling robust
+                                                                lation systems [22], [23]. Compliance is often necessary for
+   and safe manipulation without requiring bulky, expensive
+                                                                stability in contact-rich manipulations [18], [24]–[26].
+   F/T sensors.
+                                                                   When force feedback is available, specific compliance pro-
+ • Experimental validation. We demonstrate significant im-
+                                                                files can be achieved with standard impedance [27] control
+   provements from both finger-level force sensing and robot
+                                                                on backdrivable robots, or admittance control [28] on stiff,
+   compliance enabled by UMI-FT, across tasks that require
+                                                                high accuracy robots.
+   safe yet forceful manipulation.
+ • Open-source hardware and software, to facilitate large-             III. M ULTIMODAL S ENSING USING UMI-FT
+   scale adoption and encourage broader research on multi-
+                                                                   In this section, we introduce our hardware suite for col-
+   modal robot data collection.
+                                                                lecting multimodal data from human demonstrations.
+                   II. R ELATED W ORK
+                                                                A. UMI-FT Design
+A. Force/Tactile Sensing for Manipulation Data Collection           UMI-FT is a modified version of the original UMI device,
+and Policy Learning                                             designed to collect multimodal sensory data including vision,
+   Prior imitation learning systems have attempted to ob-       pose, and six-axis F/T signals at each finger, during hu-
+tain direct force/torque measurements through motor joint       man demonstrations (Fig. 1). The system integrates CoinFT
+current [9] or wrist-mounted commercial force/torque (F/T)      sensors mounted at both fingers and an iPhone 15 Pro. The
+sensors [7], [8]. As explained in the Introduction, these       iPhone is rigidly attached to the UMI-FT structure with a 15◦
+systems lack finger-level sensing and are hard to scale due     tilt to better capture the finger workspace and ArUco markers
+to their size, fragility, and cost.                             (for measuring gripper width). It provides synchronized main
+   Tactile sensors have compact sizes and provide rich con-     RGB (approximately 80◦ diagonal FoV), ultrawide RGB
+tact information directly from the fingertip. A wide range      (120◦ FoV), depth, and pose data via ARKit. The main RGB
+of tactile sensors have been developed to capture different     and pose stream are recorded at 60 Hz, ultrawide RGB at
+tactile features, including contact pressure and location,      10 Hz, and depth at 30 Hz.
+multi-axial force, slippage, temperature, and proximity [10],       Each finger is equipped with a CoinFT sensor, which
+[11]. Vision-based tactile sensors have also grown in pop-      measures wrenches at 360 Hz. Its unit weight, 2 g, has
+ularity due to their high resolution and sensitivity [12],      minimal impact on overall weight of the UMI-FT device.
+[13]. Tactile sensors have been integrated into a variety       These sensors are connected to a USB-serial bus via I2 C,
+and the bus is connected to a laptop with a USB cable for
+                                                                                    Random F/T
+data logging. CoinFT data is timestamped using internet time
+                                                                                    inputs
+and synchronized with the iPhone data streams during post-
+
+
+
+
+                                                                                                                                  Capacitance
+processing.                                                                                                       Reference
+
+
+
+
+                                                                                                                                                                      F/T
+                                                                                                                                                     MLP
+                                                                              CoinFT                              F/T Sensor
+   Significant modifications were made to the original fin-ray
+finger design of the UMI to accommodate the constraints
+of CoinFT (Fig. 1). While CoinFT is mechanically robust
+under compressive loading, its tensile tolerance is lower.
+                                                                                                  (a)                                           (b)
+During manipulation, excessive moments caused by grasp
+                                                                              20                                                                           Fx (CoinFT)
+forces and long moment arms can lead to delamination of                                                                                                    Fx (Ground Truth)
+
+
+
+
+                                                                     Fx [N]
+the sensor. To mitigate this, each CoinFT is mounted closer                    0
+to the fingertip, reducing the moment arm and ensuring                        -20
+                                                                                    0    5            10          15     20           25        30          35            40
+that grasping primarily results in compressive forces. This                    10             Fz (CoinFT)              Time [s]
+placement allows the UMI-FT fingers to perform a stronger                       0
+
+
+
+
+                                                                     Fz [N]
+                                                                                              Fz (Ground Truth)
+
+grasp while preserving mechanical integrity.                                  -10
+                                                                              -20
+   The CoinFT itself was also redesigned to enhance robust-
+                                                                                    0    5            10          15     20           25        30          35            40
+ness and increase sensing range, with a tradeoff in sensitivity.              0.5                                      Time [s]                             Tx (CoinFT)
+
+
+
+
+                                                                    Tx [Nm]
+                                                                                                                                                            Tx (Ground Truth)
+The dielectric layer consists of pillars with oval cross section,
+                                                                               0
+where in the outermost layer the major and minor axes are
+approximately 4 mm and 0.5 mm, respectively, in contrast                  -0.5
+                                                                                    0    5            10          15     20           25        30          35            40
+to circular pillars with a 0.2 mm diameter from the original                  0.1       Tz (CoinFT)                    Time [s]
+
+                                                                    Tz [Nm]
+                                                                                        Tz (Ground Truth)
+design [5].
+                                                                               0
+
+                                                                          -0.1
+B. UMI-FT Finger Calibration                                                        0    5            10          15     20           25        30          35            40
+                                                                                                                       Time [s]
+   Unlike common commercial F/T sensors such as the                                                                      (c)
+
+Gamma (ATI), CoinFT exhibits a nonlinear signal profile             Fig. 2: UMI-FT finger calibration. (a) Raw capacitance data
+due to both its mechanical properties and the physics of            from CoinFT and the corresponding F/T from a reference
+capacitive sensing [5]. The signal behavior cannot be easily        sensor (Gamma, ATI) are collected with random F/T inputs.
+modeled using traditional linear techniques under large loads       (b) The raw capacitance is mapped to F/T through an MLP
+that may occur during manipulation.                                 layer. (c) Calibration results on unseen input. Only one of
+   To achieve accurate sensing, we calibrate each CoinFT            the shear axes (x, y) were plotted due to similarity.
+sensor in situ, with the UMI-FT fingertip mounted, ensuring
+that the calibration model captures the effects of the full
+finger structure (Fig. 2 (a)). The Gamma (ATI) is used as                      IV. C OMPLIANT M ANIPULATION USING UMI-FT
+ground truth reference. During data collection, a human                In this section, we introduce our software suite for com-
+operator applies randomized combinations of forces and              pliant manipulation utilizing force/torque sensing from both
+torques along the UMI-FT finger, covering a target range            fingers of UMI-FT.
+of 25 N in the normal direction, 20 N in shear, and up to
+500 mNm in moment.                                                  A. Controller architecture:
+   The mapping from capacitance to force/torque is learned
+using a multi-layer perceptron (MLP) with five hidden fully            The force measurements from the fingers are used in three
+connected layers, with layer widths of 128, 64, 36, 24,             parallel loops, as illustrated in Fig. 3. The slowest loop
+and 12, respectively (Fig. 2 (b)). Each hidden layer em-            is a learned visuomotor policy that performs manipulation
+ploys ReLU activation, and the final layer performs a six-          reasoning. The policy takes as input the most recent 32
+dimensional regression to estimate the full six-axis F/T. This      frames of both force sensor readings. The policy is trained
+model achieves a mean squared error of 0.18 N, 0.15 N,              per task and is detailed in Sec. IV-B. The policy outputs
+0.58 N, 159 mNm, 231 mNm, 17 mNm for Fx, Fy, Fz, T x,               reference position, grasp force and stiffness, which are taken
+Ty, T z, respectively (Fig. 2 (c)).                                 as input by the two model-based compliance controllers.
+                                                                       Wrist compliance control: The wrist compliance con-
+                                                                    troller implements 6D task space admittance control to
+C. Deployment on robot
+                                                                    move the robot arm like a virtual spring-mass-damper sys-
+   Following [1], the robot end-effector retains the same           tem [21]. The 6D wrench measurements from both FT
+design as the handheld UMI-FT, including the fingers, Coin-         sensors, WS1 ,WS2 are converted to the robot tool frame and
+FTs, and the iPhone. The only modification is that all data         combined as the wrench feedback for the admittance control,
+modalities are streamed directly to the control desktop for         so the robot can respond to external forces on either finger
+real-time policy inference.                                         or both:
+                                                                  B. Imitation Learning with Compliance
+                                                                     We employ Adaptive Compliance Policy (ACP) [8] to
+                                                                  learn compliant manipulation behaviors. On the high level,
+                                                                  ACP predicts not only target positions but also target forces
+                                                                  and desired compliance parameters, which can be executed
+                                                                  on a robot by a standard compliance controller. With UMI-
+                                                                  FT, we augment both inputs and outputs of ACP to accom-
+                                                                  modate hardware improvements.
+                                                                     Observation Encoding: Our policy architecture processes
+Fig. 3: Controller structure of UMI-FT and the flow of            multimodal observations through specialized encoders for
+information. Sensor modalities are listed on the left, with       each modality.
+proprioception omitted for clarity. They flow to three con-          We sample iPhone RGB images from the two previous
+troller loops in the middle, where the learned policy runs        timesteps, with each image processed by a CLIP-pretrained
+the slowest and generates reference targets to the other two      ViT-B/32 encoder [29]. Images are resized to 224×224 pixels
+model-based controllers.                                          and augmented using random cropping and color jittering.
+                                                                     Depth input from the iPhone is processed using the same
+                                                                  vision encoder architecture as RGB. To ensure compatibility
+                                                                  with the RGB-based ViT model, depth images are copied
+                                                                  across three channels, emulating a grayscale RGB image.
+                                                                  Depth values are clipped at 0.5 m to emphasize near-surface
+                                                                  geometry and suppress distant background information.
+                                                                     Force/torque measurements from each CoinFT are en-
+                                                                  coded using a causal convolutional network [24]. The en-
+                                                                  coder takes in the previous 32 timesteps of wrench data and
+                                                                  outputs a single feature vector per sensor.
+                                                                     The resulting tokens from the RGB, depth, and F/T
+                                                                  encoders are passed to a transformer encoder layer with self-
+                                                                  attention to obtain a combined visual-force representation.
+                                                                  Finally, the output of this fusion layer is concatenated with
+Fig. 4: Structure of the adaptive compliance policy with          low-dimensional proprioceptive data, including end-effector
+modified inputs and outputs.                                      pose from the previous two timesteps. The combined feature
+                                                                  vector conditions the downstream diffusion policy [30].
+                                                                     Output Decoding: The policy outputs the position target
+                                                                  for the robot, the stiffness matrix, the reference grasp force,
+               Wwrist = AdTS1 T WS1 + AdTS2 T WS2           (1)   and the gripper action in a 21-dimensional vector:
+                                                                  • Reference pose: 9D pose vector following convention in
+where AdS1 T , AdS2 T denotes the adjoint transformation ma-        [30], where the last six elements are the top two rows of
+trix from one of the sensor frames to the robot tool frame.         a rotation matrix.
+   Unlike in [8] where the robot tool frame (TCP) was set         • Virtual target pose: another 9D pose vector representing
+close to the robot flange for comfortable kinesthetic teaching,     the actual set target of the compliance controller.
+with UMI-FT we found it helpful to set TCP to the center of       • Stiffness value: following [8], this scalar value encodes the
+the two fingertips. This allows useful and robust compliant         stiffness matrix of the robot arm when used together with
+behaviors in our manipulation tasks, such as better alignment       the reference/virtual target poses.
+with a surface while wiping.                                      • Gripper width and grasp force: two scalar values repre-
+   Grasp force control: Grasp force fG is measured as the           senting the desired gripper width and grasp force.
+average between the CoinFT readings of the two fingers in         Before training, we first follow ACP and post-process the
+the grasp axis direction. Then we can regulate grasp force to     force-motion data to obtain stiffness and virtual target labels
+a target fG∗ with a velocity-resolved admittance controller:      following a time-varying 3D mechanical spring. We also
+                         ∗
+                                                                  extract grasp forces from the CoinFT sensors.
+              vG = K p (xG − xG ) + K f ( fG∗ − fG )        (2)      At inference time, we first reconstruct the full stiffness
+                                                                  matrix following ACP, then send both the stiffness matrix and
+where the position gain K p and force gain K f can be tuned       the virtual target to the low level compliance controller, send
+to adjust how sensitive the grasping motion is to position        gripper width and grasp force to the gripper force controller.
+and force tracking error. Grasping velocity vG is sent to the
+gripper controller. Both the wrist and gripper compliance                             V. E VALUATIONS
+controller runs at the rate limit for their corresponding           We evaluate our approach on three tasks that highlight the
+hardware (500Hz for the robot, 30Hz for the gripper).             benefits of compliance control with grasp force modulation.
+                                                                  D 3ROLF\5ROORXW
+             ,QLW            7          *UDVS(UDVHU      8     $SSURDFK'UDZLQJ                   :LSH                                 5HDGLQJVIURP&RLQ)7
+                                                                                                                                    20
+                                                                                                                                                 2             3         4      3   4
+                                                                                                                                    10
+
+
+
+
+                                                                                                                        Force [N]
+                                                                                                                                      0
+
+
+                                                                                                                                  -10
+                                                                                                                                                Fx (External)
+                                                                                                                                                Fy (External)
+                                                                                                                                  -20           Fz (External)
+                                                                                                                                                Grasp Force (Internal)
+
+                                                                                                                                          0           10            20         30       40
+                                                                                                                                                                   Time [s]
+
+                                                                 E 7HVW6FHQDULRV
+    'LIIHUHQW,QLWLDO3RVH       'LIIHUHQW7DEOH+HLJKW           1DUURZHU(UDVHU          'UDZLQJVLQ8QVHHQ&RORU                           (OHYDWHG:KLWHERDUG
+                                                              RULJLQDOHUDVHU
+
+
+
+
+                                                                         PPQDUURZHU
+                                                                F %DVHOLQH)DLOXUHV
+                      ,QFRPSOHWH:LSH                              )DLOHG*UDVS                              ([FHVVLYH)RUFH
+                                                                                                                                                   &RLQ)7 5LJKW)LQJHU
+                                                                                                                              20
+                                                                                                                                              Safety Limit
+
+
+
+
+                                                                                                                      Force [N]
+                                                                                                                              10
+                                                                                                                                                                               Robot
+                                                                                                                                                                              Stopped
+
+                                                                                                                                  0
+                                                                                                                                               Force Magnitude Normal to Table
+
+                                                                                                                                    35                            45                    55
+                                                                                                                                                                Time [s]
+
+
+
+                    Fig. 5: Whiteboard Wiping policy rollout, test scenarios, and representative baseline failures.
+
+Experiments are conducted on a UR5e robot equipped with                     to ensure effective wipe, while avoiding unnecessarily high
+a WSG50 gripper and UMI-FT fingers. We compare our                          forces that could damage the environment or the robot.
+method against three baseline policies:                                        We collected 275 demonstrations for this task, incorporat-
+ • Diffusion Policy with Force (DP w/ F): This baseline                     ing variations in the initial pose, table height, and drawing
+   takes wrench information from the CoinFT sensors as in-                  patterns. Regardless of whether wrench information was
+   put but does not perform compliance control. The wrench                  included in the policy observation, we enforced safety thresh-
+   signals are also used for grasp force modulation.                        olds of 25 N in the grasp direction (normal to the CoinFT
+ • Diffusion Policy (DP): The original diffusion policy [30]                sensor) and 20 N in all other directions. Task success is
+   without force observation. The gripper is commanded                      defined as less than a total of 1 cm × 1 cm drawing remaining
+   purely through position control.                                         in 5 wipes.
+ • Diffusion Policy with Contact Microphone (DP w/                             Test Scenarios: We applied variations not present in the
+   CM): This baseline combines diffusion policy with dy-                    training set during policy rollout. Each of the following test
+   namic contact events detected via a contact microphone,                  case was executed five times, yielding 25 rollouts per policy.
+   following [3]. The contact microphone is connected to                     • Normal: Variations in the initial positions of the white-
+   the iPhone via a USB-C mic adapter and captures audio                       board, eraser, and location of drawing, similar to training
+   at 44.1 kHz. The mic is embedded on the right finger of                     data.
+   the UMI-FT (Fig. 5)                                                       • Different table height: includes values outside those seen
+   For all baselines, both RGB and depth images are used as                    in the training data.
+visual input. Consistent with [8], compliance is applied in                  • Unseen drawings in a new color: Drawings were pre-
+the 3-D translational space, though the framework naturally                    sented in an unseen color, with novel patterns.
+extends to full 6-D compliance when necessary.                               • Elevated whiteboard: The whiteboard was mounted at a
+                                                                               higher elevation relative to the table, a configuration not
+A. Whiteboard Wiping                                                           seen during training.
+   In this task, the robot must approach and grasp the eraser,               • Narrower eraser: The eraser width was reduced by 7 mm,
+retract, move to the drawing on the whiteboard, and wipe                       creating a shape not observed in training.
+until the surface is clean. During grasping, the robot must                    Findings: The results of the whiteboard wiping task
+apply sufficient force to firmly secure the eraser, beyond mere             are summarized in Table I. Overall, high-frequency contact
+contact. During wiping, it must apply enough normal force                   modulation through compliance control and grasp force reg-
+  TABLE I: Success Rates for Whiteboard Wiping Task.                                                                   D 3ROLF\5ROORXW
+                 Normal Board    Table    New     Narrow Overall                                    ,QLW                                           6NHZHU
+                        height   height   color   eraser
+ Ours (ACP)       5/5     4/5     4/5     5/5      5/5    92 %
+ DP w/ F          2/5     1/5     1/5     1/5      2/5    28 %
+ DP               2/5     0/5     1/5     1/5      0/5    16 %
+ DP w/ CM         0/5     0/5     0/5     0/5      0/5     0%
+
+
+
+ulation enables our method to reliably execute forceful tasks
+such as wiping, while generalizing to diverse environmental
+disturbances.                                                                                                        5HDGLQJVIURP&RLQ)7
+                                                                               5
+   A.1) Grasp force modulation improves robustness to un-                                                                        Skewer                         Release
+
+
+
+
+                                                                   Force [N]
+seen object shapes. Our method performed reliably in the                       0
+narrower eraser scenario. The [Diffusion Policy with Force]                               Fx (External)      Fz (External)
+succeeded in grasping the eraser, but failed due to incomplete             -5             Fy (External)      Grasp Force (Internal)
+
+wipes or excessive force for this scenario. In contrast, all                       0            2                4           6              8       10           12           14
+                                                                                                                                 Time [s]
+baselines without force information never succeeded grasp-                                                            E 7HVW6FHQDULRV
+ing in this scenario, and also failed intermittently in other                            'LIIHUHQW                                                  8QVHHQFRORU
+                                                                                                                               )RUN
+scenarios.                                                                             ,QLWLDO3RVH                                                8QVHHQWKLFNQHVV
+   A.2) Dynamic contact information alone is insufficient for
+continuous contact modulation. The [Diffusion Policy with
+Contact Mic] baseline never succeeded, with the dominant
+failure mode being excessive applied force. Additional fail-
+                                                                                                                                                           FP          FP
+ures included grasping errors, such as failing to establish
+contact with the narrow eraser or barely touching the eraser                                                         F %DVHOLQH)DLOXUHV
+without lifting it. While ManiWAV [3] showed that audio                                ,QFRPSOHWH
+                                                                                                                                      6OLS'XULQJ3XQFWXUH
+from a contact microphone can improve contact detection, it                             3XQFWXUH
+remains inadequate for regulating continuous force.
+
+B. Skewering Zucchini
+   1) In-Lab Experiments: In this task, the robot must
+skewer a pre-grasped zucchini slice onto a spike. The robot
+                                                                   Fig. 6: Skewering Zucchini policy rollout, test scenarios,
+should approach the spike at an appropriate relative pose
+                                                                   representative baseline failures.
+while maintaining a firm grasp, ensuring that the zucchini is
+properly punctured without falling off or excessively rotating           TABLE II: Success Rates for Zucchini Skewering Task.
+due to slippage. Task success is defined as achieving a
+complete puncture with less than a 45◦ of rotation.                                                   Normal            Yellow           Thicker         Fork         Overall
+   We collected 200 demonstrations for this task, with vari-           Ours (ACP)                          5/5             5/5              3/5          3/5           80 %
+ations in initial relative pose of the spike, location along           DP w/ F                             5/5             4/5              3/5          2/5           70 %
+                                                                       DP                                  2/5             2/5              2/5          0/5           30 %
+the finger where the zucchini is pre-grasped. The zucchini
+diameter had natural variations, while the slice thickness was
+controlled to 1 cm. As in the whiteboard wiping task, safety
+thresholds of 25 N in the grasp direction and 20 N in all other     • Thicker Zucchini: A 2 cm slice of green zucchini, unseen
+directions were enforced, measured by the CoinFTs.                             in training, requiring a larger puncture force.
+   Test Scenarios: Each policy was evaluated over 20 roll-          • Fork: A fork was used instead of a spike, introducing both
+outs, with 5 trials per test case, to assess generalization and                visual variation and higher puncture force. This case was
+robustness. During rollout, the zucchini was always aligned                    not present in the training set.
+with the center of the CoinFTs. The [Diffusion policy with            Findings: The evaluation results are summarized in Ta-
+contact mic] baseline was removed for this task as the gripper     ble II. We find that B.1) grasp force regulation is critical for
+kept dropping the zucchini slice while approaching and never       maintaining a secure hold on the zucchini during skewering.
+succeeded.                                                         As shown in the [Diffusion Policy] baseline, the success
+• Normal: Variations in the initial pose of the spike, using       rate of the task drops significantly without force information.
+  a 1 cm green zucchini slice, similar to training.                This occurs because the gripper is controlled solely through
+• Yellow Zucchini: A 1 cm slice of yellow zucchini, unseen         predicted width and is unaware of contact forces, causing
+  in training.                                                     the zucchini to frequently slip while skewering. As shown
+                                                                    TABLE IV: Success Rates for Lightbulb Insertion Task.
+              Policy Trained on In-the-Wild Data
+                                                                                   Normal       Table       Stiffer     Overall
+                                                                                                height      socket
+                                                                   Ours (ACP)      10/10         5/5         4/5         95 %
+                                                                   DP w/ F          4/10         5/5         3/5         60 %
+                                                                   DP               0/10         0/5         0/5          0%
+                                                                   DP w/ CM         3/10         1/5         0/5         20 %
+
+
+
+                                                                  C. Lightbulb Insertion
+              Policy Trained on In-Lab Data: Drift                   In this task, the robot begins with the bulb pre-grasped and
+                                                                  must navigate toward the socket, align the bayonet pins with
+                                                                  the slot on the socket, insert the bulb, apply sufficient force
+                                                                  (at least 15 N, measured using a Mark-10 digital force gauge)
+                                                                  to overcome the spring-loaded electrode, and then rotate to
+                                                                  turn on the light (Fig. 8 (a), (b)). For successful alignment
+                                                                  and insertion, it is desirable that the bayonet pin remains in
+                                                                  contact with the socket rim during rotation, ensuring that it
+                                                                  drops into the slot once properly aligned. The gripper must
+                                                                  hold the bulb firmly and apply enough force to compress the
+          Fig. 7: Skewering Zucchini in-the-wild.                 spring-loaded electrode, while avoiding excessive force that
+                                                                  could lead to slippage. We manually shortened the spring to
+ TABLE III: Results for In-the-Wild Zucchini Skewering.           reduce the socket’s reaction force from 30 N to 15 N, as 30 N
+                                                                  was excessive for our setup. Task success is defined as the
+ Method                                Success Rate
+                                                                  bulb illuminating.
+ ACP w/ in-the-wild data                  20/20                      We collected 200 demonstrations for this task, varying
+ ACP w/ in-lab data                       4/20
+                                                                  the initial socket pose, table height, and the bulb’s pre-grasp
+                                                                  location relative to the fingers. Similar to the previous tasks,
+                                                                  safety thresholds of 50 N in the grasp direction and 20 N
+in Fig. 6 (c), the failures are due to linear or rotational       in all other directions were enforced, measured using the
+slip. In contrast, once the grasp force regulation is included,   CoinFT sensors.
+these failures are largely eliminated. Moreover, the difference      Test Scenarios: Each policy was evaluated over 20 roll-
+between having or not having compliance control becomes           outs, with 10 trials for the normal case, and 5 trials for the
+small. We hypothesize that this is because the zucchini itself    others, to investigate generalization and robustness.
+is compliant, reducing the additional benefit of compliance       • Normal: Variations in the initial pose of the socket, similar
+
+at the manipulator level.                                           to training.
+                                                                  • Table Height: Variations in table height, including values
+   2) In-the-Wild Experiments: To investigate in-the-wild           not present in the training set.
+generalization, we collected 630 demonstrations across 15         • Stiffer Socket: The socket spring was tuned to exert a
+different scenes. Other than the scene variance, the data           higher reaction force during insertion (20 N instead of
+collection protocol remained consistent with the in-lab case.       15 N). This condition was not included in training.
+    Test Scenarios: We compared our modified ACP policy              Findings: The evaluation results are summarized in Ta-
+trained on either in-lab data or in-the-wild data. These          ble IV. C.1) Compliance control is critical for haptic search.
+policies were evaluated over 20 rollouts, in a scene not          A crucial step in this task is to locate the slot, align the
+included in either dataset with added clutter using unseen        bayonet pin, and insert it. Due to occlusion from the bulb
+objects (Fig. 7). Each rollout varied in initial pose of the      and the small size of the slot, this is difficult to achieve
+spike and different sets of unseen objects were used every        relying only on vision. Our method consistently succeeded
+five rollouts.                                                    by maintaining controlled contact force with the socket while
+    Findings: We find that B.2) in-the-wild data enables          rotating the bulb, allowing the pin to slide into the slot
+generalization to unseen environments (Fig. 7). As shown          once aligned. In contrast, the baselines often failed to main-
+in Table III, the policy trained on diverse data achieves a       tain contact during rotation, overshooting and missing the
+notably higher success rate (20/20), successfully navigating      slot (Fig. 8 (c)). Even when insertion succeeded, excessive
+to the skewer while maintaining grasp force despite unseen        contact forces frequently caused slippage during the haptic
+surroundings and clutter. In contrast, the policy trained on      search, sometimes resulting in rotation before full insertion.
+data with limited scene-diversity rarely succeeds (4/20),         Moreover, the [Diffusion Policy] baseline showed larger
+where the dominant failure mode was missing the skewer            navigation errors when approaching the socket compared to
+due to poor navigation.                                           multimodal baselines, consistent with observations in [3].
+                                                                   D 3ROLF\5ROORXW
+                ,QLW                          $SSURDFK6RFNHW                          $OLJQ3LQZLWK6ORW                            5RWDWHDQG7XUQ2Q%XOE                   
+
+
+
+
+                                                                                             ,QVHUW%XOE            
+
+                                                     3LQ
+
+                                    6ORW
+
+                                               E 7HVW6FHQDULRV
+       'LIIHUHQW,QLWLDO3RVH               'LIIHUHQW7DEOH+HLJKW                   'LIIHUHQW6SULQJ6WLIIQHVV                           5HDGLQJVIURP&RLQ)7
+                                                                                                                                    20
+                                                                                       6RFNHW&URVV6HFWLRQ                                    2               3          4 + 5
+                                                                                             (OHFWURGH                              10
+
+
+                                                                                                                                    0
+
+
+
+
+                                                                                                                        Force [N]
+                                                                                                                                -10
+
+
+                                                                                                                                -20
+                                                                                                                                          Fx (External)   Fz (External)
+                                                                                                                                          Fy (External)   Grasp Force (Internal)
+                                                                                    0HFKDQLFDOO\7XQHG6SULQJ                   -30
+                                                                                                                                           5              10             15
+                                                                                                                                                          Time [s]
+                                                                F %DVHOLQH)DLOXUH&DVHV
+         %DG1DYLJDWLRQ                    6OLSSDJH%HIRUH,QVHUWLRQ               5RWDWLRQ%HIRUH)XOO,QVHUWLRQ                          5RWDWLRQ2YHUVKRRW
+
+
+
+
+                                                           )LQJHUWLSORFDWLRQ
+                                                           EHIRUHVOLSSDJH
+
+
+
+
+                Fig. 8: Lightbulb Insertion policy rollout, test scenarios, and representative baseline failures.
+
+          VI. F UTURE W ORK AND C ONCLUSION                                      forces and internal grasp forces.
+   The current UMI-FT data collection setup is tethered, as                                          VII. ACKNOWLEDGMENTS
+the USB–serial bridge connecting the two CoinFTs to the
+laptop relies on a USB cable. UMI-FT could be made wire-                            This work was supported in part by the NSF Award
+less by using a Bluetooth-capable microcontroller, allowing                      #2143601, #2037101, and #2132519, Toyota Research In-
+the iPhone to directly connect to the CoinFTs. We leave this                     stitute, Samsung and Amazon. We thank Google and TRI
+extension as future work.                                                        for the UR5 robot hardware. We thank Huy Ha, Zeyi Liu,
+   Although the iPhone provides an ultrawide RGB                                 and other members of the Robotics and Embodied Artificial
+(120◦ FoV) stream, in this project we only used the main                         Intelligence Lab for the fruitful discussions. We also thank
+RGB camera (approx. 80◦ diagonal FoV). Our chosen tasks                          Alice Wu, Eric Cousineau, Rick Cory, Jeannette Bohg for
+did not require a wider field of view, but the same architec-                    their valuable advice and insights. The views and conclusions
+ture presented here can be applied in the future when larger                     contained herein are those of the authors and should not be
+spatial coverage is needed.                                                      interpreted as necessarily representing the official policies,
+   The CoinFT itself also has room for improvement. As dis-                      either expressed or implied, of the sponsors.
+cussed Section III, CoinFT can delaminate under sufficiently
+                                                                                                                R EFERENCES
+large tensile forces. Further design improvements such as
+modifying the pillar geometry or improving the bonding                            [1] C. Chi, Z. Xu, C. Pan, E. Cousineau, B. Burchfiel, S. Feng, R. Tedrake,
+method could enhance mechanical reliability. In addition, the                         and S. Song, “Universal manipulation interface: In-the-wild robot
+                                                                                      teaching without in-the-wild robots,” in Proceedings of Robotics:
+current microcontroller (PSoC 4100S) could be upgraded to                             Science and Systems, 2024.
+a newer generation chip to improve overall performance.                           [2] R. Bhirangi, V. Pattabiraman, E. Erciyes, Y. Cao, T. Hellebrekers,
+   In this paper, we presented UMI-FT, a scalable multimodal                          and L. Pinto, “Anyskin: Plug-and-play skin sensing for robotic touch,”
+                                                                                      arXiv preprint arXiv:2409.08276, 2024.
+data collection platform equipped with custom F/T sensors                         [3] Z. Liu, C. Chi, E. Cousineau, N. Kuppuswamy, B. Burchfiel, and
+on each finger. Through real-world robot experiments, we                              S. Song, “Maniwav: Learning robot manipulation from in-the-wild
+demonstrated that policies learned with UMI-FT enable                                 audio-visual data,” arXiv preprint arXiv:2406.19464, 2024.
+                                                                                  [4] X. Zhu, B. Huang, and Y. Li, “Touch in the wild: Learning fine-grained
+compliant behaviors, allowing robots to reliably perform                              manipulation with a portable visuo-tactile gripper,” arXiv preprint
+tasks that require careful modulation of both external contact                        arXiv:2507.15062, 2025.
+ [5] H. Choi, J. E. Low, T. M. Huh, G. A. Uribe, S. Hong, K. A. W.              [27] N. Hogan, “Impedance control: An approach to manipulation: Part
+     Hoffman, J. Di, T. G. Chen, A. A. Stanley, and M. R. Cutkosky,                  ii—implementation,” Journal of dynamic systems, measurement, and
+     “Coinft: A coin-sized, capacitive 6-axis force torque sensor for robotic        control, vol. 107, no. 1, pp. 8–16, 1985.
+     applications,” arXiv preprint arXiv:2503.19225, 2025.                      [28] J. Maples and J. Becker, “Experiments in force control of robotic
+ [6] E. Galbally, A. Piedra, C. Brosque, and O. Khatib, “Elly: A real-time           manipulators,” in IEEE International Conference on Robotics and
+     failure recovery and data collection system for robotic manipulation,”          Automation, vol. 3, 1986, pp. 695–702.
+     arXiv preprint arXiv:2208.11845, 2022.                                     [29] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai,
+ [7] W. Liu, J. Wang, Y. Wang, W. Wang, and C. Lu, “Forcemimic:                      T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, et al.,
+     Force-centric imitation learning with force-motion capture system               “An image is worth 16x16 words: Transformers for image recognition
+     for contact-rich manipulation,” in IEEE International Conference on             at scale,” arXiv preprint arXiv:2010.11929, 2020.
+     Robotics and Automation, 2025.                                             [30] C. Chi, Z. Xu, S. Feng, E. Cousineau, Y. Du, B. Burchfiel, R. Tedrake,
+ [8] Y. Hou, Z. Liu, C. Chi, E. Cousineau, N. Kuppuswamy, S. Feng,                   and S. Song, “Diffusion policy: Visuomotor policy learning via action
+     B. Burchfiel, and S. Song, “Adaptive compliance policy: Learning                diffusion,” The International Journal of Robotics Research, 2024.
+     approximate compliance for diffusion guided control,” arXiv preprint
+     arXiv:2410.09309, 2025.
+ [9] P. Wu, Y. Shentu, Q. Liao, D. Jin, M. Guo, K. Sreenath, X. Lin,
+     and P. Abbeel, “Robocopilot: Human-in-the-loop interactive imitation
+     learning for robot manipulation,” arXiv preprint arXiv:2503.07771,
+     2025.
+[10] Q. Li, O. Kroemer, Z. Su, F. F. Veiga, M. Kaboli, and H. J. Ritter, “A
+     review of tactile information: Perception and action through touch,”
+     IEEE Transactions on Robotics, vol. 36, no. 6, pp. 1619–1634, 2020.
+[11] S. Luo, N. F. Lepora, W. Yuan, K. Althoefer, G. Cheng, and R. Dahiya,
+     “Tactile robotics: An outlook,” arXiv preprint arXiv:2508.11261, 2025.
+[12] S. Li, Z. Wang, C. Wu, X. Li, S. Luo, B. Fang, F. Sun, X.-P. Zhang,
+     and W. Ding, “When vision meets touch: A contemporary review
+     for visuotactile sensors from the signal processing perspective,” IEEE
+     Journal of Selected Topics in Signal Processing, vol. 18, no. 3, pp.
+     267–287, 2024.
+[13] W. Yuan, S. Dong, and E. H. Adelson, “Gelsight: High-resolution robot
+     tactile sensors for estimating geometry and force,” Sensors, vol. 17,
+     no. 12, p. 2762, 2017.
+[14] B. Huang, Y. Wang, X. Yang, Y. Luo, and Y. Li, “3d-vitac: Learning
+     fine-grained manipulation with visuo-tactile sensing,” arXiv preprint
+     arXiv:2410.24091, 2024.
+[15] J. Zhao, N. Kuppuswamy, S. Feng, B. Burchfiel, and E. Adel-
+     son, “Polytouch: A robust multi-modal tactile sensor for contact-
+     rich manipulation using tactile-diffusion policies,” arXiv preprint
+     arXiv:2504.19341, 2025.
+[16] M. Xu, H. Zhang, Y. Hou, Z. Xu, L. Fan, M. Veloso, and S. Song,
+     “Dexumi: Using human hand as the universal manipulation interface
+     for dexterous manipulation,” arXiv preprint arXiv:2505.21864, 2025.
+[17] C. Chen, Z. Yu, H. Choi, M. Cutkosky, and J. Bohg, “Dexforce:
+     Extracting force-informed actions from kinesthetic demonstrations
+     for dexterous manipulation,” IEEE Robotics and Automation Letters,
+     vol. 10, no. 6, pp. 6416–6423, 2025.
+[18] H. Li, Y. Zhang, J. Zhu, S. Wang, M. A. Lee, H. Xu, E. Adelson,
+     L. Fei-Fei, R. Gao, and J. Wu, “See, hear, and feel: Smart sensory
+     fusion for robotic manipulation,” arXiv preprint arXiv:2212.03858,
+     2022.
+[19] Y. Liu, X. Xu, W. Chen, H. Yuan, H. Wang, J. Xu, R. Chen, and L. Yi,
+     “Enhancing generalizable 6d pose tracking of an in-hand object with
+     tactile sensing,” IEEE Robotics and Automation Letters, vol. 9, no. 2,
+     pp. 1106–1113, 2023.
+[20] A. El-Azizi, S. Islam, P. Piacenza, K. Jiang, I. Kymissis, and M. Cio-
+     carlie, “Compact led-based displacement sensing for robot fingers,”
+     arXiv preprint arXiv:2410.03481, 2024.
+[21] L. Villani and J. De Schutter, “Force control,” in Springer handbook
+     of robotics. Springer, 2016, pp. 195–220.
+[22] Y. Hou and M. T. Mason, “Robust execution of contact-rich motion
+     plans by hybrid force-velocity control,” in International Conference
+     on Robotics and Automation, 2019, pp. 1933–1939.
+[23] Y. Hou, Z. Jia, and M. T. Mason, “Manipulation with shared grasping,”
+     in Robotics: Science and Systems, 2020.
+[24] M. A. Lee, Y. Zhu, K. Srinivasan, P. Shah, S. Savarese, L. Fei-Fei,
+     A. Garg, and J. Bohg, “Making sense of vision and touch: Self-
+     supervised learning of multimodal representations for contact-rich
+     tasks,” in International conference on robotics and automation. IEEE,
+     2019, pp. 8943–8950.
+[25] J. Luo, C. Xu, J. Wu, and S. Levine, “Precise and dexterous robotic
+     manipulation via human-in-the-loop reinforcement learning,” Science
+     Robotics, vol. 10, no. 105, 2025.
+[26] X. Xu, Y. Hou, Z. Liu, and S. Song, “Compliant residual dagger: Im-
+     proving real-world contact-rich manipulation with human corrections,”
+     arXiv preprint arXiv:2506.16685, 2025.
+

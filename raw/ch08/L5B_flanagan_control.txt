@@ -1,0 +1,625 @@
+Control strategies in object manipulation tasks
+J Randall Flanagan1, Miles C Bowman1 and Roland S Johansson2
+
+The remarkable manipulative skill of the human hand is not the         and another object or surface. Importantly, these contact
+result of rapid sensorimotor processes, nor of fast or powerful        events give rise to discrete and distinct sensory events,
+effector mechanisms. Rather, the secret lies in the way manual         each characterized by a specific afferent neural signature.
+tasks are organized and controlled by the nervous system. At           Because these sensory events provide information related
+the heart of this organization is prediction. Successful               to the functional goals of successive action phases, they
+manipulation requires the ability both to predict the motor            have a crucial role in the sensory control of manipulations.
+commands required to grasp, lift, and move objects and to              In object manipulation, the brain not only forms action
+predict the sensory events that arise as a consequence of these        plans in terms of series of desired subgoals but also
+commands.                                                              predicts the sensory events that signify subgoal attain-
+Addresses                                                              ment in conjunction with the generation of the motor
+1
+  Department of Psychology and Centre for Neuroscience Studies,        commands. By comparing predicted sensory events with
+Queen’s University, Kingston, ON, K7L 3N6, Canada
+2
+                                                                       the actual sensory events, the motor system can monitor
+  Section for Physiology, Department of Integrative Medical Biology,   task progression and adjust subsequent motor commands
+Umeå University, SE-901 87 Umeå, Sweden
+                                                                       if errors are detected. As discussed further below, such
+Corresponding author: Flanagan, J Randall                              adjustments involve parametric adaptation of fingertip
+                                                                       actions to the mechanical properties of objects, triggering
+                                                                       of task-protective corrective actions, and learning of novel
+  Current Opinion in Neurobiology 2006, 16:650–659                     sensorimotor strategies. In addition, errors in performance
+  This review comes from a themed issue on
+                                                                       can be used to update representations of objects in
+  Motor systems                                                        the environment (or the motor system itself), so as to
+  Edited by Eve Marder and Peter Strick                                improve future control and prediction [1–3].
+  Available online 3rd November 2006
+                                                                       Tactile signals, especially from contact events, are essen-
+  0959-4388/$ – see front matter                                       tial for skilled and dexterous manipulation [4–6,7,8].
+  Published by Elsevier Ltd.                                           For example, when grasping and lifting an object, tactile
+  DOI 10.1016/j.conb.2006.10.005
+                                                                       afferents from different types of mechanoreceptors in the
+                                                                       glabrous skin of the hand encode information about both
+                                                                       the timing and the physical nature of the discrete
+                                                                       mechanical events that occur when the digits contact
+Introduction                                                           the object and when the object lifts off the surface
+Object manipulation is a model system for the study of                 [9–11]. Signals from ensembles of tactile afferents pro-
+sensorimotor and cognitive control strategies governing                vide information on the timing, magnitude, direction and
+skilled behavior in humans. Tasks involving object                     spatial distribution of fingertip forces, the local shape of
+manipulation engage multiple sensorimotor systems,                     the contact site, and the friction between the skin and the
+are explicitly concerned with mechanical interactions                  object (see below). However, contact events can also give
+between the body and the objects in the environment,                   rise to distinct signals in other sensory modalities, includ-
+and involve sequentially organized action plans at various             ing proprioception, vision and audition. We suggest that
+levels of complexity. Here, we review recent work on the               contact events encoded in multiple sensory modalities
+control of hand and eye movements in object manipula-                  represent sensorimotor control points that have three
+tion tasks. This work highlights the importance of                     crucial functions [12] (see Figure 1). First, by comparing
+‘contact events’ in the control of manipulation tasks                  actual and predicted sensory events in multiple sensory
+and the importance of predictive control mechanisms                    modalities, the sensorimotor system can simultaneously
+that are based on knowledge of object properties.                      monitor multiple aspects of task performance and, if
+                                                                       prediction errors arise, respond to the pattern of errors
+Sensorimotor control points                                            observed in different modalities. Second, because contact
+Object manipulation tasks typically involve a series of                events give rise to salient sensory signals from multiple
+action phases in which objects are grasped, moved,                     modalities that are linked in time and space, they provide
+brought into contact with other objects and released.                  an opportunity for sensorimotor integration and intermo-
+These phases are usually bound by mechanical events                    dal alignment that might facilitate learning and upholding
+that are subgoals of the task. These events involve the                of multimodal sensorimotor correlations that are neces-
+making and breaking of contact between either the                      sary for prediction of purposeful motor commands. Third,
+fingertips and the grasped object or the object in hand                the predicted sensory consequences of contact events can
+
+Current Opinion in Neurobiology 2006, 16:650–659                                                               www.sciencedirect.com
+                                                  Control strategies in object manipulation tasks Flanagan, Bowman and Johansson 651
+
+
+
+
+Figure 1
+
+
+
+
+Schematic illustration of the phases, separated by contact events, in a task in which an object is grasped, lifted off a surface, moved, and then
+replaced on the surface. The contact events shown at the top define subgoals of the task (i.e. goals of each action phase) and are signaled by
+distinct and discrete sensory events in one or more modalities. For example, when the object is replaced on the surface, the contact between
+the object and the surface gives rise to tactile, visual and auditory sensory events. By comparing these actual sensory events to predicted
+sensory events, the motor system can monitor task progression. For example, if the object is heavier than expected, the predicted tactile events
+associated with lift-off will not occur. As depicted in the figure, this triggers a second lift phase. (Although the figure only shows a comparison
+mechanism for tactile events, comparisons can be made for each task-relevant sensory event.) The predicted sensory events from each phase
+can be used to provide initial state estimates for the next phase. Predictive processes also operate within each phase. For example, during
+object transport, the motor system might use an internal model of the object in conjunction with a copy of the arm motor commands to predict
+the load force acting on the object, so that grip force can be suitably adjusted.
+
+
+
+
+www.sciencedirect.com                                                                          Current Opinion in Neurobiology 2006, 16:650–659
+652 The neurobiology of behaviour
+
+
+
+
+directly furnish initial state information for subsequent         70 ms, which is faster than can be explained by the
+phases of the manipulation tasks. This enables smooth             afferents transmitting information by their firing rates,
+phase transitions, in contrast to the stuttering transitions      through which they are traditionally thought to convey
+that would occur as a result of neuromuscular delays if           sensory information (rate encoding). Recently, we have
+peripheral afferent information about subgoal comple-             shown that the relative timing of first spikes in ensembles
+tions always triggered, reactively, the execution of the          of tactile afferents (temporal codes), which are elicited
+next phase.                                                       in response to discrete mechanical fingertip events,
+                                                                  encode the relevant information more rapidly than do
+Prediction and rapid updating                                     the rate codes, and fast enough to account for the use of
+Because of time delays associated with receptor transduc-         tactile signals in natural manipulation tasks [31]. This
+tion, neural conduction, central processing and muscle            work has demonstrated that first, neuronal signals can be
+activation, skilled manipulation relies on predictions            transmitted with great (millisecond) temporal precision,
+about the properties of objects. People are able to use           second, the precise timing of individual spikes carries
+visual and (in many cases haptic) cues about object size,         information, and third, temporal codes are distributed and
+shape and identity to predict object weight [13–17] and           sparse.
+mass distribution [18–22], and to estimate stable fingertip
+force vectors [4,5]. If initial predictions are incorrect, they   Control of gaze in object manipulation tasks
+can be updated over successive lifts of the object [23,24].       Studies of gaze behavior in manual tasks have mainly
+For example, if an object is lighter or heavier than              focused on hand pointing movements that are completed
+expected, lift-off will occur either too soon or not at all       the moment the target is reached [32,33]. While pointing,
+at the predicted point in time. The resulting mismatch            people direct their gaze to the target at the start of the
+between expected sensory signals in tactile afferents and         hand movement, and gaze fixates the target until the hand
+the actual sensory event triggers a learned corrective            arrives. The finding that fixating the target improves
+action pattern that decreases or increases fingertip forces,      pointing accuracy, even when vision of the hand is
+respectively, and leads to an updating of the representa-         blocked [34–36], suggests that gaze-related efferent
+tion of object weight in memory [10,13]. Thus, in this            and/or afferent signals participate in visual and non-visual
+situation the sensorimotor system reacts quickly to both          feedback loops to ensure manual accuracy [37]. Several
+the presence of an unexpected sensory event and the               recent studies have examined gaze behavior in sequential
+absence of an expected sensory event. For object proper-          object manipulation tasks [12,38–42,43]. In these tasks,
+ties that impose constraints on the fingertip force vectors       participants direct their gaze to successive contact loca-
+for grasp stability, such as friction [8] and the local shape     tions as they gain salience as the task progresses over
+of the contact surface [4,5], updating is formed on the           time. Gaze is directed to these locations well before the
+basis of prediction errors derived from tactile signals           hand (or object in hand) arrives, and typically remains at
+obtained when the digits initially contact the object.            the location until around the time of completion of the
+When handling common inertial loads in the absence                goal of the current manipulation phase, which is asso-
+of misleading cues, updating typically takes place in a           ciated with a specific contact event. For example, in a task
+single trial. However, in the presence of misleading cues         in which participants are required to pick up a bar, move
+[25,26], or when manipulating objects with unusual                the bar in hand to contact a spring-loaded target switch,
+dynamics (relating applied force to motion) [27,28],              and then replace the bar, gaze is successively directed to
+updating might require repeated lifts or movements of             the grasp site, the target, and landing surface where the
+the object.                                                       bar is replaced [12]. Gaze arrives at each location ahead of
+                                                                  the hand (or bar in hand) but, on average, remains until
+Although prediction underlies skilled manipulation, rapid         the grasp is established, the target switch is released, or
+processing of sensory events related to contact events is         the bar is replaced. These results indicate that gaze
+crucial for detecting and correcting prediction errors or for     fixations not only predict the spatial goals of sequential
+when the system is unable to predict object properties. By        action phases but also the timing of goal attainment of
+using microneurography (i.e. recording from human                 each phase. Hence, the timing of contact events demar-
+nerves using a percutaneously inserted needle) we have            cating action phases can be predicted both in the visual
+shown that when a digit initially contacts an object,             and in the tactile modalities.
+ensembles of tactile afferents provide early information
+about the frictional status of the contact [10], the shape of     Because gaze is aligned in both time and space with the
+the contact surface [29] and the direction of fingertip           contact events marking task subgoals [12], visual events
+forces [30]. The encoding of these complex fingertip              related to contact are registered in central vision. These
+parameters is formed on the basis of signals in ensembles         events can include vision of contact between two objects
+of afferents that reflect the patterns of stresses and strains    or the hand and an object, or motion of a contacted object.
+distributed throughout the fingertip. This information            According to our control point hypothesis, these visual
+begins to shape fingertip force output within about               events can be compared to predicted visual events and
+
+Current Opinion in Neurobiology 2006, 16:650–659                                                         www.sciencedirect.com
+                                         Control strategies in object manipulation tasks Flanagan, Bowman and Johansson 653
+
+
+
+
+aligned with tactile, sensory and auditory events that         completed. We have suggested that by directing gaze
+might arise from the same mechanical contact events.           to predicted contact events, observers — like actors —
+Thus, in sequential manipulation tasks, we argue that in       can monitor task progression. That is, contact events can
+addition to improving the accuracy of hand movement            function as sensorimotor control points in both actors and
+towards target objects, gaze plays a complementary role in     observers. Of course, the observer does not obtain tactile
+the monitoring of task progression and the upholding of        and proprioceptive signals related to contact. However,
+sensorimotor correlations important for prediction (see        visual and — if the action takes place within earshot —
+also [40]).                                                    auditory events can be registered and compared with
+                                                               predictions of these events. By predicting and monitoring
+Sensorimotor control points in action                          these contact events, observers (again like actors) can also
+observation                                                    gain information about the properties of objects in the
+An important hypothesis in psychology and neuroscience         environment. For example, if an observer watches an
+is that understanding others’ actions results from a           actor pick up an object that is heavier than the observer
+mechanism that maps observed action onto sensorimotor          expects (on the basis of visual cues), and assumes that the
+representations of that same action in the observer’s          actor has similar expectations about weight as they do, the
+brain. Numerous neurophysiological and imaging studies         observer might be able to discern that the object is
+have shown that neural systems that are engaged when           heavier than expected on the basis of the actions of
+performing actions are also active during action observa-      the actor [51]. Taken together, these results suggest that,
+tion (see [44–46] for reviews). These findings have given      in manipulation tasks, contact events have a key role in
+rise to the direct matching hypothesis that posits that        linking the actor and observer. In both actors and obser-
+when people observe action, they implement covert              vers, eye movements are driven by sensory predictions
+action plans that, in real time, match the action plans        and the matching between actor and observer is achieved
+executed by the actor [44,47]. We have investigated this       through common sensory predictions and monitoring. We
+issue by measuring gaze behavior in observers while they       believe that recording gaze during action observation has
+watch an actor perform visually guided object manipula-        great research potential. This novel paradigm has already
+tion tasks [42]. Because the pattern of eye movement in        been used effectively to study the development of action
+object manipulation is driven by sensorimotor represen-        understanding [49] but can also be used to examine
+tations of the task [12,40,48], the matching hypothesis        control mechanisms and levels of understanding during
+predicts that observers’ eye movements should mirror           learning, potential impairments in action understanding
+those of the actor, even though observers’ manual actions      in, for example, individuals with autism or attention
+might be suppressed or inhibited. We confirmed this            deficit and hyperactivity disorder, and to test whether
+prediction by showing that when people observe a famil-        deficits in action production, that are associated with
+iar block-stacking task, the coordination between their        stroke and other impairments, are linked with deficits
+gaze and the actor’s hand is very similar to the gaze–hand     in action perception.
+coordination adopted when they perform the task them-
+selves [42]. Both actors and observers direct their gaze to    Gaze behavior in visuomotor learning
+forthcoming contact sites (where blocks are grasped and        The acquisition of most motor skills requires learning
+replaced) and maintain their gaze at each site until the       novel transformations relating actions to their sensory
+goal is completed. This predictive gaze behavior, recently     consequences [3,52]. Studies of motor learning in manual
+shown to emerge between 6 and 12 months of age [49],          tasks have focused on how hand movements are adapted
+appears to require vision of the actor’s hand. When the        to altered visual feedback (e.g. [53–58]) or to forces
+hand cannot be seen, gaze tends to track the moving            applied to the hand or arm as a whole (see [59] for a
+blocks and is reactive rather than proactive and action-       review). Recently, we investigated gaze behavior during
+like [42,49].                                                 learning of a novel visually guided manual task [60].
+                                                               Land and McLeod [61] reported differences in gaze
+In a follow-up study, we have shown that even when             behavior across skill levels in cricket batsman; however,
+observers do not know in advance which of two possible         previous studies have not examined gaze during the
+blocks the actor will grasp, they still shift their gaze,      course of skill acquisition. In our task, participants were
+proactively, to the target block well before the hand          required to move a cursor to successive targets presented
+arrives [50]. These proactive eye movements are elicited      on a screen by applying forces and torques to a rigid tool
+after a short period of vision of the actor’s unfolding        held between the two hands. Implementation of different
+hand movement and as soon as the observer is certain           complex mappings between hand actions (twisting tor-
+about which block the actor will pick up. Although the         ques and lateral forces) and cursor motion typically
+timing of these eye movements does not directly match          resulted in three distinct stages of learning: an initial
+that of the actor, they nevertheless reveal that the obser-    exploratory stage, in which participants were unable to
+ver proactively directs gaze to sites at which contact         control the cursor effectively; a skill acquisition stage,
+events occur and fixates the site until the subgoal is         during which control began to develop and performance
+
+www.sciencedirect.com                                                         Current Opinion in Neurobiology 2006, 16:650–659
+654 The neurobiology of behaviour
+
+
+
+
+improved rapidly; and a skill refinement stage, during          tion in a tapping task, and asked whether attenuation is
+which performance improved more slowly. During the              linked to self motion or to predicted contact events [69].
+exploratory stage, participants attempt to discover the         Participants used their right index finger to tap a force
+basic mapping rules relating motor and sensory signals          sensor mounted above their left index finger (Figure 2a).
+that can then be implemented to improve performance             A motor generated a tap on the left finger either at the
+[62,63]. Like a child learning to ride a bike, the basic        same time as the right finger tap or before or after the right
+coordination needed for stability needs to be discovered        finger tap. When taps on the left and right fingers were
+before the task can even be performed. Note that most           synchronous, simulating a self-generated mechanical
+previous studies that have examined adaptation of reach-        event, the perception of force on the left finger was
+ing movements to novel loads or visuomotor perturba-            attenuated compared with that of similar taps on the left
+tions (see above) do not require an exploratory stage. In       finger experienced during rest (i.e. without right finger
+these tasks, performance improves from the first trial          tapping). The attenuation gradually reduced when the
+onwards, suggesting that learning involves adaptation           left tap was either delayed or time advanced relative to
+of previously acquired basic sensorimotor mapping rules         the active right tap (Figure 2b). However, taps on the left
+rather than the discovery of novel rules.                       finger triggered by movements of the right finger that
+                                                                stopped above or passed wide of the sensor did not result
+During the exploration stage, gaze tended to ‘chase’ the        in attenuation. These results indicate that perceptual
+cursor, reactively, through saccades directed to successive     attenuation occurs over a broadly tuned window of time
+cursor locations. As participants started to gain control       that is centered on the self-generated and predictable
+over the cursor during the skill acquisition stage, proac-      contact event. In addition, the results demonstrate that
+tive gaze behavior gradually emerged with gaze leading          perceptual attenuation is linked to specific contact events
+the cursor to the vicinity of the target or to locations en     arising from movement rather than the movement itself
+route to the target. As learning progressed, fewer reactive     [69].
+saccades were observed and, eventually, gaze was direc-
+ted almost exclusively to the target, similar to the situa-     It is not known whether the neural mechanisms that
+tion in reaching and pointing movements under normal            account for the attenuation of percepts caused by pre-
+sensorimotor conditions [32,33]. The reactive or ‘chasing’      diction of contact events are related to those accounting
+gaze behavior observed during early learning enables the        for predictions of contact events in the sensorimotor
+spatial and temporal alignment of the cursor and gaze, and      control of action. This question is touched on in
+the locations at which this alignment occurs might func-        Figure 2d, which shows grip and (vertical) load forces
+tion as sensorimotor control points, in much the same way       recorded during a task in which participants dropped a
+that targets do once the skill is acquired. That is, by         ball into a cup that was suspended from a handle held
+directing saccades to successive cursor positions, the          with a precision grip [23] (Figure 2c). The solid gray
+consequences of hand actions can be monitored in foveal         trace is from catch trials in which the ball was caught by
+vision. Moreover, this gaze strategy (whereby cursor and        the experimenter, and reveals the purely predictive grip
+saccadic eye movements are launched from the same               force response that prevents the handle from slipping at
+locations, albeit at different times) might help to establish   impact. This trace has been superimposed on Figure 2b
+a mapping between hand actions and eye movements in             after inversion and scaling in height but not time. The
+gaze-centered coordinates [33,64,65]. Once established,         time course of grip force modulation in anticipation
+this map could be inverted such that spatially congruent        of ball contact is strikingly similar to the time course
+hand and eye movements — based on peripheral vision of          of perceptual attenuation observed in the tapping
+target locations — can be programmed concurrently [36].         experiment.
+
+Sensory cancellation and contact events                         Representing object dynamics in
+As discussed above, the control of object manipulation          manipulation
+depends on sensorimotor mechanisms that exploit pre-            When lifting an object with a precision grip, with the
+dicted and actual contact events. One can ask whether           digits on either side, people scale their grip and tangential
+contact events are also important in shaping conscious          load (or lift) forces to the expected weight of the object,
+perceptions related to the consequences of our actions. It      which is predicted on the basis of visual and haptic cues
+has been proposed that sensations caused by our own             and sensorimotor memory from previous lifts [13–
+actions are attenuated to increase the salience of sensa-       15,17,18]. Similarly, when translating and rotating familiar
+tions with an external cause [66]. Such perceptual              hand-held objects, grip force is precisely modulated in
+attenuation of our own actions could explain why we             parallel with changes in movement-dependent forces and
+cannot tickle ourselves [67], and why externally imposed        torques tangential to the grasped surfaces [18,20,21,70–
+constant forces applied to the fingertip are perceived as       73]. Importantly, the close coupling between grip force
+more intense than the same forces applied by ourselves          and load force has been demonstrated for objects with
+[68]. In a recent study, we examined perceptual attenua-        different complex dynamics (elastic, viscous and inertial
+
+Current Opinion in Neurobiology 2006, 16:650–659                                                         www.sciencedirect.com
+                                                  Control strategies in object manipulation tasks Flanagan, Bowman and Johansson 655
+
+
+
+
+Figure 2
+
+
+
+
+Perceptual attenuation in a tapping task. (a) Apparatus and task. While resting their left index finger beneath a force sensor fixed to the lever of a
+torque motor, participants produced a brief force pulse with their right index finger on a second force sensor fixed above their left index finger
+(active tap). The motor delivered a similar force pulse (test tap) to the left index finger with a variable lead or lag. Participants compared the
+magnitude of the test tap to that of a comparison tap delivered to the left index finger a short amount of time later. (b) Relative amplitude of the
+comparison tap to the test tap at the point of perceptual equality, as a function of time difference between the test tap and the active tap. Filled
+circles and vertical bars represent the mean and 1 S.E. of 12 participants, and the dashed line shows the mean relative amplitude in a control
+condition in which no active tap was produced. The horizontal error bars represent 1 S.D. (c) Apparatus used in the ball drop experiment.
+Participants used their left hand to drop a ball into a cup suspended by a handle instrumented with force sensors that measured grip and load
+forces applied by the right hand. (d) Dashed curves show average grip and load forces as a function of time with 0 representing the time of impact.
+The solid traces show mean grip and load forces in catch trials during which impact did not occur. The grip force profile from these catch trials
+is also shown in (b) but has been inverted and scaled in height. Modified from [69] and [23].
+
+
+
+loads) [27,28]. Because the mapping between arm motor                        The ease with which people seamlessly and skillfully
+commands and load force is determined by object                              handle objects in natural manipulation tasks suggests that
+dynamics, these findings show that arm motor commands                        they can recruit and de-recruit internal models of object
+and grip motor commands are independently controlled.                        dynamics when grasping and releasing objects that are
+This conclusion is supported by recent studies in which                      distinct from internal models used to control limb
+the loads acting at the hand and on the arm have been                        dynamics alone. Direct support for this idea comes from
+dissociated. Danion and colleagues [74,75] examined                         recent studies of adaptation to hand-held loads in reach-
+grip forces when holding or moving objects with an                           ing, which demonstrate that the after-effects of adapta-
+additional inertial or spring load attached to either the                    tion are not observed if the object in hand is released
+object or the arm. Grip force was clearly modulated for                      [59,76].
+additional loads applied to the object but not for equiva-
+lent loads applied to the arm.                                               As noted above, when the weight of an object that has
+                                                                             been lifted repeatedly is unexpectedly changed, grip and
+Taken together, these results indicate that the motor                        load forces are typically updated within a single lift. The
+system makes use of internal models of object dynamics                       standard interpretation of this adaptation is that the
+to predict the load forces that will arise when acting on                    internal model of the object, incorporating information
+objects (Figure 1). By combining knowledge about object                      about its weight or inertia, is updated. However, Quaney
+dynamics with knowledge of the intended arm motor                            et al. [77] have shown that the grip force used to lift an
+commands (i.e. efference copy), the system can predict                       object can also be influenced by previous fingertip actions
+load force and adjust grip force accordingly [3,23,28,52].                   that do not involve lifting the object. For example, if a
+
+www.sciencedirect.com                                                                          Current Opinion in Neurobiology 2006, 16:650–659
+656 The neurobiology of behaviour
+
+
+
+
+participant strongly pinches an object and then lifts a test    learning when the object was rotated (or they rotated the
+object, the grip force used during lifting will be substan-     object themselves), requiring a switch in the digit
+tially increased compared with that used when the test          load forces to avoid tilt (see also [19]). This result suggests
+object is lifted without prior pinching. Similarly, if a        that participants stored the specific digit forces (or
+participant is explicitly asked to use excessive grip forces    motor commands) required to lift the object rather than
+for several lifts, they will employ an elevated grip force      the dynamics of the object itself. However, it is also
+when lifting the object a day later, even when told to use a    possible that the dynamics (i.e. the weight distribution)
+normal grip force [78]. However, the load forces used           were encoded but that participants failed to apply this
+when lifting are not affected by these interventions. On        knowledge appropriately when the object was rotated. A
+the basis of these results, these authors suggested that        similar failure to account for object rotation has previously
+separate internal representation of object properties could     been described when lifting objects with different fric-
+be used to predict grip and load forces when lifting [78]. It   tional conditions at the opposing grasp surfaces [82].
+is important to remember that whereas the load force            When lifting under these conditions, people learn, within
+required for lifting depends solely on object weight (i.e.      a single lift, to apply less vertical lifting force with the
+dynamics), grip force also depends on the friction              digit contacting the more slippery surface. (This predic-
+between the fingertips and the object, in addition to           tive strategy tilts the object and reduces the tangential
+the grip force safety margin used to guard against slip,        load at the more slippery surface.) When the object
+and that can vary idiosyncratically. Thus, instructing          is rotated 1808, the predictive scaling of vertical forces
+participants to use particular grip force behaviors could       is lost. Recently, Quaney and Cole [83] replicated this
+influence implicit memory mechanisms that are related to        finding but also found that after 1808 hand rotation,
+scaling of grip force to load force, independently of the       participants correctly anticipated the new digit–friction
+internal model of the dynamics of the object.                   relationships. Thus, internally driven motor plans
+                                                                can access the relevant memories for predictively parti-
+Although it is clear that people store and recall informa-      tioning the vertical tangential forces according to the
+tion about object dynamics, relatively little is known          frictional demands with changes in hand orientation
+about how this information is represented or encoded.           relative to the object, but not when the orientation of
+Several studies have examined how we represent loads            the object is changed relative to the hand.
+applied to the hand by robotic manipulanda during reach-
+ing movements; these studies concluded that these loads         We have shown, within the context of the size–weight
+are represented in arm-centered coordinates as opposed          illusion, that the brain maintains independent represen-
+to Cartesian coordinates (e.g. [79,80]). Mah and Mussa-         tations of object weight for sensorimotor control and
+Ivaldi [81] examined how object dynamics are repre-             perception [26]. The size–weight illusion refers to the
+sented using a task in which participants learned to            fact that people judge the smaller of two equally weighted
+balance a virtual inverted pendulum by applying iso-            (and otherwise similar) objects to be heavier when lifted.
+metric forces that moved the base of the pendulum on            We asked participants to repeatedly and alternately lift a
+a computer screen according to a simulated equation of          large cube and an equally weighted small cube and
+motion. They found that learning did not transfer across        measured their fingertip forces in each lift. As expected,
+different arm configurations, which suggests that partici-      participants initially scaled fingertip forces to object size
+pants did not learn the dynamics of the object (i.e. the        such that they generated larger forces when lifting
+mapping between applied force and object motion), but           the large cube. However, they quickly adapted their force
+instead learned a mapping between observed object               output to the true object weights and exhibited accurate
+motion and motor commands to the arm and hand mus-              sensorimotor predictions about weight (see also [84]).
+cles [81]. Thus, these results are consistent with the idea     Nevertheless, the size–weight illusion persisted and
+that novel dynamics are encoded (at least initially) in         was unaffected by lifting each object 20 times. This result
+intrinsic coordinates.                                          indicates that the sensorimotor and perceptual systems
+                                                                use separate and independent representations of object
+It is an open question as to whether, with sufficient           weight and also demonstrates that the illusion does not
+practice manipulating objects with novel dynamics using         result from errors in sensorimotor prediction. Instead, we
+different arm configurations, people are able to form a         have suggested that the illusion stems from errors in
+single object-centered representation of dynamics or            perceptual prediction. That is, participants judge the
+retain multiple arm-centered representations. Salimi            small cube to be heavier because it is heavier than
+et al. [24] examined fingertip forces employed when             expected at the perceptual level. Note that the size–
+lifting a box with an asymmetric weight distribution that       weight illusion cannot be explained on the basis of
+could not be discerned from visual cues. On the first lift,     Bayesian integration. Assuming that sensory information
+the box tilted but, after one or two lifts, participants        about object weight is uncertain, Bayesian integration
+adapted by generating unequal load forces at the two            predicts that participants should rely, at least to some
+digits. However, participants were unable to transfer this      extent, on prior expectations about object weight based
+
+Current Opinion in Neurobiology 2006, 16:650–659                                                         www.sciencedirect.com
+                                                  Control strategies in object manipulation tasks Flanagan, Bowman and Johansson 657
+
+
+
+
+on object size. In other words, in the face of sensory                   7.    Nowak DA, Hermsdorfer J: Predictive and reactive control of
+                                                                             grasping forces: on the role of the basal ganglia and sensory
+uncertainty, they should judge the small object to be                          feedback. Exp Brain Res 2006, 173:650-660.
+lighter than the equally weighted large object.                          The authors examined reactive and predictive control of grip forces in
+                                                                         patients with basal ganglia disorders (including Parkinson’s disease) and
+                                                                         in deafferented patients lacking all tactile and proprioceptive sensory
+Conclusions                                                              feedback. In the predictive control task, participants used one hand to
+                                                                         drop a ball into a receptacle held in a precision grip by the other hand. In
+The work reviewed here highlights the important role of                  the reactive task, the experimenter dropped the ball and the participant
+contact events in object manipulation tasks. These                       was blindfolded. The basal ganglia dysfunction patients exhibited ade-
+                                                                         quate predictive and reactive control of grip forces. As expected, reactive
+events give rise to discrete and distinct sensory events                 control was absent in the deafferented patient. However, these patients
+in multiple sensory modalities and are sensorimotor                      also exhibited poor predictive control. This supports the notion that the
+                                                                         ability to monitor sensory events is important in maintaining predictive
+control points at which predicted and actual sensory                     control mechanisms.
+events can be compared and aligned. In visually guided
+                                                                         8.   Johansson RS, Westling G: Roles of glabrous skin receptors
+object manipulation tasks, gaze is directed to contact                        and sensorimotor memory in automatic-control of precision
+points enabling visual contact events to be captured in                       grip when lifting rougher or more slippery objects. Exp Brain
+central vision. During action observation, gaze is also                       Res 1984, 56:550-564.
+
+directed to contact points, and we propose that observers                9.   Westling G, Johansson RS: Responses in glabrous skin
+                                                                              mechanoreceptors during precision grip in humans. Exp Brain
+predict and monitor sensory events in the same way that                       Res 1987, 66:128-140.
+actors do. We also emphasized, in this review, the key
+                                                                         10. Johansson RS, Westling G: Signals in tactile afferents from the
+role of predictive control in object manipulation. There is                  fingers eliciting adaptive motor-responses during precision
+now ample evidence that people make use of internal                          grip. Exp Brain Res 1987, 66:141-154.
+models of object dynamics in skilled tasks, and recent                   11. Johansson RS, Cole KJ: Sensory-motor coordination during
+studies have started to examine how this information is                      grasping and manipulative actions. Curr Opin Neurobiol 1992,
+                                                                             2:815-823.
+represented.
+                                                                         12. Johansson RS, Westling G, Backstrom A, Flanagan JR: Eye-hand
+                                                                             coordination in object manipulation. J Neurosci 2001,
+The notion of sensorimotor control point still requires a                    21:6917-6932.
+great deal of elaboration and we expect that future
+                                                                         13. Johansson RS, Westling G: Coordinated isometric muscle
+empirical and modeling studies will investigate the con-                     commands adequately and erroneously programmed for the
+tributions of different sensory events, registered by dif-                   weight during lifting task with precision grip. Exp Brain Res
+                                                                             1988, 71:59-71.
+ferent modalities, to the learning and control of object
+manipulations tasks. In addition, we anticipate that future              14. Gordon AM, Forssberg H, Johansson RS, Westling G: Visual size
+                                                                             cues in the programming of manipulative forces during
+studies will uncover how different physical properties of                    precision grip. Exp Brain Res 1991, 83:477-482.
+objects are represented by the motor system.
+                                                                         15. Gordon AM, Forssberg H, Johansson RS, Westling G: The
+                                                                             integration of haptically acquired size information in the
+Acknowledgements                                                             programming of precision grip. Exp Brain Res 1991,
+This work was supported by the Canadian Institutes of Health Research,       83:483-488.
+the Human Frontier Science Program, the Swedish Research Council
+(project 08667) and the Sixth Framework Program of the European          16. Mon-Williams M, Murray AH: The size of the visual size cue used
+                                                                             for programming manipulative forces during precision grip.
+Union (project IST-001917 and IST-028056).
+                                                                             Exp Brain Res 2000, 135:405-410.
+                                                                         17. Gordon AM, Westling G, Cole KJ, Johansson RS: Memory
+References and recommended reading                                           representations underlying motor commands used during
+Papers of particular interest, published within the annual period of         manipulation of common and novel objects. J Neurophysiol
+review, have been highlighted as:                                            1993, 69:1789-1796.
+      of special interest                                               18. Wing AM, Lederman SJ: Anticipating load torques produced by
+      of outstanding interest                                              voluntary movements. J Exp Psychol Hum Percept Perform
+                                                                             1998, 24:1571-1581.
+1.     Wolpert DM, Flanagan JR: Motor prediction. Curr Biol 2001,        19. Salimi I, Frazier W, Reilmann R, Gordon AM: Selective use of
+       11:R729-R732.                                                         visual information signaling objects’ center of mass for
+2.     Wolpert DM, Ghahramani Z, Flanagan JR: Perspectives and               anticipatory control of manipulative fingertip forces.
+       problems in motor learning. Trends Cogn Sci 2001,                     Exp Brain Res 2003, 150:9-18.
+       5:487-494.                                                        20. Johansson RS, Backlin JL, Burstedt MK: Control of grasp
+3.     Wolpert DM, Ghahramani Z: Computational principles of                 stability during pronation and supination movements.
+       movement neuroscience. Nat Neurosci 2000, 3:1212-1217.                Exp Brain Res 1999, 128:20-30.
+
+4.     Jenmalm P, Johansson RS: Visual and somatosensory                 21. Goodwin AW, Jenmalm P, Johansson RS: Control of grip
+       information about object shape control manipulative fingertip         force when tilting objects: effect of curvature of grasped
+       forces. J Neurosci 1997, 17:4486-4499.                                surfaces and applied tangential torque. J Neurosci 1998,
+                                                                             18:10724-10734.
+5.     Jenmalm P, Dahlstedt S, Johansson RS: Visual and tactile
+       information about object-curvature control fingertip forces       22. Jenmalm P, Goodwin AW, Johansson RS: Control of grasp
+       and grasp kinematics in human dexterous manipulation.                 stability when humans lift objects with different surface
+       J Neurophysiol 2000, 84:2984-2997.                                    curvatures. J Neurophysiol 1998, 79:1643-1652.
+6.     Nowak DA, Glasauer S, Hermsdorfer J: How predictive is grip       23. Johansson RS, Westling G: Programmed and triggered actions
+       force control in the complete absence of somatosensory                to rapid load changes during precision grip. Exp Brain Res
+       feedback? Brain 2004, 127:182-192.                                    1988, 71:72-86.
+
+www.sciencedirect.com                                                                       Current Opinion in Neurobiology 2006, 16:650–659
+658 The neurobiology of behaviour
+
+
+
+
+24. Salimi I, Hollender I, Frazier W, Gordon AM: Specificity of internal   44. Rizzolatti G, Fogassi L, Gallese V: Neurophysiological
+    representations underlying grasping. J Neurophysiol 2000,                  mechanisms underlying the understanding and imitation of
+    84:2390-2397.                                                              action. Nat Rev Neurosci 2001, 2:661-670.
+25. Gordon AM, Forssberg H, Johansson RS, Westling G: Integration          45. Rizzolatti G, Craighero L: The mirror-neuron system. Annu Rev
+    of sensory information during the programming of precision                 Neurosci 2004, 27:169-192.
+    grip: Comments on the contributions of size cues. Exp Brain
+    Res 1991, 85:226-229.                                                  46. Liberman AM, Whalen DH: On the relation of speech to
+                                                                               language. Trends Cogn Sci 2000, 4:187-196.
+26. Flanagan JR, Beltzner MA: Independence of perceptual and
+    sensorimotor predictions in the size-weight illusion.                  47. Iacoboni M, Woods RP, Brass M, Bekkering H, Mazziotta JC,
+    Nat Neurosci 2000, 3:737-741.                                              Rizzolatti G: Cortical mechanisms of human imitation.
+                                                                               Science 1999, 286:2526-2528.
+27. Flanagan JR, Vetter P, Johansson RS, Wolpert DM: Prediction
+    precedes control in motor learning. Curr Biol 2003, 13:146-150.        48. Land MF, Furneaux S: The knowledge base of the oculomotor
+                                                                               system. Philos Trans R Soc Lond B Biol Sci 1997, 352:1231-1239.
+28. Flanagan JR, Wing AM: The role of internal models in motion
+    planning and control: evidence from grip force adjustments             49. Falck-Ytter T, Gredeback G, von Hofsten C: Infants predict other
+    during movements of hand-held loads. J Neurosci 1997,                      people’s action goals. Nat Neurosci 2006, 9:878-879.
+    17:1519-1528.                                                          The authors show that the generation of proactive and action-like eye
+                                                                           movements during observation of a manipulation task emerges in infants
+29. Jenmalm P, Birznieks I, Goodwin AW, Johansson RS: Influence of         between 6 months and 12 months of age. The fact that the ability to
+    object shape on responses of human tactile afferents under             perform manipulation tasks also emerges during this period supports the
+    conditions characteristic of manipulation. Eur J Neurosci 2003,        idea that action observation engages action systems.
+    18:164-176.
+                                                                           50. Rotman G, Troje NF, Johansson RS, Flanagan JR: Eye
+30. Birznieks I, Jenmalm P, Goodwin AW, Johansson RS: Encoding of              movements when observing predictable and unpredictable
+    direction of fingertip forces by human tactile afferents.                   actions. J Neurophysiol 2006, 96:1358-1369.
+    J Neurosci 2001, 21:8222-8237.                                         This paper shows that when participants watch an actor grasp one of two
+                                                                           possible blocks and do not know in advance which block will be grasped,
+31. Johansson RS, Birznieks I: First spikes in ensembles of human          they nevertheless directed their gaze to the target block ahead of the
+    tactile afferents code complex spatial fingertip events.               actor’s hand and maintain fixation at the block until it is grasped. The
+    Nat Neurosci 2004, 7:170-177.                                          authors suggest that these proactive eye movements are driven by
+32. Desmurget M, Pelisson D, Rossetti Y, Prablanc C: From eye to           sensorimotor representations of the task (activated in the observer’s
+    hand: planning goal-directed movements. Neurosci Biobehav              brain) and enable the observer to monitor the task in much the same
+    Rev 1998, 22:761-788.                                                  way that actors do.
+
+33. Crawford JD, Medendorp WP, Marotta JJ: Spatial                         51. de C Hamilton AF Joyce DW, Flanagan JR, Frith CD, Wolpert DM:
+    transformations for eye-hand coordination. J Neurophysiol                  Kinematic cues in perceptual weight judgement and their
+    2004, 92:10-19.                                                            origins in box lifting. Psychol Res 2005, in press.
+
+34. Prablanc C, Echallier JE, Jeannerod M, Komilis E: Optimal              52. Kawato M: Internal models for motor control and trajectory
+    response of eye and hand motor systems in pointing at a visual             planning. Curr Opin Neurobiol 1999, 9:718-727.
+    target. II. Static and dynamic visual cues in the control of hand      53. Krakauer JW, Pine ZM, Ghilardi MF, Ghez C: Learning of
+    movement. Biol Cybern 1979, 35:183-187.                                    visuomotor transformations for vectorial planning of reaching
+35. Prablanc C, Pelisson D, Goodale MA: Visual control of reaching             trajectories. J Neurosci 2000, 20:8916-8924.
+    movements without vision of the limb.1. role of retinal                54. Wigmore V, Tong C, Flanagan JR: Visuomotor rotations of
+    feedback of target position in guiding the hand. Exp Brain Res             varying size and direction compete for a single internal model
+    1986, 62:293-302.                                                          in motor working memory. J Exp Psychol Hum Percept Perform
+36. Jeannerod M: The Neural and Behavioural Organization of                    2002, 28:447-457.
+    Goal-Directed Movements. Oxford: OUP Psychology Series No 5;           55. Cunningham HA: Aiming error under transformed spatial maps
+    1988.                                                                      suggest a structure for visual-motor maps. J Exp Psychol 1989,
+37. Desmurget M, Gaveau V, Vindras P, Turner RS, Broussolle E,                 15(3):493-506.
+    Thobois S: On-line motor control in patients with Parkinson’s          56. Martin TA, Keating JG, Goodkin HP, Bastian AJ, Thach WT:
+    disease. Brain 2004, 127:1755-1773.                                        Throwing while looking through prisms. II. Specificity and
+38. Ballard DH, Hayhoe MM, Li F, Whitehead SD: Hand-eye                        storage of multiple gaze-throw calibrations. Brain 1996,
+    coordination during sequential tasks. Philos Trans R Soc Lond B            119:1199-1211.
+    Biol Sci 1992, 337:331-338.
+                                                                           57. Fernandez-Ruiz J, Diaz R, Aguilar C, Hall-Haro C: Decay of prism
+39. Smeets JB, Hayhoe MM, Ballard DH: Goal-directed arm                        aftereffects under passive and active conditions. Brain Res
+    movements change eye-head coordination. Exp Brain Res                      Cogn Brain Res 2004, 20:92-97.
+    1996, 109:434-440.
+                                                                           58. Wang J, Sainburg RL: Adaptation to visuomotor rotations
+40. Land M, Mennie N, Rusted J: The roles of vision and eye                    remaps movement vectors, not final positions. J Neurosci
+    movements in the control of activities of daily living. Perception         2005, 25:4024-4030.
+    1999, 28:1311-1328.
+                                                                           59. Lackner JR, DiZio P: Motor control and learning in altered
+41. Land MF, Hayhoe M: In what ways do eye movements                        dynamic environments. Curr Opin Neurobiol 2005, 15:653-659.
+    contribute to everyday activities? Vision Res 2001,                    The authors review research on load adaptation in the context of reaching
+    41:3559-3565.                                                          movements and emphasize differences between active self-recalibration
+                                                                           and adaptive tool use. They also show that the internal models of hand-held
+42. Flanagan JR, Johansson RS: Action plans used in action                 objects are rapidly recruited and de-recruited when grasped and released.
+    observation. Nature 2003, 424:769-771.
+                                                                           60. Sailer U, Flanagan JR, Johansson RS: Eye-hand coordination
+43. Hayhoe M, Ballard D: Eye movements in natural behavior.                 during learning of a novel visuomotor task. J Neurosci 2005,
+    Trends Cogn Sci 2005, 9:188-194.                                           25:8833-8842.
+The authors provide an excellent review of saccadic eye movement           This is the first study examining gaze behavior during the acquisition of a
+organization in natural tasks. The review focuses on recent advances       novel visuomotor transformation. Participants were required to learn a
+that have greatly expanded our understanding of the role of eye move-      complex mapping between hand actions and cursor motion to move the
+ments in natural behaviour. These advances include findings showing the    cursor to targets.Duringearly learning, gaze chased theuncontrolled cursor.
+importance of both the task and internal reward in specifying eye move-    Once control over the cursor began to emerge, proactivegaze behavior, with
+ments in addition to limb movements.                                       gaze leading the cursor towards the target, started to develop.
+
+Current Opinion in Neurobiology 2006, 16:650–659                                                                            www.sciencedirect.com
+                                                  Control strategies in object manipulation tasks Flanagan, Bowman and Johansson 659
+
+
+
+
+61. Land MF, McLeod P: From eye movements to actions: how                75. Descoins M, Danion F, Bootsma RJ: Predictive control of grip
+    batsmen hit the ball. Nat Neurosci 2000, 3:1340-1345.                     force when moving object with an elastic load applied on the
+                                                                               arm. Exp Brain Res 2006, 172:331-342.
+62. Brooks V, Hilperath F, Brooks M, Ross HG, Freund HJ: Learning        The authors show that people are able to distinguish loads applied to the
+    ‘‘what’’ and ‘‘how’’ in a human motor task. Learn Mem 1995,          arm and loads applied to an object in hand in order to adjust grip forces
+    2:225-242.                                                           predictively for object loads. They compared grip forces applied to a
+                                                                         hand-held object during arm movement under three conditions: when an
+63. Willingham DB: A neuropsychological theory of motor skill
+                                                                         elastic band was attached to the forearm, when the elastic band was
+    learning. Psychol Rev 1998, 105:558-584.
+                                                                         attached to the object, and when there was no elastic band. They found
+64. Andersen RA, Buneo CA: Intentional maps in posterior parietal        that, relative to the no elastic band condition, grip forces increased when
+    cortex. Annu Rev Neurosci 2002, 25:189-220.                          the band was attached to the object but not the forearm.
+
+65. Engel KC, Flanders M, Soechting JF: Oculocentric frames of           76. Cothros N, Wong JD, Gribble PL: Are there distinct neural
+    reference for limb movement. Arch Ital Biol 2002, 140:211-219.           representations of object and limb dynamics? Exp Brain Res
+                                                                             2006, 173:689-697.
+66. Sperry RW: Neural basis of the spontaneous optokinetic
+    response produced by visual inversion. J Comp Physiol Psychol        77. Quaney BM, Rotella DL, Peterson C, Cole KJ: Sensorimotor
+    1950, 43:482-489.                                                        memory for fingertip forces: evidence for a task-independent
+                                                                             motor memory. J Neurosci 2003, 23:1981-1986.
+67. Weiskrantz L, Elliott J, Darlington C: Preliminary observations on
+    tickling oneself. Nature 1971, 230:598-599.                          78. Quaney BM, Nudo RJ, Cole KJ: Can internal models of objects
+                                                                             be utilized for different prehension tasks? J Neurophysiol 2005,
+68. Shergill SS, Bays PM, Frith CD, Wolpert DM: Two eyes for an eye:         93:2021-2027.
+    The neuroscience of force escalation. Science 2003, 301:187.
+                                                                         79. Shadmehr R, Mussa-Ivaldi FA: Adaptive representation of
+69. Bays PM, Wolpert DM, Flanagan JR: Perception of the                      dynamics during learning of a motor task. J Neurosci 1994,
+    consequences of self-action is temporally tuned and event                14:3208-3224.
+    driven. Curr Biol 2005, 15:1125-1128.
+                                                                         80. Malfait N, Shiller DM, Ostry DJ: Transfer of motor learning
+70. Flanagan JR, Lolley S: The inertial anisotropy of the arm is             across arm configurations. J Neurosci 2002, 22:9656-9660.
+    accurately predicted during movement planning. J Neurosci
+    2001, 21:1361-1369.                                                  81. Mah CD, Mussa-Ivaldi FA: Generalization of object
+                                                                             manipulation skills learned without limb motion. J Neurosci
+71. Flanagan JR, Tresilian J: Grip-load force coupling: a general            2003, 23:4821-4825.
+    control strategy for transporting objects. J. Exp. Psychol. Hum
+    Percept Perform 1994, 20:944-957.                                    82. Edin BB, Westling G, Johansson RS: Independent control of
+                                                                             human finger-tip forces at individual digits during precision
+72. Flanagan JR, Wing AM: Modulation of grip force with load force           lifting. J Physiol-London 1992, 450:547-564.
+    during point-to-point arm movements. Exp Brain Res 1993,
+    95:131-143.                                                          83. Quaney BM, Cole KJ: Distributing vertical forces between the
+                                                                             digits during gripping and lifting: the effects of rotating the
+73. Flanagan JR, Wing AM: The stability of precision grip forces             hand versus rotating the object. Exp Brain Res 2004,
+    during cyclic arm movements with a hand-held load. Exp Brain             155:145-155.
+    Res 1995, 105:455-464.
+                                                                         84. Grandy MS, Westwood DA: Opposite perceptual and
+74. Danion F: How dependent are grip force and arm actions                   sensorimotor responses to a size–weight illusion.
+    during holding an object? Exp Brain Res 2004, 158:109-119.               J Neurophysiol 2006, 95:3887-3892.
+
+
+
+
+www.sciencedirect.com                                                                       Current Opinion in Neurobiology 2006, 16:650–659
+

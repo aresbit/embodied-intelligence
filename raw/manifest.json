@@ -1,0 +1,338 @@
+{
+  "project": "《具身智能导论》— Robots That Learn 中文翻译",
+  "course": "CS294-291: Robots That Learn, UC Berkeley, Spring 2026",
+  "instructor": "Jitendra Malik, TA: Tara Sadjadpour",
+  "totalChapters": 17,
+  "batches": {
+    "batchA": {
+      "chapters": "ch01-ch06",
+      "label": "导论与生物基础",
+      "lectures": "L1, L2A, L2B, L3, L4A, L4B"
+    },
+    "batchB": {
+      "chapters": "ch07-ch11",
+      "label": "控制与学习基础",
+      "lectures": "L5A, L5B, L6A, L6B, L7"
+    },
+    "batchC": {
+      "chapters": "ch12-ch17",
+      "label": "学习范式与案例",
+      "lectures": "L8A, L8B, L9, L10, L11, L12"
+    }
+  },
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "导论：为什么要让机器人学习",
+      "lecture": "L1",
+      "hasSlides": true,
+      "papers": [],
+      "notes": "Course overview. Slides on Google Drive (not downloadable). Use course website summary + general knowledge."
+    },
+    {
+      "id": "ch02",
+      "title": "生物运动力学：行走与奔跑",
+      "lecture": "L2A",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L2A_neuromechanics.pdf",
+          "title": "The neuromechanics of animal locomotion",
+          "authors": "Ramdya & Ijspeert",
+          "journal": "Science Robotics, 2023",
+          "url": "https://robots-that-learn.github.io/resources/Locomotion-biology-robotics-scirobotics.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch03",
+      "title": "机器人机构学：运动学与动力学",
+      "lecture": "L2B",
+      "hasSlides": true,
+      "papers": [],
+      "notes": "Exponential coordinates, DH parameters, Lagrangian/Newton-Euler dynamics. Slides only (Google Drive). Supplement with Lynch-Park textbook knowledge."
+    },
+    {
+      "id": "ch04",
+      "title": "扩散模型入门",
+      "lecture": "L3 (Guest: Angjoo Kanazawa)",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L3_normalizing_flows.pdf",
+          "title": "Normalizing Flows for Probabilistic Modeling and Inference",
+          "authors": "Papamakarios et al.",
+          "journal": "JMLR, 2021",
+          "url": "https://robots-that-learn.github.io/resources/normalizing_flows_paper.pdf"
+        },
+        {
+          "file": "L3_flow_matching.pdf",
+          "title": "Flow Matching for Generative Modeling",
+          "authors": "Lipman et al.",
+          "journal": "ICLR, 2023",
+          "url": "https://robots-that-learn.github.io/resources/flow_matching_paper.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch05",
+      "title": "人手与灵巧操作 + 机器人手",
+      "lecture": "L4A",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L4A_century_robotic_hands.pdf",
+          "title": "A Century of Robotic Hands",
+          "authors": "Piazza et al.",
+          "journal": "Annual Review of Control, Robotics, and Autonomous Systems, 2019",
+          "url": "https://robots-that-learn.github.io/resources/century-of-robotic-hands.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch06",
+      "title": "本体感觉与触觉感知",
+      "lecture": "L4B",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L4B_human_hand_function.pdf",
+          "title": "Human Hand Function",
+          "authors": "Jones",
+          "journal": "Oxford University Press, 2006",
+          "url": "https://robots-that-learn.github.io/resources/Human_Hand_Function.pdf"
+        },
+        {
+          "file": "L4B_touch_gardner.pdf",
+          "title": "Touch",
+          "authors": "Gardner",
+          "journal": "Encyclopedia of Life Sciences, 2010",
+          "url": "https://robots-that-learn.github.io/resources/Gardner-ELS2010.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch07",
+      "title": "运动控制的发展视角",
+      "lecture": "L5A",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L5A_visual_locomotion.pdf",
+          "title": "Learning Visual Locomotion with Cross-Modal Supervision",
+          "authors": "Loquercio, Kumar & Malik",
+          "journal": "ICRA, 2023",
+          "url": "https://robots-that-learn.github.io/resources/ICRA23_Learning_to_see_by_walking_blind.pdf"
+        },
+        {
+          "file": "L5A_six_lessons.pdf",
+          "title": "The Development of Embodied Cognition: Six Lessons from Babies",
+          "authors": "Smith & Gasser",
+          "journal": "Artificial Life, 2005",
+          "url": "https://robots-that-learn.github.io/resources/6_lessons.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch08",
+      "title": "机器人动力学、控制与运动规划",
+      "lecture": "L5B",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L5B_kawato_internal.pdf",
+          "title": "Internal models for motor control and trajectory planning",
+          "authors": "Kawato",
+          "journal": "Current Opinion in Neurobiology, 1999",
+          "url": "https://robots-that-learn.github.io/resources/Kawato-internal-models.pdf"
+        },
+        {
+          "file": "L5B_flanagan_control.pdf",
+          "title": "Control strategies in object manipulation tasks",
+          "authors": "Flanagan, Bowman & Johansson",
+          "journal": "Current Opinion in Neurobiology, 2006",
+          "url": "https://robots-that-learn.github.io/resources/FlanaganBowmanJohansson06.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch09",
+      "title": "计算神经科学：预测与控制",
+      "lecture": "L6A",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L6A_land_vision.pdf",
+          "title": "The roles of vision and eye movements in the control of activities of daily living",
+          "authors": "Land, Mennie & Rusted",
+          "journal": "Perception, 1999",
+          "url": "https://robots-that-learn.github.io/resources/teamaking-land-mennie-rusted-1999.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch10",
+      "title": "视频世界模型",
+      "lecture": "L6B",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L6B_world_action_models.pdf",
+          "title": "World Action Models are Zero-shot Policies",
+          "authors": "Ye et al.",
+          "journal": "arXiv, 2026",
+          "url": "https://arxiv.org/abs/2602.15922"
+        },
+        {
+          "file": "L6B_track2act.pdf",
+          "title": "Track2Act: Predicting Point Tracks from Internet Videos",
+          "authors": "Bharadhwaj et al.",
+          "journal": "arXiv, 2024",
+          "url": "https://arxiv.org/abs/2405.01527"
+        }
+      ]
+    },
+    {
+      "id": "ch11",
+      "title": "强化学习",
+      "lecture": "L7",
+      "hasSlides": true,
+      "papers": [],
+      "notes": "Deep RL for walking (Haarnoja et al.) + Dexterous in-hand manipulation (OpenAI et al.). Papers not hosted on course site. Supplement with Sutton & Barto RL theory + general knowledge."
+    },
+    {
+      "id": "ch12",
+      "title": "行为克隆",
+      "lecture": "L8A",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L8A_diffusion_policy.pdf",
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
+          "authors": "Chi et al.",
+          "journal": "RSS, 2023",
+          "url": "https://robots-that-learn.github.io/resources/diffusion_policy_2023.pdf"
+        }
+      ]
+    },
+    {
+      "id": "ch13",
+      "title": "视觉模仿学习",
+      "lecture": "L8B",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L8B_umi.pdf",
+          "title": "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots",
+          "authors": "Chi et al.",
+          "journal": "RSS, 2024",
+          "url": "https://arxiv.org/abs/2402.10329"
+        }
+      ]
+    },
+    {
+      "id": "ch14",
+      "title": "运动控制案例研究",
+      "lecture": "L9",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L9_rma_locomotion.pdf",
+          "title": "RMA: Rapid Motor Adaptation for Legged Robots",
+          "authors": "Kumar et al.",
+          "journal": "RSS, 2021",
+          "url": "https://ashish-kmr.github.io/rma-legged-robots/rma-locomotion-final.pdf"
+        },
+        {
+          "file": "L9_egocentric_locomotion.pdf",
+          "title": "Legged Locomotion in Challenging Terrains using Egocentric Vision",
+          "authors": "Agarwal et al.",
+          "journal": "CoRL, 2022",
+          "url": "https://arxiv.org/abs/2211.07638"
+        }
+      ]
+    },
+    {
+      "id": "ch15",
+      "title": "导航案例研究",
+      "lecture": "L10 (Guest: Jonas Frey)",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L10_goat_navigation.pdf",
+          "title": "GOAT: Go to Any Thing",
+          "authors": "Chang et al.",
+          "journal": "RSS, 2024",
+          "url": "https://robots-that-learn.github.io/resources/59_goat_go_to_any_thing.pdf"
+        },
+        {
+          "file": "L10_fast_traversability.pdf",
+          "title": "Fast Traversability Estimation for Wild Visual Navigation",
+          "authors": "Frey et al.",
+          "journal": "RSS, 2023",
+          "url": "https://arxiv.org/abs/2305.08510"
+        }
+      ]
+    },
+    {
+      "id": "ch16",
+      "title": "灵巧操作案例研究",
+      "lecture": "L11",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L11_recipe_dexterous.pdf",
+          "title": "Sim-to-Real RL for Vision-Based Dexterous Manipulation",
+          "authors": "Lin et al.",
+          "journal": "CoRL, 2025",
+          "url": "https://toruowo.github.io/recipe/assets/recipe.pdf"
+        },
+        {
+          "file": "L11_umi_ft.pdf",
+          "title": "In-the-Wild Compliant Manipulation with UMI-FT",
+          "authors": "Choi et al.",
+          "journal": "ICRA, 2026",
+          "url": "https://arxiv.org/abs/2601.09988"
+        }
+      ]
+    },
+    {
+      "id": "ch17",
+      "title": "长程规划与语言的作用",
+      "lecture": "L12",
+      "hasSlides": true,
+      "papers": [
+        {
+          "file": "L12_pi05_vla.pdf",
+          "title": "π0.5: a Vision-Language-Action Model with Open-World Generalization",
+          "authors": "Physical Intelligence",
+          "journal": "CoRL, 2025",
+          "url": "https://www.pi.website/download/pi05.pdf"
+        },
+        {
+          "file": "L12_molmospaces.pdf",
+          "title": "MolmoSpaces: An Open Ecosystem for Spatial Reasoning",
+          "authors": "Kim et al.",
+          "journal": "arXiv, 2026",
+          "url": "https://arxiv.org/abs/2602.11337"
+        }
+      ]
+    }
+  ],
+  "outputFormat": {
+    "sections": [
+      "概要",
+      "核心概念与数学基础",
+      "论文精读",
+      "算法与代码实现",
+      "核心Takeaway与延伸阅读",
+      "练习与思考"
+    ],
+    "mathFormat": "LaTeX ($...$ inline, $$...$$ display)",
+    "codeFormat": "Python/PyTorch with逐行中文注释"
+  },
+  "limitations": {
+    "slides": "Google Drive slides behind authentication — paper-agent supplements from papers + general knowledge",
+    "lectures_without_papers": "ch01, ch03, ch11 — rely on course website notes + general field knowledge"
+  }
+}

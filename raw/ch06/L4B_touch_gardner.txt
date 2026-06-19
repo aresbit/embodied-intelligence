@@ -1,0 +1,761 @@
+Touch                                                                                                           Advanced article
+
+Esther P Gardner, New York University School of Medicine, New York, USA                                              Article Contents
+                                                                                                   . Tactile Experience: Vibration, Touch, Pressure and Pain
+                                                                                                   . Primary Afferent Terminals Specialised for the
+                                                                                                     Transduction of Tactile Information
+
+                                                                                                   . Organisation of Somatosensory Pathways that Transmit
+                                                                                                     Tactile Information to the Brain
+                                                                                                   . Alteration of Different Modalities of the Tactile
+                                                                                                     Experience by Lesions of Different Somatosensory
+                                                                                                     Cortical Maps
+                                                                                                   . Summary
+
+                                                                                                   . Acknowledgement
+
+                                                                                                                   Online posting date: 19th May 2010
+
+
+
+
+Touch is defined as direct contact between two physical                  1985). Sensory receptors in the skin provide information to
+bodies. In neuroscience, touch describes the special sense               the brain about the size and shape of objects held in the
+by which contact with the body is perceived in the con-                  hand. These receptors allow us to perceive whether objects
+scious mind. Touch allows us to recognise objects held in                appear hard or soft, smooth or rough in texture, heavy or
+the hand, and use them as tools. Because the skin is elastic,
+                                                                         light in weight, hot, cold or neutral in temperature and
+                                                                         whether the overall sensation produces pain or pleasure
+it forms a mirror image of object contours, allowing us to
+                                                                         (Johnson and Hsiao, 1992). See also: Proprioceptive
+perceive their size, shape and texture. Four classes of                  Sensory Feedback; Sensory Systems in Vertebrates: Gen-
+mechanoreceptors inform the brain about the form,                        eral Overview
+weight, motion, vibration and hand posture that define                      The tactile sense is one of the several submodalities of the
+each object. Parallel messages from  20 000 nerve fibres                somatic sensory system – the sense of one’s own body.
+are integrated by neurons in the cerebral cortex that                    When the body is contacted by an external stimulus, its
+detect specific object classes. Some touch involves active               surface is indented or stretched because the skin is ﬂexible
+movement – stroking, tapping or pressing – whereby a                     rather than rigid. The mechanical deformation is detected
+limb is moved against another surface. The sensory and                   by receptors that signal where contact is made, the amount
+motor components of touch are connected anatomically                     of force that is exerted and the speed of motion against the
+                                                                         surface. Contact is experienced as light touch or pressure,
+in the brain, and are important functionally in guiding
+                                                                         or even pain, depending on how much force is exerted.
+skilled behaviours.
+                                                                         When the stimulus moves on the skin, touch is perceived as
+                                                                         stroking, tapping or vibration.
+                                                                            Sensations of touch are often accompanied by tem-
+                                                                         perature sensations of warmth or cold, or by painful or
+                                                                         itching sensations, because the receptors for touch are
+Tactile Experience: Vibration, Touch,                                    intermixed in the skin with other sense organs that detect
+Pressure and Pain                                                        thermal energy or chemicals released by tissue damage or
+                                                                         applied to the skin. We experience these as distinct sensory
+Our human sense of touch is most highly developed in the                 modalities because the information is processed by diﬀer-
+hand where it serves a cognitive function when experi-                   ent sets of neurons in the central nervous system, and
+encing objects in the world, and guides the skilled move-                conveyed to the cerebral cortex in separate anatomical
+ments of the surgeon, the sculptor and the musician. Tactile             pathways. See also: Pain and Analgesia; Somatosensory
+information teaches us the physical properties of objects,               Systems
+allowing us to identify them even in the dark (Klatzky et al.,
+
+                                                                         Primary Afferent Terminals Specialised
+ELS subject area: Neuroscience
+                                                                         for the Transduction of Tactile
+How to cite:
+Gardner, Esther P (May 2010) Touch. In: Encyclopedia of Life Sciences
+                                                                         Information
+(ELS). John Wiley & Sons, Ltd: Chichester.
+DOI: 10.1002/9780470015902.a0000219.pub2
+                                                                         The neurobiological processes that underlie sensations of
+                                                                         touch begin with the sensory transduction mechanisms by
+
+                                   ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net                                                   1
+    Touch
+
+
+
+
+Figure 1 Cross-section of the skin showing the major classes of cutaneous mechanoreceptors. Modified from Gardner et al. (2000). Used with the
+permission of the McGraw-Hill Companies.
+
+
+
+
+which physical deformation of the skin is transformed into                    distal endings. Some of the primary aﬀerent ﬁbres branch
+electrical signals. The intensity of contact force and speed of               and have separate capsular receptors on each ending;
+motion are detected by special sense organs in the skin called                others have a single large capsule that surrounds the entire
+mechanoreceptors, so called because they detect mechanical                    nerve terminal. The capsular structures link the nerve
+energy applied to the skin. The elasticity of the skin enables                terminal to the surface of the body, and therefore play a
+these receptors to detect the shape, texture and pressure                     crucial role in transducing the tissue deformation that
+exerted by the object because the skin can conform to the                     occurs when something contacts the skin. Although the
+contours of the object, forming a mirror image of its shape.                  sensitivity of the receptors to mechanical displacement is a
+This information is translated into a pulse (action potential)                property of ionic channels in the nerve terminal membrane,
+code that is conveyed to the central nervous system by the                    their response to touch is also shaped by the capsule.
+peripheral nerves. See also: Action Potentials: Generation                       Several major classes of mechanoreceptors have been
+and Propagation; Sensory Transduction Mechanisms                              identiﬁed in the human body (Figure 1). The principal touch
+   The mechanoreceptors of the skin, like other somatic                       receptors in the glabrous (hairless) skin of the lips, palm,
+sense organs, comprise the distal terminals of the dorsal                     ﬁngers and sole of the foot are the Meissner corpuscle
+root ganglion neurons or trigeminal sensory neurons.                          and the Merkel cell–neurite complex (Johansson and
+Trigeminal sensory neurons innervate the face and head;                       Flanagan, 2009; Johansson and Vallbo, 1983). These rece-
+the dorsal root ganglion neurons innervate the other parts                    ptors are located close to the surface of the skin, at precise
+of the body. These sensory neurons, called primary aﬀer-                      locations in the papillary ridges that form the ﬁngerprint
+ents, have three major components: (1) a cell body that lies                  patterns. The anatomical arrangement of these receptors in
+in a ganglion on the dorsal root of a spinal or trigeminal                    the ﬁngertip skin provides a precise grid for detection of
+nerve, (2) a peripheral branch that terminates in a spe-                      spatial features such as Braille dots. The hairy skin of the
+cialised receptor ending and (3) a central branch that pro-                   hand dorsum and the other parts of the body senses touch
+jects to the central nervous system. Primary aﬀerent ﬁbres                    with hair follicle aﬀerents, ﬁeld receptors and Merkel cells.
+originating in speciﬁc regions of the body are gathered in                    Touch is also detected in both the skin types by Pacinian
+small bundles or fascicles that join to form the peripheral                   corpuscles and Ruﬃni endings in the subcutaneous tissue.
+nerves. They enter the central nervous system through the                     See also: Skin: Immunological Defence Mechanisms
+dorsal roots or the sensory branches of the ﬁfth cranial                         The human hand is richly endowed with these sensors
+nerve. See also: Vertebrate Peripheral Nervous System                         (Johansson and Vallbo, 1983). Each hand has approxi-
+                                                                              mately 150 000 mechanoreceptors which are connected to
+Types of mechanoreceptors in the skin                                         the central nervous system by 30 000 primary aﬀerent
+                                                                              ﬁbres. The density of these receptors is highest on the ﬁn-
+Individual primary aﬀerent ﬁbres respond selectively to                       gertips (2 500 per cm2). Each ﬁngertip is innervated by
+speciﬁc types of stimuli because of morphological and                         250–300 mechanoreceptive ﬁbres. This large number of
+molecular specialisation of their peripheral terminals.                       nerves confers ﬁne tactual acuity to the ﬁngertips, enabling
+Unlike other sensory aﬀerents in the skin, mechano-                           them to read Braille and to discriminate surface texture.
+receptors have a non-neural capsule that surrounds the                        See also: Sensors of External Conditions in Vertebrates
+
+2                                   ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net
+                                                                                                                                                     Touch
+
+
+                    Meissner corpuscles and Merkel cell receptors                           Pacinian corpuscle
+
+
+
+
+       RA1 fibre
+
+
+
+
+       SA1 fibre
+
+                                                                       50 µm
+
+
+           (a)                   Papillary ridge                                         (b)   Pacinian corpuscle           RA2 fibre
+                                                                                                    capsule
+
+Figure 2 Images of the principal touch receptors in the skin. (a) Meissner corpuscles and Merkel cells are revealed in immunostained confocal images of a
+papillary (fingerprint) ridge from the human fingertip. Meissner corpuscles (white arrows) are located below the epidermis (blue) along the lateral borders of
+each ridge; each corpuscle is innervated by at least two RA1 fibres. SA1 fibres innervate clusters of neighbouring Merkel cells (yellow arrow) in the centre of
+the ridge, providing localised signals of pressure applied to the finger. The fibres lose their myelin sheaths (red) when entering the receptor capsule exposing
+broad terminal bulbs (green) where sensory transduction occurs. Photograph courtesy of M Nolano; reproduced with permission from Nolano et al. (2003).
+(b) Photograph of a Pacinian corpuscle (1.6 mm in length) located in the mesentery of the abdominal wall. Each Pacinian corpuscle is innervated by a
+single RA2 fibre. Reproduced courtesy of S Bolanowski from Bell et al. (1994).
+
+
+Mechanoreceptors are specialised for                                              (Johansson, 1996). Hair follicle aﬀerents and ﬁeld recep-
+pressure and motion                                                               tors serve a similar physiological role in hairy skin.
+                                                                                     The Merkel cell receptor is the principal slowly adapting
+Morphological specialisation of touch receptors allows                            (SA) receptor in the hand. It resides at the centre of the
+them to discriminate the amount of force applied to their                         ﬁngerprint ridge where skin elasticity is greatest (Figure 2a).
+receptive ﬁeld, the speed of motion during stroking or                            This small epithelial cell transmits compressive strain to the
+pressing on an object, the ﬁne details of the surface texture,                    sensory nerve ending, evoking sustained responses that are
+the local curvature in the region of contact and the posture                      proportional to the pressure applied to the skin (Goodwin
+and shape of the hand when an object is grasped. These                            and Wheat, 2004; Johnson, 2001). Thus, when an object is
+intensive and temporal properties are reﬂected in the                             placed in the hand, the frequency of ﬁring conveys infor-
+physiological responses to pressure (Goodwin and Wheat,                           mation about its weight; the heavier the object, the higher
+2004; Johansson and Flanagan, 2009; Johnson, 2001;                                the ﬁring rate of the Merkel cell aﬀerents (SA1 ﬁbres).
+Khalsa et al., 1998).                                                             Similarly, these receptors sense the grip forces applied by
+   The Meissner corpuscle (Figure 2a) is the principal rapidly                    the ﬁngers as an object is enclosed and held by the hand
+adapting receptor (RA) in the hand. These receptors                               (Johansson, 1996). Because individual Merkel cells are the
+respond to initial contact and to motion, but not to steady                       smallest touch receptors, they also provide high-ﬁdelity
+pressure (Talbot et al., 1968). The capsule is linked by                          information about the spatial structure of objects that is the
+collagen ﬁlaments to the lateral edge of the ﬁngerprint                           basis of form and texture perception (Connor et al., 1990;
+ridge, positioning it to sense the tangential shearing forces                     Johnson and Hsiao, 1992; Khalsa et al., 1998; Phillips et al.,
+induced when the hand is moved across a textured surface                          1992).
+or over edges (Bolanowski and Pawson, 2003; Iggo and
+Andres, 1982; Nolano et al., 2003). The surface irregular-                        Biophysics of sensory transduction by
+ities are signalled by bursts of action potentials in the                         mechanoreceptors
+sensory nerve innervating the Meissner corpuscle (RA1
+ﬁbre) (Connor et al., 1990; Sathian et al., 1989). The                            Indentation or lateral stretch of the skin is believed to excite
+Meissner corpuscle also senses motion of an object gras-                          mechanoreceptors by direct gating of cation channels in
+ped by the hand when it slips unexpectedly, signalling us                         the sensory nerve ending. Mechanical stimulation deforms
+to tighten the grip to prevent the object from falling                            the receptor protein, thus opening stretch-sensitive ion
+
+                                       ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net                                               3
+    Touch
+
+
+channels, and increasing Na+ and Ca2+ conductance. The               ending of a primary aﬀerent ﬁbre. The nerve loses its myelin
+resulting inward current through these channels produces a           sheath inside the capsule; its naked endings contain
+local depolarisation of the nerve or receptor cell called the        mechanosensory channels sensitive to compression.
+receptor potential. The amplitude of the receptor potential             When the skin is touched, or a probe is applied experi-
+is proportional to the amount of pressure exerted by the             mentally to the capsule, the lamellar structure ﬁlters the
+object and how fast it is applied. Removal of the pressure           stimulus so that only rapid displacements are transmitted
+stimulus relieves mechanical stretch on the receptor and             to the nerve terminal. If the probe is vibrated at frequencies
+allows stretch-sensitive channels to close. Direct activation        of 200 Hz, the capsule is suﬃciently stiﬀ that it cannot
+of mechanoreceptive ion channels permits rapid activation            change shape as fast as the probe moves. Therefore, all of
+and inactivation as forces are applied to the skin. See also:        the lamellae move up and down together in phase with the
+Cell Biophysics; Sodium Channels                                     probe, compressing and decompressing the nerve. Each
+    The molecular biology of mechanoreception in the                 vibratory cycle evokes a brief depolarising response in the
+mammalian skin is not well understood, primarily because             sensory nerve that is suﬃciently intense to generate an
+it is diﬃcult to isolate the receptors from other cell types in      action potential. However, if the vibratory frequency is
+this tissue. Various mechanisms for mechanotransduction              slowed to 20 Hz, the displacement is so slow that the upper
+have been proposed in other sensory systems (Christensen             layers of the capsule are squeezed together, displacing the
+and Corey, 2007; Lumpkin and Caterina, 2007). The most               ﬂuid laterally within the capsule, whereas the bottom layers
+widely accepted hypothesis for mechanically gated chan-              close to the nerve remain rigid. The nerve is unresponsive
+nels involves structural proteins that link the channel to the       to the low-frequency stimulus because the energy is
+surrounding tissue of the skin and to the cytoskeleton. The          not transmitted by the capsule to the mechanosensory
+channel subunits are tied to extracellular matrix elements           channels.
+such as collagen or other ﬁlamentous proteins that are                  This physical structure endows the Pacinian corpuscle
+stretched by mechanical deformation; these links are often           with exquisite sensitivity to vibration in the range 100–
+represented as a spring. The intracellular portion of the            400 Hz (Talbot et al., 1968). It is the most sensitive mech-
+channel is anchored to the cytoskeleton most likely by actin         anoreceptor in the body, and can capture signals from a
+ﬁlaments. Other models propose indirect activation of the            wide area of skin because of its large size. Humans are able
+ion channel through second-messenger pathways. In the                to detect vibrations as weak as 1 mm in amplitude when
+indirect model, the force sensor is a protein in the receptor        tested at 250 Hz. The hum of motors on a computer disc
+cell’s membrane distinct from the ion channel. Stimulation           drive that one perceives with the hand, or the vibrations felt
+of these receptors by a mechanical stimulus is conveyed to           in the concert hall during forte passages played by a sym-
+the ion channel by a variety of intracellular messengers that        phony orchestra, are detected by the Pacinian corpuscles.
+cause the channel to open or close. See also: Cytoskeleton;          These receptors can also sense the weak shock waves
+Extracellular Matrix; Ion Channels                                   transmitted to a grasped object when it is placed on a rigid
+    Studies of touch receptors in Caenorhabditis elegans             surface and released (Johansson, 1996). This type of sens-
+suggest that the transduction proteins in mammals may                ory feedback is particularly useful in controlling the actions
+belong to the degenerin/epithelial Na+ channel (DEG/                 of the hand during skilled movements and when using
+ENaC) superfamily. Other studies have implicated various             tools. See also: Motor Neurons and Spinal Control of
+transient receptor potential (TRP) cation channels in                Movement
+mechanotransduction (Christensen and Corey, 2007).
+Mechanosensory channels in individual receptors diﬀer                Receptive fields of mechanoreceptors
+somewhat in their structural linkage to the matrix elements,
+and these molecular properties modify the channel open               Individual Meissner corpuscle and Merkel disc receptors
+times. Thus some mechanoreceptors yield slowly adapting,             are smaller than a ﬁngerprint ridge. Their morphology
+sustained depolarisation to pressure, whereas others                 enables them to detect displacements localised to the ridge
+inactivate rapidly. The molecular diversity of gating and            in which they reside. However, the primary aﬀerent ﬁbre
+adaptation mechanisms is also expressed in the morph-                that transmits this information to the brain detects touch
+ology of the capsules surrounding the sensory nerve term-            over a larger region of skin, called its receptive ﬁeld, because
+inal. See also: Receptor Adaptation Mechanisms                       it has 10–25 terminals, each enclosed by a Meissner cor-
+                                                                     puscle or Merkel cell (Johansson and Vallbo, 1983). This
+Pacinian corpuscle is designed to detect                             arrangement allows the nerve to sample the activity of
+vibration                                                            multiple receptors of the same class, while also resolving
+                                                                     ﬁne details.
+The role of the non-neural capsule in sensory transduction              The receptive ﬁeld of a mechanosensory neuron labels
+has been studied extensively in the Pacinian corpuscle, a            the tactile information conveyed to the brain with a speciﬁc
+mechanoreceptor located in subcutaneous tissue and in the            topographic location (Figure 3). Thus the brain knows
+mesentery of the abdominal wall (Bell et al., 1994). The             where touch occurs by determining which receptors are
+Pacinian corpuscle (Figure 2b) consists of a 1-mm long,              activated. The regions of the body that are used most
+multilamellar, ﬂuid-ﬁlled capsule that encloses the sensory          extensively to touch other persons or things – the ﬁngertips
+
+4                              ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net
+                                                                                                                                                     Touch
+
+
+                    (a) Slowly adapting                      (b) Rapidly adapting                           (c) Receptive field
+                        mechanoreceptors                         mechanoreceptors                               architecture
+
+
+
+
+      Superficial
+      layers
+
+
+
+
+                  Merkel disk receptors (SA1)               Meissner’s corpuscles (RA1)
+
+
+
+
+       Deep
+       layers
+
+
+
+
+                     Ruffini endings (SA2)                     Pacinian corpuscles (RA2)
+
+    Neural
+    spike train
+    Stimulus
+                     SA1                 SA2                      RA1                 RA2
+
+Figure 3 Receptive fields in the human hand mapped with single fibre recordings from the median nerve. Each coloured area on the hands indicates the
+receptive field of an individual sensory nerve fibre. Receptive fields of Merkel disk receptors and Meissner corpuscles cover spot-like patches of skin on the
+hand, and are smaller than those of Ruffini endings and Pacinian corpuscles because of differences in receptor cell size. SA1 and RA1 fibres innervate clusters
+of mechanoreceptors; SA2 and RA2 fibres innervate only one large receptor cell. The neural responses in the lower panels illustrate responses of the four fibre
+types to steady pressure on the skin. Adapted from Johansson and Vallbo (1983) and reproduced from Gardner and Johnson (In press). Used with the
+permission of the McGraw-Hill Companies.
+
+
+
+and lips – have the largest number of receptor organs in the                      Organisation of Somatosensory
+skin and the smallest receptive ﬁelds; the ability to localise
+touch is highest here. The more proximal regions of the
+                                                                                  Pathways that Transmit Tactile
+body – the arm, leg and trunk – are less densely innervated                       Information to the Brain
+and have fewer receptors. These areas have large receptive
+ﬁelds and do not resolve ﬁne spatial details.                                     An important principle of sensory information processing
+   The speciﬁcity of the spatial information transmitted                          is illustrated by touch receptors. The brain analyses sensory
+from each receptor is also essential for perceiving the size,                     information by deconstructing the stimulus into com-
+shape and texture of the object. Mechanoreceptors sub-                            ponent parts, and sensing local features such as surface
+divide the object that is touched into small regions and                          curvature or edges. For example, each of the dots that
+analyse the local curvature proﬁle. The collective activity in                    comprise a letter of the Braille alphabet is read by a dif-
+the population of stimulated receptors indicates the total                        ferent set of touch receptors in the ﬁngertip (Phillips et al.,
+area of skin that is touched, and the proﬁle of skin inden-                       1992). The shape of the entire letter is thus distributed
+tation deﬁnes the object’s shape. The brain must reassem-                         across the population of receptors – bursts of impulses are
+ble the individual parts to construct a uniﬁed percept of the                     transmitted in parallel by primary aﬀerent ﬁbres touching
+object.                                                                           each dot, while the other are silent. The signals are brought
+
+                                      ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net                                               5
+    Touch
+
+
+together by central processing networks in the brain to             accurate spatial and intensive information encoded by
+reconstruct the complete pattern of dots and perceive it as         mechanoreceptors, while integrating these signals to
+a single character. This mechanism requires an orderly              enhance feature recognition. Finally, higher centres in the
+arrangement of somatosensory neurons such that neigh-               brain, such as the cerebral cortex, use the inhibitory net-
+bourhood relations on the body are preserved in the brain.          works in the brainstem and thalamic nuclei to modulate
+In addition, since sensory information is transmitted to the        the sensory information transmitted from the skin. These
+brain as sequences of nerve impulses, the diﬀerent sub-             descending inhibitory connections provide contextual
+modalities and receptor types must remain segregated so             information about the immediate behavioural signiﬁcance
+that responses to pressure are not confounded with those            of input from touch receptors needed to enhance or sup-
+signalling motion or temperature.                                   press it. See also: Modulatory and Command Interneurons
+   The sensory information detected by touch receptors is           for Behaviour
+conveyed to the central nervous system along the per-
+ipheral nerves together with nerve ﬁbres subserving other           Primary somatosensory cortex
+somatosensory modalities in the same body segment such
+as pain, temperature and proprioception (Gardner and                Tactile information reaches the conscious mind when it
+Johnson, 2010). Touch ﬁbres enter the spinal cord through           enters the cerebral cortex. Thalamic information is con-
+the dorsal roots, and ascend through the dorsal columns             veyed initially to the primary somatosensory cortex (S-I)
+together with ﬁbres for proprioception to the medulla               located in the postcentral gyrus of the parietal lobe (Jones
+where they terminate in the dorsal column nuclei (the               and Friedman, 1982). S-I cortex spans four cytoarchi-
+cuneate and gracile nuclei). The second-order neurons in            tectural areas (Brodmann areas 3a, 3b, 1 and 2) that are
+the dorsal column nuclei send their axons across the mid-           arrayed as parallel strips along the rostral–caudal axis of
+line in the medulla where they ascend in the medial lem-            the parietal lobe (Figure 4). The four areas of the S-I cortex
+niscus to the ventral posterior lateral (VPL) and medial            are extensively interconnected, such that both serial and
+(VPM) nuclei of the thalamus. See also: Somatosensory               parallel processing networks are engaged in higher-order
+Systems                                                             elaboration of information from the sense of touch (Jones
+   The ascending somatosensory pathways and processing              and Powell, 1969; Pons et al., 1992). The four areas diﬀer in
+centres are organised along two orthogonal axes: one                anatomical connectivity and function. Thalamic ﬁbres
+topographic and the other functional. One axis displays the         from VPL and VPM terminate in areas 3a and 3b, and the
+topography of the body in what are called somatotopic               cells in areas 3a and 3b project their axons to areas 1 and 2,
+maps. The somatotopic map of the body is preserved in all           respectively. Areas 3b and 1 receive information from
+the somatosensory areas of the brain, although the details          receptors in the skin, whereas areas 3a and 2 receive pro-
+of the body orientation and receptive ﬁeld topography               prioceptive information from receptors in muscles, joints
+diﬀer in each representation. The other axis segregates the         and the skin. This information is conveyed in parallel
+various somatosensory modalities into functional groups             from the four areas of S-I cortex to higher centres in the
+of neurons. Thus receptors for touch and proprioception             cortex, including the second somatosensory (S-II) cortex,
+are grouped into distinct anatomical fascicles and columns          the posterior parietal cortex and the primary motor
+of cells. Eventually the modalities converge on to common           (M-I) cortex. See also: Cerebral Cortex; Sensory System
+neurons. This convergence occurs at the highest levels of           Organization
+cortical processing involved in cognition and motor plan-              Each cortical neuron receives inputs arising from
+ning, at spinal interneurons involved in reﬂex pathways             receptors in a speciﬁc area of the skin, and these inputs
+and at the motor neurons whose ﬁring patterns govern all            together are its receptive ﬁeld (Gardner and Johnson, In
+behaviour. See also: Motor System Organization; Spinal              press). We perceive that a particular location on the skin is
+Reﬂexes; Topographic Maps in the Brain                              touched because a speciﬁc population of neurons in the
+   The somatosensory nuclei of the brainstem and thala-             brain is activated. Conversely, when a point in the cortex is
+mus use convergence of sensory aﬀerents to bring together           stimulated electrically we experience tactile sensations on a
+sensory information from neighbouring skin regions.                 speciﬁc part of the skin.
+These inputs mutually reinforce each other, providing the              The receptive ﬁelds of cortical neurons are much larger
+ﬁrst step in object representation. For example, inputs from        than the receptive ﬁelds of touch ﬁbres in peripheral nerves.
+groups of receptors aligned along an edge that are stimu-           For example, the receptive ﬁelds of SA1 and RA1 ﬁbres
+lated simultaneously will be enhanced by convergence,               innervating the ﬁngertip are tiny spots on the skin, whereas
+whereas those aligned across the edge will be less eﬀective         those of the cortical neurons receiving these inputs are large
+because only a few receptors are activated. In addition,            areas covering the entire ﬁngertip (DiCarlo et al., 1998;
+inhibitory interneurons in these nuclei suppress weakly             Sripati et al., 2006). The receptive ﬁeld of a neuron in area
+stimulated neurons, thereby sharpening the outputs from             3b represents a composite of inputs from 300 to 400 touch
+the most active groups of mechanoreceptors so that the              ﬁbres innervating neighbouring areas of the skin on the
+strongest signals are relayed forward. The inhibitory net-          opposite (contralateral) side of the body. An individual
+works also ﬁlter noise from random neural activity. Thus            neuron in area 3b resolves ﬁne details of spatial patterns,
+the signal transmitted to the cerebral cortex preserves the         such as an array of Braille dots, by faithfully reproducing
+
+6                             ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net
+                                                                                                                                                    Touch
+
+
+                    The somatosensory cortex                                                              Coronal section
+
+                                                                                                                        Primary motor
+                                                                                                                        cortex
+                                                             S-I
+                                                       3 1 2                  Posterior                     Central
+                   Central sulcus                                             parietal                      sulcus
+                                                                    5
+                                                                                                                   3b
+                                                                   39 7
+                                                     40                                                        1
+
+                                                                                                           2              3a
+                                                      S-II                                                                         Thalamus
+                                                                                                    Lateral
+                                                                                                    sulcus              S-II
+
+
+
+                    Lateral
+                    sulcus
+                                                                                                                                        Internal
+                     (a)                                                                            (b)                                 capsule
+
+                     Cortical connections
+
+                                                  Ventral stream           Dorsal stream
+                                              to medial temporal areas to frontal motor areas
+
+
+
+                   Higher
+                   somatosensory            PR                     S-II /PV                     5
+                   cortex
+
+
+
+                   S-I cortex
+                                              3a             3b               1            2
+
+
+
+
+                   Thalamus
+                                               VPS                 VPL/VPM                VPS
+                     (c)
+
+Figure 4 Somatosensory areas of the cerebral cortex. (a) Lateral view of the brain showing primary (S-I), secondary (S-II) and posterior parietal areas.
+(b) Coronal section through the postcentral gyrus indicating the cytoarchitectural subdivisions of S-I cortex, and their relation to S-II cortex. (c) Schematic
+outline of the hierarchical connections to and from the S-I cortex. Neurons projecting from the thalamus send their axons to areas 3a and 3b, but some also
+project to areas 1 and 2. Neurons in areas 3a and 3b project to areas 1 and 2. Information from the four areas of S-I cortex is conveyed to neurons in the
+posterior parietal cortex (area 5) and S-II cortex. Reproduced from Gardner and Johnson (In press). Used with the permission of the McGraw-Hill Companies.
+
+
+the activity of the receptors that provide the strongest                            patterns are tuned to features such as the orientation of
+input. As in the periphery, complex spatial patterns are                            edges, the spacing of repeated patterns in gratings or Braille
+encoded in area 3b by bursts and silences distributed across                        dot arrays, the surface curvature, the direction of motion
+a population of topographically arranged neurons.                                   across the skin or the integrated posture of the hand and
+   Neurons at the next stage of cortical processing, in areas                       arm (Figure 5; Costanzo and Gardner, 1980; Hyvärinen and
+1 and 2, integrate information from large groups of                                 Poranen, 1978; Warren et al., 1986). These neurons signal
+receptors. Receptive ﬁelds in these areas are larger than in                        properties common to a variety of shapes such as vertical or
+area 3b, spanning functional regions of skin that are acti-                         horizontal edges, rather than their exact location on the
+vated simultaneously during motor activity (Iwamura                                 body. See also: Neural Information Processing
+et al., 1993). These include the tips of several adjacent ﬁn-                         Feature detection is a property of cortical processing
+gers, or both the ﬁngers and the palm. Their responses are                          common to a variety of sensory systems including touch
+less tightly linked to the actual location of stimuli on the                        (Gardner, 1988). The higher cortical areas assemble the
+skin. Instead, speciﬁc combinations of sensory inputs are                           components detected by the receptors into a coherent
+required for optimum activation of these cells. Their ﬁring                         representation of the entire object by requiring speciﬁc
+
+                                      ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net                                               7
+    Touch
+
+
+                                              Distal−proximal axis                                      Ulnar−radial axis
+
+                                     (a) Motion-sensitive neurons
+                                 D
+
+                                 R
+                                                                                                                                          U
+                                                                                 P                                                        R
+                                                                                 D
+                                     (b) Direction-sensitive neurons
+
+
+
+
+                                                                                 D                                                       U
+
+                                                                                 P                                                        R
+                                     (c) Orientation-sensitive neurons
+
+
+
+
+                                                                                 D                                                        U
+                                                                                                                                              5 cm
+                                                                                 P                                         1 sec          R
+
+Figure 5 Spike trains recorded from neurons in Brodmann area 2 of the cerebral cortex in response to motion across their receptive fields; the direction of
+motion is indicated by upward and downward deflections in the lower trace and by arrows on the hands. (a) A motion sensitive neuron responds to stroking
+the skin in all directions. (b) A direction sensitive neuron responds strongly to motion towards the ulnar side of the palm, but fails to respond to motion along
+the same path in the opposite direction. Responses to distal or proximal movements are weaker. (c) An orientation sensitive neuron responds better to
+motion across a finger (ulnar-radial) than to motion along the finger (distal–proximal), but does not distinguish ulnar from radial nor proximal from distal
+directions. Adapted from Warren et al. (1986), and reproduced from Gardner and Johnson (In press). Used with the permission of the McGraw-Hill
+Companies.
+
+
+spatiotemporal conjunctions of sensory inputs. Con-                                  representation of spatial properties at the early stages
+vergent excitatory connections between neurons repre-                                with the more abstract representations further along the
+senting neighbouring skin areas and intracortical                                    anatomical network. See also: Neural Networks and
+inhibitory circuits enable higher-order cortical cells to                            Behaviour
+integrate global features of objects to detect their size,
+shape, weight and texture (Gardner and Costanzo, 1980).                              Higher-order somatosensory areas of the
+Although most neurons in areas 3b and 1 respond only to                              cerebral cortex
+touch, and neurons in area 3a respond to muscle stretch,
+many of the neurons in area 2 receive both inputs. This                              Neuronal responses to touch in S-I cortex depend almost
+convergence of modalities allows neurons in area 2 to                                exclusively on input from within the neuron’s receptive
+integrate the hand posture used to grasp an object, the grip                         ﬁeld. This feed-forward pathway is often described as a
+force applied by the hand and the tactile stimulation pro-                           ‘bottom-up’ process because the receptors in the hand are
+duced by the object that allows us to recognise it. In this                          the principal source of excitation of S-I neurons. Higher-
+manner, the somatosensory areas of the brain represent                               order somatosensory areas of the parietal lobe not only
+properties common to particular classes of objects.                                  receive information from peripheral receptors, but are also
+   However, it would be a mistake to assume that each                                strongly inﬂuenced by ‘top-down’ processes, such as
+object that is handled becomes imprinted on a single neu-                            behavioural goals, attentional modulation and working
+ron at the apex of cortical processing. Although, the                                memory. Data obtained from single-neuron studies in
+mechanisms underlying the binding of features that give                              monkeys, from neuroimaging studies in humans, and
+rise to a uniﬁed percept are not fully understood, it is                             clinical observations of patients with lesions in higher-
+believed that temporal synchrony between diﬀerent cor-                               order somatosensory areas of the brain suggest that the
+tical areas plays an important role in this process.                                 ventral and dorsal regions of the parietal lobe serve com-
+This mechanism permits integration of the detailed                                   plementary functions in the sense of touch similar to the
+
+8                                      ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net
+                                                                                                                           Touch
+
+
+‘what’ and ‘where’ pathways of the visual system                     information encoded in the posterior parietal cortex is
+(Ungerleider and Mishkin, 1982).                                     transmitted to the premotor areas of the frontal lobe that
+   The ventral pathway originates in the second somato-              formulate complex movement sequences such as speciﬁc
+sensory cortex (S-II cortex), located on the upper bank and          grasp styles (Fogassi and Luppino, 2005). These networks
+adjacent to parietal operculum of the lateral ﬁssure                 thus provide feedback from the senses of touch, proprio-
+(Robinson and Burton, 1980). It plays an important sens-             ception and vision that can modify the behaviours used to
+ory role in tactile object recognition, as selective attention       handle objects. See also: Nervous Control of Movement
+increases neuronal responses to speciﬁc shapes. Although                Predicting the sensory consequences of hand actions is
+neurons in S-II respond to textures such as Braille dots,            an important component of active touch. For example,
+embossed letters or periodic gratings, they do not replicate         when we view an object and reach for it, we predict how
+the spatial or temporal patterns of these stimuli in their           heavy it should be and how it should feel in the hand; we use
+spike trains. Instead, they ﬁre at diﬀerent rates for each           such predictions to initiate grasping (Johansson, 1996).
+pattern. Moreover, the context in which tactile stimuli are          During active touch the motor system may control the
+presented inﬂuences the responses of neurons in S-II cortex          aﬀerent ﬂow of somatosensory information so that subjects
+(Hsiao et al., 2002; Romo et al., 2002). Firing patterns of          can predict when tactile information should arrive in S-I
+these neurons are modiﬁed by the behavioural relevance of            cortex and be perceived in the conscious mind (Flanagan
+the tactile information, or memories of the preceding                et al., 2003; Johansson and Flanagan, 2009). Convergence
+stimuli, suggesting that S-II cortex may be a decision point         of central and peripheral signals allows neurons to com-
+for tactile memory formation. This is consistent with its            pare prediction and reality. Corollary discharge from the
+anatomical connections to the insular cortex, which in turn          motor areas of the cortex to somatosensory regions may
+innervates regions of the temporal lobe that are important           play a key role in active touch. It provides a neural signal of
+for tactile memory (Friedman et al., 1986). This somato-             intended actions to posterior parietal areas allowing these
+sensory pathway for tactual form has a parallel function to          neurons to compare predicted and actual neural responses
+the visual pathway for form recognition through the                  to tactile stimuli. Such mechanisms may explain why it is so
+inferotemporal cortex.                                               diﬃcult to tickle oneself.
+   The dorsal pathway in the parietal lobe plays a sensor-
+imotor role in the guidance of movement (Brochier and
+Umiltà, 2007; Culham and Valyear, 2006; Fogassi                     Alteration of Different Modalities of
+and Luppino, 2005; Jeannerod et al., 1995; Milner and                the Tactile Experience by Lesions of
+Goodale, 1995). The sense of touch is extremely important
+for skilled use of the hand. When tactile sensations are lost,
+                                                                     Different Somatosensory
+due to nerve injury or to local anesthesia, hand movements           Cortical Maps
+are clumsy, poorly coordinated and utilise abnormally high
+forces when grasping objects (Jenmalm and Johansson,                 Information is processed within S-I cortex in vertical arrays
+1997; Monzée et al., 2003). Without touch one is com-               of neurons called columns (Mountcastle, 1997). The neu-
+pletely reliant on vision for directing the hand.                    rons within a cortical column receive sensory inputs from
+   Tactile information from the skin is transmitted to the           the same receptor class, and share overlapping receptive
+motor areas of the frontal lobe through direct pathways              ﬁelds on the skin (Friedman et al., 2004; Sur et al., 1984).
+from S-I to motor cortex. Touch is also communicated to              The columns are arranged topographically such that sacral
+the frontal lobe through a higher-order pathway that                 segments are represented medially, lumbar and thoracic
+involves somatosensory connections to regions of the                 segments centrally, cervical segments more laterally and
+posterior parietal cortex surrounding the intraparietal              the trigeminal representation at the most lateral boundary
+sulcus: areas 5 and 7 in monkeys and the superior (SPL,              (Nelson et al., 1980). The internal representation of the
+Brodmann areas 5 and 7) and inferior parietal lobules (IPL,          body in the human brain is essential for maintaining
+areas 39 and 40) in humans. Tactile information from the             self-awareness and for controlling movement. This soma-
+skin is integrated in area 5 with postural inputs from the           totopic map is referred to as a homunculus, because it
+underlying muscles and joints to deﬁne the position and              provides a distorted image of the body surface. Each part of
+action of the hand. Neurons in the SPL respond vigorously            the body is represented in the brain in proportion to its
+when a monkey reaches out and shapes the hand in                     relative importance to sensory perception, as measured by
+anticipation of grasping an object (Mountcastle et al.,              its innervation density rather than its surface area. Thus
+1975; Buneo and Andersen, 2006). These responses peak                the homunculus exaggerates the hand, foot and mouth,
+when the object is acquired in the hand thereby integrating          and compresses more proximal body parts. There are
+tactile and postural information from the hand (Gardner              approximately 100 times more cortical neurons per square
+et al., 2007). IPL neurons integrate tactile and visual stimuli      centimetre of skin that sense touch on the tips of the ﬁngers
+conjoining the feel of objects with their appearance and             than sense touch on the back (Sur et al., 1980). Therefore, it
+location in space. Their ﬁring patterns are correlated with          is not surprising that deﬁcits in touch sensation following
+the hand posture used to grasp an object rather than its             injury to the cortex are more pronounced in these magni-
+geometric shape (Murata et al., 2000). The multimodal                ﬁed areas of the body.
+
+                               ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net                           9
+     Touch
+
+
+Plasticity of somatotopic maps                                        on the extent of cortical tissue that is damaged. Although
+                                                                      some sensations of touch are eventually restored, the ability
+Although all brains in a given species share a common                 to discriminate shape and textures is disrupted permanently.
+somatotopic arrangement of columns, the details of the map            Experimental lesions in animals provide even clearer insights
+characterise each individual and are determined largely by            into the sensory functions of speciﬁc cytoarchitectonic ﬁelds
+experience. The importance of these maps for constructing             (Brochier et al., 1999; Carlson, 1981; Hikosaka et al., 1985;
+one’s body image is demonstrated most dramatically in                 LaMotte and Mountcastle, 1979). Lesions conﬁned to area
+human amputees. These individuals often experience                    3b produce the severest sensory deﬁcits, as the tactile input to
+phantom sensations of touch on their missing limbs, long              the cortex is almost completely severed. Ablation of area 1
+after they know that the limb is gone forever. Although the           results in deﬁcits in texture discrimination, whereas lesions
+neurons in the brain that previously represented the missing          in area 2 impair stereognosis (the ability to discriminate the
+limb are deprived of their normal inputs, most of them do             size and shape of objects). See also: Cerebral Cortex Diseases
+not die. They continue to function, but are apparently                and Cortical Localization
+activated by receptors that innervate neighbouring portions              Lesions to the higher somatosensory cortical areas result
+of the body. For example, neurons representing an ampu-               in deﬁcits consistent with their sensory properties. In these
+tated arm eventually receive inputs from touch receptors on           higher cortical areas, the sense of touch ﬂows seamlessly
+the face or on the limb stump, and acquire new receptive              into the act of touching. Although the patient can detect
+ﬁelds on these regions (Pons et al., 1991; Ramachandran,              and localise touch in the lesioned area, complex cognitive
+1993). However, gentle touch of these body parts evokes               or sensorimotor functions of touch are abnormal (Milner
+phantom sensations that are referred to the missing limb,             and Goodale, 1995; Pause et al., 1989). Lesions to S-II
+because the patient has many years of experience that cor-            cortex result in deﬁcits in both stereognosis and texture
+relate ﬁring in that portion of the cortex with touch on a            discrimination, but hand movements are relatively normal.
+particular region of the hand. We do not understand fully             By contrast, lesions in posterior parietal cortex disrupt
+why the hand becomes permanently imprinted on these                   normal hand motor behaviour. Reaching movements are
+neurons, even though the patient is fully cognizant that the          inaccurate, the wrist cannot be oriented properly to place
+missing arm is no longer a part of the body. See also: Cortical       an object in a narrow space, and visually guided preshaping
+Plasticity: Use-dependent Remodelling                                 of the ﬁngers for grasp is disrupted.
+   Not only can the maps in the brain be altered by                      Disruption of active touch is perhaps the most striking
+depriving certain areas of their normal input, but they               deﬁcit observed following lesions to the parietal cortex.
+can also be changed by increasing the sensory input                   Hand movements are clumsy and poorly coordinated, the
+(Recanzone et al., 1992). We do this when we learn, and we            ﬁngers are diﬃcult to control, and the patient is often
+learn by practice, repeating a task over and over. Repetitive         unable to manipulate or explore novel objects without
+activation of a pathway strengthens those synapses, mak-              visual guidance. Faced with this motor deﬁcit, patients
+ing it easier to pass information forward. The alteration of          refrain from touching objects in the environment, further
+the sensory maps by experience is highly speciﬁc to the               depriving the remaining tissue of sensory stimulation.
+stimulated pathway. For example, functional magnetic
+resonance imaging (fMRI) studies of professional violinists
+demonstrate an unusually large representation of the ﬁn-              Summary
+gers placed on the strings of their instruments, and on the
+ﬁngertips of the bowing hand. The long hours of practice              The neurobiological processes that underlie sensations of
+have impressed themselves on the brain. See also: Repeti-             touch are initiated by mechanoreceptors that transform
+tive Action Potential Firing                                          physical deformation of the skin into electrical signals
+                                                                      proportional to the applied forces. The information is
+Deficits in the sense of touch caused by                              conveyed to the central nervous system by the peripheral
+damage to the brain                                                   nerves as a pulse code of action potentials. Topo-
+                                                                      graphically organised ascending anatomical pathways
+An intact cerebral cortex deprived of its normal sensory              transmit tactile information to the cerebral cortex where it
+innervation still preserves its representation of the entire          is analysed by the conscious mind to perceive the speciﬁc
+body. However, when speciﬁc regions of the parietal cortex            object that is touched. Tactile sensations may be altered by
+are damaged by stroke, head injury or disease, deﬁcits in             experience or by lesions in somatosensory areas of the
+tactile sensation occur. These sensory abnormalities are              brain. See also: Somatosensory Systems
+localised to the regions of the body that innervate the injured
+cortex. The losses in the sense of touch are so speciﬁc that they
+are widely used by neurologists to diagnose cortical mal-             Acknowledgement
+function. See also: Traumatic Central Nervous System Injury
+   Lesions to S-I cortex in humans result in a loss of touch          This work was supported in part by National Institute of
+sensation on the contralateral side of the body (Freund,              Neurological Diseases and Stroke (NINDS) Grant R01
+2003; Pause et al., 1989). The severity of the deﬁcit depends         NS-011862.
+
+10                              ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net
+                                                                                                                                Touch
+
+
+References                                                               neurons in alert monkeys. Journal of Neurophysiology 43:
+                                                                         1342–1354.
+Bell J, Bolanowski S and Holmes MH (1994) The structure and            Gardner EP and Johnson KO (2010) The somatosensory system:
+  function of Pacinian corpuscles: a review. Progress in Neuro-          receptors and central pathways. In: Kandel ER, Schwartz JH,
+  biology 42: 79–128.                                                    Jessell TM, Siegelbaum SA and Hudspeth AJ (eds) Principles of
+Bolanowski SJ and Pawson L (2003) Organization of Meissner               Neural Science, 5th edn. (In press) New York: McGraw-Hill.
+  corpuscles in the glabrous skin of monkey and cat. Somato-           Gardner EP and Johnson KO (In press) Touch. In: Kandel ER,
+  sensory and Motor Research 20: 223–231.                                Schwartz JH, Jessell TM, Siegelbaum SA and Hudspeth AJ
+Brochier T, Boudreau M-J, Paré M and Smith AM (1999) The                (eds) Principles of Neural Science, 5th edn. New York:
+  eﬀects of muscimol inactivation of small regions of motor and          McGraw-Hill.
+  somatosensory cortex on independent ﬁnger movements and              Gardner EP, Martin JH and Jessell TM (2000) The bodily senses.
+  force control in the precision grip. Experimental Brain Research       In: Kandel ER, Schwartz JH and Jessell TM (eds) Principles of
+  128: 31–40.                                                            Neural Science, 4th edn. pp. 430–450. New York: McGraw-
+Brochier T and Umiltà MA (2007) Cortical control of grasp               Hill.
+  in non-human primates. Current Opinion in Neurobiology 17:           Goodwin AW and Wheat HE (2004) Sensory signals in neural
+  637–643.                                                               populations underlying tactile perception and manipulation.
+Buneo CA and Andersen RA (2006) The posterior parietal cortex:           Annual Review of Neuroscience 27: 53–77.
+  sensorimotor interface for the planning and online control of        Hikosaka O, Tanaka M, Sakamoto M and Iwamura Y (1985)
+  visually guided movements. Neuropsychologia 44: 2594–2606.             Deﬁcits in manipulative behaviors induced by local injections of
+Carlson M (1981) Characteristics of sensory deﬁcits following            muscimol in the ﬁrst somatosensory cortex of the conscious
+  lesions of Brodmann’s areas 1 and 2 in the postcentral gyrus of        monkey. Brain Research 325: 375–380.
+  Macaca mulatta. Brain Research 204: 424–430.                         Hsiao SS, Lane J and Fitzgerald P (2002) Representation of
+Christensen AP and Corey DP (2007) TRP channels in mechan-               orientation in the somatosensory system. Behavioural Brain
+  osensation: direct or indirect activation? Nature Reviews.             Research 135: 93–103.
+  Neuroscience 8: 510–521.                                             Hyvärinen J and Poranen A (1978) Movement-sensitive and dir-
+Connor CE, Hsiao SS, Phillips JR and Johnson KO (1990) Tactile           ection and orientation-selective cutaneous receptive ﬁelds in the
+  roughness: neural codes that account for psychophysical mag-           hand area of the post-central gyrus in monkeys. Journal of
+  nitude estimates. Journal of Neuroscience 10: 3823–3836.               Physiology (London) 283: 523–537.
+Costanzo RM and Gardner EP (1980) A quantitative analysis              Iggo A and Andres KH (1982) Morphology of cutaneous recep-
+  of responses of direction-sensitive neurons in somatosensory           tors. Annual Review of Neuroscience 5: 1–31.
+  cortex of alert monkeys. Journal of Neurophysiology 43:              Iwamura Y, Tanaka M, Sakamoto M and Hikosaka O (1993)
+  1319–1341.                                                             Rostrocaudal gradients in neuronal receptive ﬁeld complexity
+Culham JC and Valyear KF (2006) Human parietal cortex in                 in the ﬁnger region of the alert monkey’s postcentral gyrus.
+  action. Current Opinion in Neurobiology 16: 205–212.                   Experimental Brain Research 92: 360–368.
+DiCarlo JJ, Johnson KO and Hsiao SS (1998) Structure of                Jeannerod M, Arbib MA, Rizzolatti G and Sakata H (1995)
+  receptive ﬁelds in area 3b of primary somatosensory cortex in          Grasping objects: the cortical mechanisms of visuomotor
+  the alert monkey. Journal of Neuroscience 18: 2626–2264.               transformation. Trends in Neuroscience 18: 314–320.
+Flanagan JR, Vetter P, Johansson RS and Wolpert DM (2003)              Jenmalm P and Johansson RS (1997) Visual and somatosensory
+  Prediction precedes control in motor learning. Current Biology         information about object shape control manipulative ﬁnger tip
+  13: 146–150.                                                           forces. Journal of Neuroscience 17: 4486–4499.
+Fogassi L and Luppino G (2005) Motor functions of the parietal         Johansson RS (1996) Sensory control of dexterous manipulation
+  lobe. Current Opinion in Neurobiology 15: 626–631.                     in humans. In: Wing AM, Haggard P and Flanagan JR (eds)
+Freund HJ (2003) Somatosensory and motor disturbances in                 Hand and Brain, pp. 381–414. Academic Press: San Diego, CA.
+  patients with parietal lobe lesions. Advances in Neurology 93:       Johansson RS and Flanagan JR (2009) Coding and use of tactile
+  179–193.                                                               signals from the ﬁngertips in object manipulation tasks. Nature
+Friedman DP, Murray EA, O’Neill JB and Mishkin M (1986)                  Reviews. Neuroscience 10: 345–359.
+  Cortical connections of the lateral sulcus of macaques: evidence     Johansson RS and Vallbo ÅB (1983) Tactile sensory coding in the
+  for a corticolimbic pathway for touch. Journal of Comparative          glabrous skin of the human hand. Trends in Neuroscience 6: 27–32.
+  Neurology 252: 323–347.                                              Johnson KO (2001) The roles and functions of cutaneous mech-
+Friedman RM, Chen LM and Roe AW (2004) Modality maps                     anoreceptors. Current Opinion in Neurobiology 11: 455–461.
+  within primate somatosensory cortex. Proceedings of the              Johnson KO and Hsiao SS (1992) Neural mechanisms of tactual
+  National Academy of Sciences of the USA 101: 12724–12729.              form and texture perception. Annual Review of Neuroscience 15:
+Gardner EP (1988) Somatosensory cortical mechanisms of feature           227–250.
+  detection in tactile and kinesthetic discrimination. Canadian        Jones EG and Friedman DP (1982) Projection pattern of func-
+  Journal of Physiology and Pharmacology 66: 439–454.                    tional components of thalamic ventrobasal complex on
+Gardner EP, Babu KS, Reitzen SD et al. (2007) Neurophysiology            monkey somatosensory cortex. Journal of Neurophysiology 489:
+  of prehension: I. Posterior parietal cortex and object-oriented        521–544.
+  hand behaviors. Journal of Neurophysiology 97: 387–406.              Jones EG and Powell TPS (1969) Connexions of the somatic
+Gardner EP and Costanzo RM (1980) Neuronal mechanisms                    sensory cortex of the rhesus monkey. I. Ipsilateral cortical
+  underlying direction sensitivity of somatosensory cortical             connexions. Brain 92: 477–502.
+
+
+                                 ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net                              11
+     Touch
+
+
+Khalsa PS, Friedman RM, Srinivasan MA and LaMotte RH                       postauditory and granular insular cortical areas of M. fascicu-
+  (1998) Encoding of shape and orientation of objects indented             laris. Journal of Comparative Neurology 192: 93–108.
+  into the monkey ﬁngerpad by populations of slowly and rapidly          Romo R, Hernandez A, Zainos A, Lemus L and Brody CD (2002)
+  adapting mechanoreceptors. Journal of Neurophysiology 79:                Neuronal correlates of decision-making in secondary somato-
+  3238–3251.                                                               sensory cortex. Nature Neuroscience 5: 1217–1235.
+Klatzky RA, Lederman SJ and Metzger VA (1985) Identifying                Sathian K, Goodwin AW, John KT and Darian Smith I (1989)
+  objects by touch: an ‘‘expert system’’. Perception and Psycho-           Perceived roughness of a grating: correlation with responses of
+  physics 37: 299–302.                                                     mechanoreceptive aﬀerents innervating the monkey’s ﬁnger-
+LaMotte RH and Mountcastle VB (1979) Disorders in some-                    pad. Journal of Neuroscience 9: 1273–1279.
+  sthesis following lesions of parietal lobe. Journal of Neuro-          Sripati AP, Yoshioka T, Denchev P, Hsiao SS and Johnson KO
+  physiology 42: 400–419.                                                  (2006) Spatiotemporal receptive ﬁelds of peripheral aﬀerents
+Lumpkin EA and Caterina MJ (2007) Mechanisms of sensory                    and cortical area 3b and 1 neurons in the primate somatosen-
+  transduction in the skin. Nature 445: 858–865.                           sory system. Journal of Neuroscience 26: 2101–2114.
+Milner AD and Goodale MA (1995) The Visual Brain in Action.              Sur M, Merzenich M and Kaas JH (1980) Magniﬁcation, recep-
+  Oxford: Oxford University Press.                                         tive-ﬁeld area, and ‘hypercolumn’ size in areas 3b and 1 of
+Monzée J, Lamarre Y and Smith AM (2003) The eﬀects of digital             somatosensory cortex in owl monkeys. Journal of Neuro-
+  anesthesia on force control using a precision grip. Journal of           physiology 44: 295–311.
+  Neurophysiology 89: 672–683.                                           Sur M, Wall JT and Kaas JH (1984) Modular distribution of
+Mountcastle VB (1997) The columnar organization of the neo-                neurons with slowly adapting and rapidly adapting responses in
+  cortex. Brain 120: 701–722.                                              area 3b of somatosensory cortex in monkeys. Journal of
+Mountcastle VB, Lynch JC, Georgopoulos A, Sakata H and                     Neurophysiology 56: 598–622.
+  Acuna C (1975) Posterior parietal association cortex of the            Talbot WH, Darian-Smith I, Kornhuber HH and Mountcastle
+  monkey: command functions for operations within extra-                   VB (1968) The sense of ﬂutter-vibration: comparison of the
+  personal space. Journal of Neurophysiology 38: 871–908.                  human capacity with response patterns of mechanoreceptive
+Murata A, Gallese V, Luppino G, Kaseda M and Sakata H (2000)               aﬀerents from the monkey hand. Journal of Neurophysiology 31:
+  Selectivity for the shape, size and orientation of objects for           301–334.
+  grasping in neurons of monkey parietal area AIP. Journal of            Ungerleider LG and Mishkin M (1982) Two cortical visual sys-
+  Neurophysiology 83: 2580–2601.                                           tems. In: Ingle DG, Goodale MA and Mansﬁeld RJW (eds)
+Nelson RJ, Sur M, Felleman DJ and Kaas JH (1980) Represen-                 Analysis of Visual Behavior, pp. 549–586. Cambridge, MA:
+  tations of the body surface in postcentral parietal cortex of Macaca     MIT Press.
+  fascicularis. Journal of Comparative Neurology 192: 611–643.           Warren S, Hämäläinen HA and Gardner EP (1986) Objective
+Nolano M, Provitera V, Crisci C et al. (2003) Quantiﬁcation of             classiﬁcation of motion- and direction-sensitive neurons in
+  myelinated endings and mechanoreceptors in human digital                 primary somatosensory cortex of awake monkeys. Journal of
+  skin. Annals of Neurology 54: 197–205.                                   Neurophysiology 56: 598–622.
+Pause M, Kunesch E, Binkofski F and Freund H-J (1989) Sen-
+  sorimotor disturbances in patients with lesions of the parietal
+  cortex. Brain 112: 1599–1625.                                          Further Reading
+Phillips JR, Johansson RS and Johnson KO (1992) Responses of
+  human mechanoreceptive aﬀerents to embossed dot arrays scan-           Hyvärinen J (1982) Posterior parietal lobe of the primate brain.
+  ned across ﬁnger pad skin. Journal of Neuroscience 12: 827–839.          Physiological Reviews 62: 1060–1129.
+Pons TP, Garraghty PE and Mishkin M (1992) Serial and parallel           Jones EG (2007) The Thalamus. Cambridge: Cambridge Uni-
+  processing of tactual information in somatosensory cortex of             versity Press.
+  rhesus monkeys. Journal of Neurophysiology 68: 518–527.                Jones EG and Peters A (eds) (1986) Cerebral Cortex. Vol 5:
+Pons TP, Garraghty PE, Ommaya AK et al. (1991) Massive cor-                Sensory-Motor Areas and Aspects of Cortical Connectivity. New
+  tical reorganization after sensory deaﬀerentation in adult               York: Plenum Press.
+  macaques. Science 252: 1857–1860.                                      Jones EG and Pons TP (1998) Thalamic and brainstem contri-
+Ramachandran VS (1993) Behavioral and magnetoencephalo-                    butions to large-scale plasticity of primate somatosensory cor-
+  graphic correlates of plasticity in the adult human brain. Pro-          tex. Science 282: 1121–1125.
+  ceedings of the National Academy of Sciences of the USA 90:            Kaas JH and Gardner EP (eds) (2008) The Senses: A Com-
+  10413–10420.                                                             prehensive Reference. Vol 6: Somatosensation. Oxford: Elsevier.
+Recanzone GH, Merzenich MM, Jenkins WM, Grajski KA and                   Mountcastle VB (1995) The parietal system and some higher brain
+  Dinse HR (1992) Topographic reorganization of the hand                   functions. Cerebral Cortex 5: 377–390.
+  representation in cortical area 3b of owl monkeys trained in a         Mountcastle VB (2005) The Sensory Hand. Neural Mechanisms of
+  frequency discrimination task. Journal of Neurophysiology 67:            Somatic Sensation. Cambridge, MA: Harvard University Press.
+  1031–1056.                                                             Rizzolatti G and Matelli M (2003) Two diﬀerent streams form the
+Robinson CJ and Burton H (1980) Somatic submodality distri-                dorsal visual system: anatomy and functions. Experimental
+  bution within the second somatosensory (SII), 7b, retroinsular,          Brain Research 153: 146–157.
+
+
+
+
+12                                 ENCYCLOPEDIA OF LIFE SCIENCES & 2010, John Wiley & Sons, Ltd. www.els.net
+

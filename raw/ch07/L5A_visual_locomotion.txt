@@ -1,0 +1,600 @@
+            Learning Visual Locomotion with Cross-Modal Supervision
+                                        Antonio Loquercio*, Ashish Kumar*, Jitendra Malik
+
+
+
+
+Fig. 1: The deployed walking policy shown above only uses a monocular egocentric RGB stream and proprioception. The
+terrains include stairs (up to 19cm high), curbs (up to 20cm high), slopes (35◦ ), dirt roads, and unstructured construction
+sites. Several of these require precise foothold placement which is achieved by predicting the upcoming terrain using a
+visual lookahead module. This module is trained entirely in the real world. To do so, our proposed algorithm Cross-Modal
+Supervision(CMS) uses onboard proprioception to supervise the vision module. This naturally allows the policy to continually
+learn in the real world with its own experience. We show one such progression of continual learning at the bottom, where
+the policy goes from an initial success rate of 40% to 100% with less than 30 minutes of real-world data. Video results and
+code at https://antonilo.github.io/vision_locomotion/.
+
+   Abstract— In this work, we show how to learn a visual                    our policy can adapt to shifts in the visual field with a limited
+walking policy that only uses a monocular RGB camera and                    amount of real-world experience.
+proprioception to walk. Since simulating RGB is hard, we
+necessarily have to learn vision in the real world. We start with                               I. INTRODUCTION
+a blind walking policy trained in simulation. This policy can
+traverse some terrains in the real world but often struggles                   Gibson famously said that “We see in order to move and
+since it lacks knowledge of the upcoming geometry. This can                 we move in order to see". For land animals, if we interpret
+be resolved with the use of vision. We train a visual module                moving as walking, we might say “we see in order to walk
+in the real world to predict the upcoming terrain with our                  and we walk in order to see". Taken literally, this statement
+proposed algorithm Cross-Modal Supervision (CMS). CMS uses
+time-shifted proprioception to supervise vision and allows the              is surely false because obviously blind humans can walk.
+policy to continually improve with more real-world experience.              Blind robots can walk too [1], [2]. However Gibson wasn’t
+We evaluate our vision-based walking policy over a diverse set              completely wrong either – while blind people can walk,
+of terrains including stairs (up to 19cm high), slippery slopes             they find it challenging to walk, and cannot walk as fast on
+(inclination of 35◦ ), curbs and tall steps (up to 20cm), and               complex terrains such as stairs. They have to probe gently
+complex discrete terrains. We achieve this performance with
+less than 30 minutes of real-world data. Finally, we show that              with a walking stick first before they can start walking safely.
+                                                                            Research on human vision [3], [4], [5], [6] shows that
+  * denotes equal contribution. All authors are affiliated to UC Berkeley   vision gives us "look-ahead" - when we can see the ground
+     Proprioception                                                                                              Deployment
+      x(t-50), a(t-50)
+             .
+             .
+             .
+                         100 Hz                    x(t), a(t-1)
+       x(t-1), a(t-1)                                                   Motor Policy          at
+                                  Adaptation       γt0, γt5, γt15       100 Hz
+                                  Module
+                         15 Hz    90 Hz                 zt
+
+
+     Vision Frames
+       1.2
+                            Visual Lookahead Target                 CMS Error                 Cross Modal Supervision
+                                   Prediction From Vision                                          1
+
+                                                                                                0.8
+       0.8                                                                                      0.6
+
+                                                                        Proprioceptive          0.4         Success Rate
+                                                                        Prediction                          CMS Error
+   ∞t
+
+
+
+
+                 Time Shifted                                                                   0.2
+                                                                                                  Day 1         Day 2          Day 3
+       0.4                                  Time (s)
+
+Fig. 2: Top: During deployment, we use an adaptation module to predict the extrinsic parameters zt and an estimate of
+                     Vision
+the terrain geometry below, 5cm, and 15cm in front of the robot (γ 0 , γ 5 , γ 15 ) from egocentric RGB and proprioception.
+Bottom: We train theProprioception
+                      visual module in the real world to predict a time-shifted proprioceptive estimate of the terrain’s slope
+by minimizing the CMS     Error. We Proprioception
+                     Time-Shifted   observe that CMS    enables the adaptation module to improve continually with more
+                                                     (Target)
+real-world experience. On the bottom right we see that as the CMS error decreases the walking policy improves.
+                               0.5                 1.0                      1.5                 2.0
+ahead of us, our foot placement is smoother and the walking              most popular techniques for training walking policies with
+more efficient. We study this question in a robotics[s]
+                                              Time       context.        RL typically train in simulation and then deploy zero shot in
+This paper is about our development of walking policies for              the real world [1], [2]. This works out fine with depth inputs
+quadruped robots, using the visual system for look-ahead–                because the sim-to-real gap for depth is small, and multiple
+predicting the height of the terrain in front of the robot before        systems have been successfully demonstrated for walking and
+it gets there. Unsurprisingly, we found that policies with look-         flying [11], [9], [10]. However rendered RGB images in a
+ahead indeed do better than blind ones (see Figure 1), thus              simulator look very different from those in the real world.
+validating the spirit, if not the letter of Gibson’s statement.          The higher the fidelity desired in the rendering, the greater
+   A vision sensor in a robotics context could be a single               the computational cost, which makes it practically infeasible
+RGB camera, or one of the many different devices directly                to use in an inner loop for training RL policies because of
+capturing depth using stereopsis or LIDAR for instance. Our              their high sample complexity.
+decision was to go for RGB cameras since (1) there is                       Our core insight is that we can train the vision part of
+evidence from human vision that stereo input contributes                 our policy in the real world from onboard sensors, while
+relatively little to making walking faster/more efficient [6]            still managing to train the action policy in a simulator. In a
+(2) for objects in terrestrial perspective, priors enable one to         simulator we can train policies which don’t use vision but
+make reasonable depth estimates even from a single image [7]             "cheat" - they have access to look-ahead information of terrain
+(3) the multiple views captured by a moving robot could in               height at a few "look-ahead" points ahead of the robot - and
+theory be exploited to recover depth directly as well [8]. We            then it is a separate problem to train a vision system from
+don’t wish to argue our point too strongly – there has been              real world experience which can predict the terrain height at
+passionate but not necessarily productive debate on this in              those look-ahead points. This vision system is trained using
+the context of self-driving cars already – but just say that             cross-modal supervision (CMS) from proprioception with
+the RGB version is scientifically interesting and there might            a time lag - I see a point A ahead of me whose height is
+also be engineering contexts where it is favored (cost, power,           currently unknown, but when my feet get to A, then its height
+passive sensing). From a research novelty perspective, there             can be inferred from the joint angles of my body. There is a
+are several systems which exploit depth input for guiding                "chicken-and-egg" aspect to this - to develop a vision system
+walking [9], [10], whereas the RGB only design choice has                which can provide look-ahead for walking, you need to be
+hardly been studied.                                                     able to walk first to get the data to provide the supervision
+   The RGB only choice leads to a technical challenge. The               for the vision system! Fortunately, there is no infinite regress
+problem here, as the robot can walk (clumsily of course)           transferred to the real world. This policy has no visual
+when blind, so the bootstrapping can start from there.             lookahead and uses proprioception to estimate the terrain
+   Experiments show that our policy can walk over a diverse        under the feet of the robot as the robot walks. Once we have
+set of terrains including stairs (up to 19cm high), slippery       this policy, we can deploy it in the real world, and train a
+slopes (inclination of 35◦ ), curbs and tall steps (up to 20cm),   module for visual terrain lookahead using CMS. Once we
+and complex discrete terrains from a single onboard RGB            have this visual predictor of the upcoming terrain, we can
+camera and proprioception. To systematically understand the        then use the lookahead policy π (also trained in simulation)
+improvements over the initially deployed policy, we take 4         to get a visual walking policy in the real world.
+real-world stair cases on which the initial blind policy starts
+                                                                                           III. M ETHOD
+off at around 50%, and compare the performance of the visual
+walking policy as it improves with experience. We find that        A. Simulation Training
+in all these cases, the visual walking policy reaches 100%            We train two walking policies (π and πblind ) in simulation
+performance with less than 30 minutes of data, collected           to walk on complex terrains. Both the policies take the state
+across 4 days.(Figure 4 and Section IV).                           xt , the extrinsics vector zt , and the terrain information γt to
+   Since the proposed algorithm, CMS (Cross-Modal Supervi-         predict the target joint angles at at 100Hz which is converted
+sion), enables learning in the real world from onboard sensors     to torques using a PD controller. The lookahead policy π
+our system can continue to learn lifelong. The experience          takes an additional input γt+∆t , which is the terrain estimate
+collected online is used continually to improve the visual         at 15cm lookahead in front of the robot. Concretely,
+system, which in turn, improves the performance of the overall     State Input. xt = [qt , qt′ , at−1 , zt , γt ]⊤ , where qt ∈ R12
+policy. We systematically evaluate this aspect of CMS in 4         is the current joint position, qt′ ∈ R12 the joint velocity,
+challenging setups in the real world and show significant          at−1 ∈ R12 the previous action.
+and consistent improvements in performance with less than
+                                                                   Extrinsics Vector. zt ∈ R8 is a latent representation of
+7 minutes of data each day. We also analyze the qualitative
+                                                                   the environment parameters which includes payload, motor
+change in behavior of the visual terrain predictor compared to
+                                                                   strength, binarized foot contacts, linear velocity and friction.
+the proprioceptive estimator (Section IV) and see precise foot
+placement with vision. Video results can be seen at https:         Terrain Geometry Vector. γt is a latent representation of
+//antonilo.github.io/vision_locomotion/.                           the ground truth terrain geometry ht under the feet of the
+                                                                   robot, and γt+∆t is the terrain estimate 15cm infront of the
+                       II. OVERVIEW                                robot. This gives us:
+   We want a visual walking policy that can walk on complex                            zt = µ(et )                              (1)
+terrains. We train adaptive walking policies similarly to
+                                                                                       γt = δ(ht )                              (2)
+RMA [1], but with the following significant change – we
+have an additional module that estimates the upcoming                              γt+∆t = δ(ht+∆t )                            (3)
+terrain geometry from the last three egocentric frames. More                           at = π(xt , zt , γt , γt+∆t )            (4)
+concretely, the policy π takes a) an estimate of terrain in                            at = πblind (xt , zt , γt ),             (5)
+front and below the robot γ for visual adaptation to complex
+terrain, b) an estimate of the environment parameters z to         where µ, π and πblind are MLPs with two hidden layers and
+enable adaptation to variations in the environment (similar to     [256, 128] and [128, 128] neurons, respectively. Note that we
+RMA [1])) the current proprioceptive state x, and uses them        use the same network δ (hidden dimensions of [64, 16]) to
+to predict the target actions a. This system is shown in the       process γt and γt+∆t . We train the πblind and the dependent
+top part of Figure 2. Once we have such a system deployed, it      encoders jointly in an end-to-end manner using model-free
+collects egocentric visual data, as well as proprioception. This   reinforcement learning. Once trained, we freeze the network
+multi-modal data can be used for Cross-Modal Supervision           δ and µ, and train policy π using model-free RL. We now
+(CMS) to continually improve the visual estimates of the           explain the environment design and the reward structure we
+terrain parameters γ. This is enabled by the key insight           use for RL which is shared between both the policies.
+that proprioception can get an accurate estimate of the same       Environment Design. We recreate in simulation a set of
+terrain that the egocentric camera records ahead of time. This     natural conditions to elicit robust locomotion. Specifically,
+allows using proprioceptive estimates of terrain to supervise      we train on fractal terrains (similar to [1], [12]) and
+the visual estimate, as shown in the bottom half of Figure 2.      parameterized inclines and stairs, which typically represent
+Specifically, we train a vision module to predict the future       a majority of the commonly encountered terrains in human-
+proprioceptive estimate of terrain from the egocentric visual      made environments. To design the distribution of stair cases,
+input (that looks in front of the robot) by minimizing the CMS     we take inspiration from a classic reference in the field of
+error. Since the supervision comes from onboard sensors, we        architecture [13]. According to the latter, to be comfortable for
+continually do so to get an increasingly better policy with        humans, staircases should have height in the range [10, 19]cm
+more experience.                                                   and lengths not smaller than 30cm. In addition, two heights
+   We initialize the CMS improvement procedure from a              and one length should make for the length of a step, which
+blind policy πblind , which can be trained in simulation and       is approximately 1mt. We use these two recommendations
+            Blind Policy
+
+
+
+
+       2
+     2.0
+
+                                           First Collision                    Second Collision                      Proprioceptive                  Blind
+
+
+     1.5
+
+
+
+
+       γt
+     1.0
+∞1
+
+
+
+
+     0.5
+
+
+
+               Flat Walking                        Estimation via proprioception                           Walking on Stairs
+                                      |                               |                                |                            |
+           0                                 2
+                                                         Time (s)            Time    [s]
+                                                                                            4
+                                                                                                                                        6
+                                                                                                                                            6
+
+
+
+
+            Day 3 Policy
+
+
+
+
+     2.0
+
+
+       2
+     1.5                                                                                          Proprioceptive
+                                                                                                         Visual
+       γt
+     1.0
+∞1
+
+
+
+
+     0.5
+
+
+               Flat Walking                                  Walking on Stairs
+                                  |                               |                                |                            |
+       0                                                                                                                                3
+                                              1                                              2                                                  3
+
+                                                       Time (s)                        Time      [s]
+
+
+
+
+ Fig. 3: Behavior Analysis: The top row shows a blind policy, which needs to touch the stairs multiple times before correctly
+ estimating its height and climbing over it. In contrast, a vision-based policy trained to predict the future proprioceptive
+ estimate of terrain can anticipates changes in the terrain geometry and adapt its gait accordingly. This speeds up the initial
+ climb by approximately two times and gives an overall higher success rate.
+
+ to build our parameterized staircases: we uniformly sample               staircase.
+ step heights in the range [10, 21]cm and lengths from the set            Curriculum. We start by training exclusively on flat terrain
+ [30, 40, 50, 60]cm.                                                      for 500M steps. Afterwards, we train on progressively difficult
+ RL Rewards. We design a reward function to promote the                   staircases: starting from heights of 10cm and gradually
+ agent to move with a user-defined forward and angular speed              increasing the step height every 100M steps until it reaches
+ in the ranges vx d ∈ [0, 1]m/s and wz d ∈ [−0.4, 0.4] rad/s,             the maximum. During training on staircases, we sample flat
+ while penalizing lateral speed and jerky motions. We define              terrains with 10% probability to avoid catastrophic forgetting.
+ v as linear velocity, ω as the angular velocity, α and α̇ as             To guide the optimization, we additionally add a regression
+ joint angles and velocities, τ as joint torques, v f the feet            loss to match the actions from a policy exclusively trained on
+ velocity and g the binary foot contact indicator. Accordingly,           flat( [12]) We randomly sample the environment parameters
+ we define the reward at time t as the sum of the following               such as payload, friction, and motor strength from the ranges
+ terms:                                                                   reported in [1].
+      • Forward: −∥vx d − vx ∥ + vx d                                     Sim to Real Transfer. To transfer policy πblind to the real
+      • Lateral: ∥vy ∥
+                                                                          world, we train a network g0 to predict zt and γt from
+                       d
+      • Angular: −∥wz − wz ∥ + wx
+                                      d                                   proprioception and action history. We use the same structure
+                  ⊤
+      • Work: ∥τ · (αt − αt−1 )∥
+                                                                          and training procedure for g0 as proposed by RMA [1].
+                                f
+      • Foot Slip: ∥diag(g)t · vt ∥                                       B. Vision-Based Locomotion via CMS
+ The scaling of each of the previous factors is 65, 1, 40, −0.05,            Once πblind is deployed in the real world, we collect
+ −0.2. We additionally add a survival bonus of 9, which is                a dataset of trajectory rollouts in the real world D =
+ doubled whenever the robot is tasked with walking on a                   ([It , xt ], γt ), where It is the egocentric visual input from
+      I: Rise 13.4 cm Going 43 cm                                                           III: Rise 15.5 cm Going 43 cm
+                                                          Success   Distance         TTC                                                     Success   Distance    TTC
+
+                                            Blind          40%          0.51     10.5 s                                          Blind         40%      0.67       14 s
+
+                                            Day I          40%          0.71     9.55 s                                          Day I         60%      0.89      13.69 s
+
+                                            Day II         60%          0.75     10.4 s                                          Day II        80%      0.81      10.24 s
+
+                                            Day III       100%           1           9s                                          Day III      100%        1         9s
+
+      II: Rise 19 cm Going 29 cm                                                            IV: Rise 12.7 cm Going 42 cm
+                                            Blind          40%          0.58     7.25 s                                          Blind         60%      0.82       28 s
+
+
+                                            Day I          60%          0.76     7.44 s                                          Day I         60%      0.85      26.58 s
+
+
+                                            Day II         60%          0.85     6.74 s                                          Day II        80%      0.86      25.6 s
+
+
+                                            Day III       100%           1       6.58 s                                          Day III      100%        1        23 s
+
+
+              Success Rate [%]                                Distance                              Time to Completion [s]                 Data per Episode (Frames)
+
+    100                                         1.0                                        14                                      1780
+
+     80                                                                                    12
+                                                0.8                                                                                1680
+
+     60                                                                                    10
+                                                                                                                                   1580
+                                                0.6
+     40                                                                                     8
+                                                                                                                                   1480
+          0    1    2      3        4   5             0      1      2        3   4     5        0      1    2     3    4     5
+              Training Data [min]                          Training Data [min]                       Training Data [min]                   Day 0 Day 1 Day 2 Day 3
+
+
+Fig. 4: Real-World Improvement: (Top Row) We find that using CMS continually improves the performance of the walking
+policy, from approximately 50% to 100% in all the settings considered above. This is enabled by the use of vision, which is
+trained in the real world with CMS. The final policy uses less than 30 minutes of data collected over 4 days in different
+conditions. (Bottom Row) We observe that using the latest available vision policy (green) to collect data, instead of the
+initial blind policy (orange), leads to faster convergence of the final visual policy. This shows that the data collected with the
+latest visual policy is of higher quality. Moreover, we observe that since the vision policy can walk longer without falling, it
+significantly improves the efficiency of data collection in the real world.
+
+the onboard camera, xt is the current proprioceptive state                                 Vision-Based Estimator. We build a custom model to predict
+and γt is the current geometry estimate. We can now use this                               the future γ to allow inference on limited compute. The input
+dataset to train a convolutional neural network gi to estimate                             of the model are the latest three frames (camera frequency is
+the current extrinsics zt and the future terrain geometry γt+∆t                            15Hz), converted to grayscale and concatenated to make an
+using supervised learning as shown in Figure 2. Having a                                   input tensor. We compute features from such tensor with a
+visual predictor of upcoming terrain we can now use the                                    shufflenet-V2 model [15]. We use as features the last layer
+lookahead policy π which has better performance than the                                   before global-average pooling to maintain spatial information.
+blind policy.                                                                              The features are then projected to a 2dim channel space
+                                                                                           with 1D convolutions and processed by an MLP with hidden
+C. Lifelong Learning via CMS                                                               dimension of [128, 64] to predict γ. We additionally provide a
+   CMS naturally allows for lifelong learning. Since we                                    history of 50 IMU measurements (roll and pitch) and desired
+continuously collect the dataset D with real-world experience,                             velocity commands to the predictor. This network outputs a
+we can use the γ estimate from proprioception to continuously                              128 dimensional embedding which is later concatenated with
+train the visual lookahead terrain predictor during execution                              the shufflenet features and passed through the final MLP.
+and improve performance.
+                                                                                                                      V. R ESULTS AND A NALYSIS
+                     IV. E XPERIMENTAL S ETUP                                                  We design an evaluation procedure to answer three main
+   Simulation Setup: We use the RaiSim simulator [14] for                                   questions: (i) What are the quantitative and qualitative benefits
+rigid-body and contact dynamics simulation. We import the                                   of vision-based locomotion over blind locomotion in the real
+A1 URDF file from Unitree. Each RL episode lasts for a                                      world? (ii) During the continual training in the real world,
+maximum of 1200 steps with early termination if the roll or                                 what benefit does deploying the latest available policy have
+pitch exceeds a threshold, or the base of the robot is very                                 over collecting all the data with a blind policy and using it at
+close to the ground. The control frequency of the policy is                                 once? (iii) What is the quantitative benefit of having a visual
+100 Hz, and the simulation time step is 0.025s.                                             lookahead on terrain geometry?
+   Pre-test                                    Exposure                                 Adaptation
+
+
+
+
+                                 Initial Camera FPV                                        Rotated Camera FPV
+
+
+
+
+Fig. 5: Prism-Adaptation Test: We perform the widely-known prism test [16] on our robot. In this test, the visual field of
+the subject is altered by using a prism infront of the eyes. To simulate this, we rotate the camera from its nominal position,
+and then the robot attempts to perform the task with a visually different input. (Top Row) The left image shows the visual
+walking policy under nominal conditions, the center image is the performance of this visual walking policy immediately after
+the camera is rotated, and the right image shows the performance after training for 80 seconds of experience. We can see
+that the behavior recovers with just 1 minute of finetuning on the new visual input. (Bottom Row) The left camera is the
+nominal position, and the right camera is the one after rotation. The view from the camera is shown next to the camera
+orientation. Note the drastic visual change between the two images.
+
+A. Lifelong Vision Learning                                         counterpart.
+                                                                       Since the visual walking policy can go longer without
+   A blind policy walks very differently than a vision-based
+                                                                    falling it collects data more efficiently. As shown in Fig. 4,
+policy. In Figure 3 we analyze the qualitative change in
+                                                                    the amount of experience collected on average during a real-
+behavior as a consequence of improved terrain prediction by
+                                                                    world experiment increases by 21%. In addition, the quality
+plotting the estimated γ as a function of time for the blind
+                                                                    of the data collected using vision is of superior quality. For
+policy and the visual walking policy. The blind policy is
+                                                                    approximately the same amount of data, the policy trained on
+clumsy but "exploratory", tapping the terrain twice before
+                                                                    data collected exclusively from the blind controller performs
+walking on it. Conversely, the vision policy can anticipate
+                                                                    worse than the one trained in an iterative fashion. Intuitively,
+the geometry of the terrain and adapt its stride accordingly.
+                                                                    this is due to the fact that the blind controller occasionally
+This results in a smooth and agile gait, enabling the robot to
+                                                                    stumbles or taps the terrain before taking a step, which results
+start climbing the stairs without stumbling and speeding up
+                                                                    in corrupted data. Conversely, a (possibly intermediate) vision
+the initial climb by approximately two times.
+                                                                    controller is more precise in its gait, leading to higher quality
+   The quality of the vision predictor improves with expe-
+                                                                    data.
+rience. We study the dependence between experience and
+performance in Fig. 4. We select four stairs of different heights   Generalization Experiments. We test the generalization of
+and lengths and evaluate the performance over multiple              our final vision policy on several challenging terrains, as
+iterations of data collection. For each policy, we perform          shown in Figure 1. The terrains include previously unseen
+five trials on each stair. We define a "day" as the policy          staircases, steep inclines (up to 35 degree steep), discrete
+trained with all data collected by its predecessors. All the        terrains, and curbs. Our approach was successful on 80%
+metrics constantly improve as a function of time. A policy          of previously unseen staircases, 100% of curbs, and 60%
+trained on three "days" of experience, or more specifically         percent of inclines, which is remarkable since the vision
+on 26 minutes of walking data, can climb all stairs without         module was never trained for them. All generalization
+a single failure. Overall, the vision policy can walk faster        videos are available at https://antonilo.github.
+(average speed is 26% higher) and more effectively (the             io/vision_locomotion/.
+success rate is 50 percentage points higher) than its blind         Visual Plasticity. The prism test is a widely-known experi-
+ment designed to test adaptation to an artificial shift of the                 these methods require accurate modeling of the robot and
+visual field [16]. This test is generally performed on patients                substantial task-specific engineering for tuning locomotion
+to improve the spatial deficits caused by brain damage, e.g.,                  gaits and behaviors. While some of these problems could
+after a stroke [17]. A prism adaptation session consists of                    be mitigated with optimization-based controllers [25], [26],
+three phases: the pre-test, where a subject performs a task                    these methods tend to become brittle outside of lab-controlled
+without any disturbance of the visual field; the exposure,                     conditions [27], [2]. While using learning for locomotion has
+where the subject performs the same task under an horizontal                   a long history [28], [29], recent deep reinforcement learning
+shift of the visual field (generally wearing prism wedges); and                (RL) controllers achieved impressive results in real-world
+the adaptation, where the subject adapts to the new visual                     rough terrains [2], [1]. Bbeing proprioception relatively low
+field and can perform the task at pre-test levels. Ideally, the                dimensional, training blind controllers can be done within
+subject should complete the task perfectly in the pre-test                     minutes in highly optimized simulators [30]. Independently
+phase and quickly adapt to the misalignment of the visual                      of the training procedure, blind controllers can only react
+and proprioceptive maps caused by the prism wedges.                            to varying terrain conditions, but not anticipate them. This
+   We perform a similar test to measure the adaptation ability                 results in clumsy locomotion behaviours, especially when
+of our visual locomotion policy. However, instead of adding                    the terrain has discontinuities.
+prism wedges, we shift the visual field by rotating the
+camera on its yaw axis of approximately 30 degrees (Fig. 5).                   B. Vision-Based Locomotion
+Such shift makes the terrain in front of the robot almost
+                                                                                  Using vision unlocks locomotion on complex terrain.
+unobservable. Immediately after altering the robot’s visual
+                                                                               However, developing such a system is challenging because of
+field, the policy stumbles on the steps and accumulates drift
+                                                                               the high dimensionality of images. These challenges pushed
+while climbing stairs. To account for such vision impairment,
+                                                                               prior work to favour modular systems to end-to-end ones,
+we fine-tune the vision policy by minimizing the CMS error.
+                                                                               essentially dividing the locomotion task in a vision and control
+Specifically, after each trial in the modified setup, we finetune
+                                                                               sub-task. Vision observations are generally used to build a
+only the last 3 layers of gamma predictor for 10 epochs. After
+                                                                               local elevation map [31], [32], [33], [10], [34], [35]. Such
+just three trials (roughly corresponding to 80 seconds of data),
+                                                                               maps are used to predict motion primitives (in terms of goal
+the vision policy learns to account for the systematic bias in
+                                                                               velocities [34], foothold placement [31], [32], [33] or leg
+the visual field and manages to correctly anticipate stairs and
+                                                                               motion phase [10]), which are tracked by a separate controller
+walk straight (Fig. 5).
+                                                                               module. A parallel line of work aims to directly predict
+   Finally, we bring the robot’s camera back to its initial
+                                                                               navigation commands (either in terms of foothold placement
+position and repeat the task. In this phase, generally referred
+                                                                               of joint velocities) from on-board depth observations [36],
+to as post-test [17], the robot is required to quickly adjust
+                                                                               [37], [38]. Overall, the aforementioned methods achieve
+back to its original visual field. We repeat the same procedure
+                                                                               impressive performance in simulation, but did not yet obtain a
+as above and observe that also in this case, after three trials,
+                                                                               similar performance in real-world conditions. One exception
+the policy adapts back to its original visual field. We invite
+                                                                               is the recent work of Miki et al. [10], which obtains impressive
+the reader to visit our project web-page for a video of the
+                                                                               results in real-world conditions. However, such method has
+experiment.
+                                                                               very high sensing requirements (up to three lidars or eight
+B. The value of visual lookahead                                               stereo modules) and computational costs, making it unfesible
+                                                                               on smaller scale robots as the one considered in this work.
+  We compare in simulation the performance of policies
+with access to a larger ground-truth terrain lookahead. Table I
+                                                                               C. Self-supervised learning
+shows the results of this evaluation. These results indicate
+a sharp increase in performance (from 58% to 75%) when                            Early works in self-supervised learning for locomotion
+look ahead increases from 0 to 15cm.                                           mainly used haptic feedback to identify the terrain [39], [40],
+                                                                               [41], [42], [43]. Such information can be used to bias motion
+     Look Ahead    Success (↑)   TTF (↑)   Distance (m) (↑)   Smoothness (↓)
+                                                                               over easily traversable environments [40], [44]. Another line
+   0cm (RMA [1])      58%         0.83          4.11              34.19
+        5cm           64%         0.88          4.67              44.30        of works estimate traversability information (e.g. probability
+       15cm           75%         0.95          4.73              30.77        of falling) from local elevation maps and used it for path
+       25cm           74%         0.96          4.96              37.19
+       35cm           74%         0.94          4.66              31.43        planning. The training data for such estimators is generally
+                                                                               collected through experience in simulation [45], [46], [47].
+TABLE I: Performance of motor policies with access to dif-
+                                                                               Similar ideas have also been investigated on other robotic
+ferent ground-truth visual lookahead. The value of lookahead
+                                                                               platforms [48], [49], [46]. Overall, the aformentioned works
+saturates after 15cm.
+                                                                               generally operate on an high-level abstraction (traditionally,
+                       VI. R ELATED W ORK                                      a trajectory), generally tracked by a separate low-level
+                                                                               controller module. In contrast, our work aims to improve the
+A. Blind Locomotion                                                            quality of the low-level controller via self-supervised learning,
+  Traditionally, locomotion controllers were model-                            practically increasing the range of traversable terrain through
+based [18], [19], [20], [21], [22], [23], [24]. However,                       experience.
+                          VII. C ONCLUSION                                        [17] A. Barrett, K. M. Goedert, and J. C. Basso, “Prism adaptation for
+                                                                                       spatial neglect after stroke: translational practice gaps,” Nature Reviews
+   We propose CMS, a technique which uses onboard data                                 Neurology, vol. 8, no. 10, p. 567, 2012.
+collected from multiple sensory inputs to continually improve                     [18] J. Buchli, M. Kalakrishnan, M. Mistry, P. Pastor, and S. Schaal, “Com-
+its performance. We demonstrate this idea for the task                                 pliant quadruped locomotion over rough terrain,” in 2009 IEEE/RSJ
+                                                                                       international conference on Intelligent robots and systems. IEEE,
+of visual walking, using time-shifted proprioception for                               2009, pp. 814–820.
+supervision. Our approach show significant improvements in                        [19] A. D. Ames, K. Galloway, K. Sreenath, and J. W. Grizzle, “Rapidly
+performance with less than 7 minutes of data per run. One                              exponentially stabilizing control lyapunov functions and hybrid zero
+                                                                                       dynamics,” IEEE Transactions on Automatic Control, vol. 59, no. 4,
+limitation of the current system is that it does not improve                           pp. 876–891, apr 2014.
+the motor system in the real world. An interesting venue                          [20] M. Khoramshahi, H. J. Bidgoly, S. Shafiee, A. Asaei, A. J. Ijspeert,
+for future work is to explore the coupling of techniques that                          and M. N. Ahmadabadi, “Piecewise linear spine for speed–energy
+                                                                                       efficiency trade-off in quadruped robots,” Robotics and Autonomous
+additionally improve the motor policy along with CMS for                               Systems, vol. 61, no. 12, pp. 1350–1359, dec 2013.
+improving the visual system.                                                      [21] D. J. Hyun, J. Lee, S. Park, and S. Kim, “Implementation of trot-to-
+                                                                                       gallop transition and subsequent gallop on the MIT cheetah i,” The
+                    VIII. ACKNOWLEDGEMENT                                              International Journal of Robotics Research, vol. 35, no. 13, pp. 1627–
+                                                                                       1650, jul 2016.
+   This work was supported by the DARPA Machine Common                            [22] C. D. Bellicoso, F. Jenelten, P. Fankhauser, C. Gehring, J. Hwangbo,
+Sense program and by the ONR MURI award N00014-21-                                     and M. Hutter, “Dynamic locomotion and whole-body control for
+                                                                                       quadrupedal robots,” in 2017 IEEE/RSJ International Conference on
+1-2801. We would like to thank Sasha Sax for the helpful                               Intelligent Robots and Systems (IROS). IEEE, 2017, pp. 3359–3365.
+discussions, Noemi Aepli for support with media material,                         [23] M. Kalakrishnan, J. Buchli, P. Pastor, M. Mistry, and S. Schaal,
+and Haozhi Qi for support with the website creation.                                   “Learning, planning, and control for quadruped locomotion over
+                                                                                       challenging terrain,” The International Journal of Robotics Research,
+                                                                                       vol. 30, no. 2, pp. 236–258, 2011.
+                              R EFERENCES                                         [24] K. Byl and R. Tedrake, “Dynamically diverse legged locomotion for
+ [1] A. Kumar, Z. Fu, D. Pathak, and J. Malik, “Rma: Rapid motor                       rough terrain,” in 2009 IEEE International Conference on Robotics
+     adaptation for legged robots,” in Robotics: Science and Systems, 2021.            and Automation, 2009, pp. 1607–1608.
+ [2] J. Lee, J. Hwangbo, L. Wellhausen, V. Koltun, and M. Hutter, “Learning       [25] C. Gehring, S. Coros, M. Hutter, C. Dario Bellicoso, H. Heijnen,
+     quadrupedal locomotion over challenging terrain,” Science robotics,               R. Diethelm, M. Bloesch, P. Fankhauser, J. Hwangbo, M. Hoepflinger,
+     vol. 5, no. 47, p. eabc5986, 2020.                                                and R. Siegwart, “Practice makes perfect: An optimization-based
+ [3] A. E. Patla, “Understanding the roles of vision in the control of human           approach to controlling agile motions for a quadruped robot,” IEEE
+     locomotion,” Gait & posture, vol. 5, no. 1, pp. 54–69, 1997.                      Robotics Automation Magazine, vol. 23, no. 1, pp. 34–43, 2016.
+ [4] A. Patla, “Strategies for dynamic stability during adaptive human            [26] R. Calandra, A. Seyfarth, J. Peters, and M. P. Deisenroth, “Bayesian op-
+     locomotion,” IEEE Engineering in Medicine and Biology Magazine,                   timization for learning gaits under uncertainty,” Annals of Mathematics
+     vol. 22, no. 2, pp. 48–52, 2003.                                                  and Artificial Intelligence, vol. 76, no. 1-2, pp. 5–23, jun 2015.
+ [5] J. M. Loomis, J. A. Da Silva, N. Fujita, and S. S. Fukusima, “Visual         [27] J. Hwangbo, J. Lee, A. Dosovitskiy, D. Bellicoso, V. Tsounis, V. Koltun,
+     space perception and visually directed action.” Journal of experimental           and M. Hutter, “Learning agile and dynamic motor skills for legged
+     psychology: Human Perception and Performance, vol. 18, no. 4, p.                  robots,” Science Robotics, vol. 4, no. 26, p. eaau5872, 2019.
+     906, 1992.                                                                   [28] J. Z. Kolter and A. Y. Ng, “The stanford LittleDog: A learning and
+ [6] K. Bonnen, J. S. Matthis, A. Gibaldi, M. S. Banks, D. M. Levi, and                rapid replanning approach to quadruped locomotion,” The International
+     M. Hayhoe, “Binocular vision and the control of foot placement during             Journal of Robotics Research, vol. 30, no. 2, pp. 150–174, jan 2011.
+     walking in natural terrain,” Scientific reports, vol. 11, no. 1, pp. 1–12,   [29] M. Zucker, N. Ratliff, M. Stolle, J. Chestnutt, J. A. Bagnell, C. G.
+     2021.                                                                             Atkeson, and J. Kuffner, “Optimization and learning for rough terrain
+ [7] R. Ranftl, K. Lasinger, D. Hafner, K. Schindler, and V. Koltun,                   legged locomotion,” The International Journal of Robotics Research,
+     “Towards robust monocular depth estimation: Mixing datasets for zero-             vol. 30, no. 2, pp. 175–191, 2011.
+     shot cross-dataset transfer,” IEEE Transactions on Pattern Analysis          [30] N. Rudin, D. Hoeller, P. Reist, and M. Hutter, “Learning to walk
+     and Machine Intelligence, vol. 44, no. 3, 2022.                                   in minutes using massively parallel deep reinforcement learning,” in
+ [8] R. Hartley and A. Zisserman, Multiple view geometry in computer                   Conference on Robot Learning. PMLR, 2022, pp. 91–100.
+     vision. Cambridge university press, 2003.                                    [31] V. Tsounis, M. Alge, J. Lee, F. Farshidian, and M. Hutter, “Deepgait:
+ [9] A. Agarwal, A. Kumar, J. Malik, and D. Pathak, “Legged locomotion                 Planning and control of quadrupedal gaits using deep reinforcement
+     in challenging terrains using egocentric vision,” 2022. [Online].                 learning,” IEEE Robotics and Automation Letters, vol. 5, no. 2, pp.
+     Available: https://openreview.net/pdf?id=Re3NjSwf0WF                              3699–3706, 2020.
+[10] T. Miki, J. Lee, J. Hwangbo, L. Wellhausen, V. Koltun, and M. Hutter,        [32] A. Agrawal, S. Chen, A. Rai, and K. Sreenath, “Vision-aided dynamic
+     “Learning robust perceptive locomotion for quadrupedal robots in the              quadrupedal locomotion on discrete terrain using motion libraries,”
+     wild,” Science Robotics, vol. 7, no. 62, p. eabk2822, 2022.                       arXiv preprint arXiv:2110.00891, 2021.
+[11] A. Loquercio, E. Kaufmann, R. Ranftl, M. Müller, V. Koltun, and              [33] M. Gaertner, M. Bjelonic, F. Farshidian, and M. Hutter, “Collision-free
+     D. Scaramuzza, “Learning high-speed flight in the wild,” Science                  mpc for legged robots in static and dynamic scenes,” in 2021 IEEE
+     Robotics, vol. 6, no. 59, p. eabg5810, 2021.                                      International Conference on Robotics and Automation (ICRA). IEEE,
+[12] Z. Fu, A. Kumar, J. Malik, and D. Pathak, “Minimizing energy                      2021, pp. 8266–8272.
+     consumption leads to the emergence of gaits in legged robots,” 2021.         [34] Z. Fu, A. Kumar, A. Agarwal, H. Qi, J. Malik, and D. Pathak, “Coupling
+[13] J. Templer, The Staircase: Studies of Hazards, Falls, and Safer Design.           vision and proprioception for navigation of legged robots,” arXiv
+     The MIT PressNational Endowment for the Humanities/Andrew                         preprint arXiv:2112.02094, 2021.
+     W. Mellon Foundation Humanities Open Book Program., 03 1995.                 [35] H.-W. Park, P. M. Wensing, S. Kim et al., “Online planning for
+     [Online]. Available: https://doi.org/10.7551/mitpress/6434.001.0001               autonomous running jumps over obstacles in high-speed quadrupeds,”
+[14] J. Hwangbo, J. Lee, and M. Hutter, “Per-contact iteration method for              Robotics: Science and Systems, 2015.
+     solving contact dynamics,” IEEE Robotics and Automation Letters,             [36] G. B. Margolis, T. Chen, K. Paigwar, X. Fu, D. Kim, S. bae
+     vol. 3, no. 2, pp. 895–902, 2018. [Online]. Available: www.raisim.com             Kim, and P. Agrawal, “Learning to jump from pixels,” in 5th
+[15] N. Ma, X. Zhang, H.-T. Zheng, and J. Sun, “Shufflenet v2: Practical               Annual Conference on Robot Learning, 2021. [Online]. Available:
+     guidelines for efficient cnn architecture design,” in Proceedings of the          https://openreview.net/forum?id=R4E8wTUtxdl
+     European conference on computer vision (ECCV), 2018, pp. 116–131.            [37] W. Yu, D. Jain, A. Escontrela, A. Iscen, P. Xu, E. Coumans,
+[16] H. Von Helmholtz, Helmholtz’s treatise on physiological optics.                   S. Ha, J. Tan, and T. Zhang, “Visual-locomotion: Learning
+     Optical Society of America, 1925, vol. 3.                                         to walk on complex terrains with vision,” in 5th Annual
+     Conference on Robot Learning, 2021. [Online]. Available: https:
+     //openreview.net/forum?id=NDYbXf-DvwZ
+[38] R. Yang, M. Zhang, N. Hansen, H. Xu, and X. Wang,
+     “Learning vision-guided quadrupedal locomotion end-to-end with
+     cross-modal transformers,” in International Conference on Learning
+     Representations, 2022. [Online]. Available: https://openreview.net/
+     forum?id=nhnJ3oo6AB
+[39] M. A. Hoepflinger, C. D. Remy, M. Hutter, L. Spinello, and R. Sieg-
+     wart, “Haptic terrain classification for legged robots,” in 2010 IEEE
+     International Conference on Robotics and Automation. IEEE, 2010,
+     pp. 2828–2833.
+[40] K. Walas, “Terrain classification and negotiation with a walking robot,”
+     Journal of Intelligent & Robotic Systems, vol. 78, no. 3, pp. 401–423,
+     2015.
+[41] A. Valada and W. Burgard, “Deep spatiotemporal models for robust
+     proprioceptive terrain classification,” The International Journal of
+     Robotics Research, vol. 36, no. 13-14, pp. 1521–1539, 2017.
+[42] M. Hoffmann, K. Štěpánová, and M. Reinstein, “The effect of motor
+     action and different sensory modalities on terrain classification in a
+     quadruped robot running with multiple gaits,” Robotics and Autonomous
+     Systems, vol. 62, no. 12, pp. 1790–1798, 2014.
+[43] X. A. Wu, T. M. Huh, R. Mukherjee, and M. Cutkosky, “Integrated
+     ground reaction force sensing and terrain classification for small legged
+     robots,” IEEE Robotics and Automation Letters, vol. 1, no. 2, pp. 1125–
+     1132, 2016.
+[44] L. Wellhausen, A. Dosovitskiy, R. Ranftl, K. Walas, C. Cadena, and
+     M. Hutter, “Where should i walk? predicting terrain properties from
+     images via self-supervised learning,” IEEE Robotics and Automation
+     Letters, vol. 4, pp. 1509–1516, 2019.
+[45] B. Yang, L. Wellhausen, T. Miki, M. Liu, and M. Hutter, “Real-time
+     optimal navigation planning using learned motion costs,” in 2021 IEEE
+     International Conference on Robotics and Automation (ICRA). IEEE,
+     2021, pp. 9283–9289.
+[46] J. Guzzi, R. O. Chavez-Garcia, M. Nava, L. M. Gambardella, and
+     A. Giusti, “Path planning with local motion estimations,” IEEE Robotics
+     and Automation Letters, vol. 5, no. 2, pp. 2586–2593, 2020.
+[47] R. O. Chavez-Garcia, J. Guzzi, L. M. Gambardella, and A. Giusti,
+     “Learning ground traversability from simulations,” IEEE Robotics and
+     Automation letters, vol. 3, no. 3, pp. 1695–1702, 2018.
+[48] G. Kahn, P. Abbeel, and S. Levine, “Badgr: An autonomous self-
+     supervised learning-based navigation system,” IEEE Robotics and
+     Automation Letters, vol. 6, no. 2, pp. 1312–1319, 2021.
+[49] M. Nava, J. Guzzi, R. O. Chavez-Garcia, L. M. Gambardella, and
+     A. Giusti, “Learning long-range perception using self-supervision from
+     short-range sensors and odometry,” IEEE Robotics and Automation
+     Letters, vol. 4, no. 2, pp. 1279–1286, 2019.
+

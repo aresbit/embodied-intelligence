@@ -1,0 +1,858 @@
+                                                                 Fast Traversability Estimation for
+                                                                      Wild Visual Navigation
+                                           Jonas Frey?,1,3      Matias Mattamala?,2        Nived Chebrolu2          Cesar Cadena1       Maurice Fallon2        Marco Hutter1
+                                                       1 ETH Zurich         2 University of Oxford             3 Max Planck Institute for Intelligent Systems
+                                                              ? Equal contribution. jonfrey@ethz.ch, matias@robots.ox.ac.uk
+arXiv:2305.08510v2 [cs.RO] 16 May 2023
+
+
+
+
+                                         Fig. 1: Wild Visual Navigation (WVN) learns to predict traversability from images via online self-supervised learning. Starting from a
+                                         randomly initialized traversability estimation network without prior assumptions about the environment (a), a human operator drives the
+                                         robot around areas that are traversable for the given platform (b). After a few minutes of operation, WVN learns to distinguish between
+                                         traversable and untraversable areas (c), enabling the robot to navigate autonomously and safely within the environment (d).
+
+                                            Abstract—Natural environments such as forests and grasslands        cost. While the topic has been widely studied for wheeled or
+                                         are challenging for robotic navigation because of the false percep-    flying robots supported by 3D sensors using the traditional
+                                         tion of rigid obstacles from high grass, twigs, or bushes. In this     approach of occupancy mapping [27], the development of
+                                         work, we propose Wild Visual Navigation (WVN), an online self-
+                                         supervised learning system for traversability estimation which         new platforms with advanced mobility skills, such as legged
+                                         uses only vision. The system is able to continuously adapt from        robots, prompts a reconsideration of current definitions of
+                                         a short human demonstration in the field. It leverages high-           traversability, as new and more complex types of natural
+                                         dimensional features from self-supervised visual transformer           terrain can be traversed [25].
+                                         models, with an online scheme for supervision generation that             It is difficult to infer traversability within natural terrains,
+                                         runs in real-time on the robot. We demonstrate the advantages
+                                         of our approach with experiments and ablation studies in               such as high grass or forest undergrowth. Occupancy-based
+                                         challenging environments in forests, parks, and grasslands. Our        navigation systems based on 3D sensing are often confused by
+                                         system is able to bootstrap the traversable terrain segmentation       high grass and incorrectly classify such terrain as an obstacle
+                                         in less than 5 min of in-field training time, enabling the robot       which is untraversable — even if the platform is actually able
+                                         to navigate in complex outdoor terrains — negotiating obstacles        to pass through. Semantic understanding is important in such
+                                         in high grass as well as a 1.4 km footpath following. While our
+                                         experiments were executed with a quadruped robot, ANYmal,              environments to determine which terrain is actually passable
+                                         the approach presented can generalize to any ground robot.             for a particular robot.
+                                         Project page: bit.ly/3M6nMHH                                              Existing approaches, which build upon deep neural models
+                                                                                                                for semantic segmentation [24] or anomaly detection [37],
+                                                                I. I NTRODUCTION                                have demonstrated navigation in off-road environments; how-
+                                            Traversability estimation is a core capability needed to            ever there are recurring problems with the collection and
+                                         allow robots to autonomous navigate in field environments.             labelling of large amounts of relevant training data. In addition
+                                         It is understood as the affordance [14] necessary for a robot          to the effort required to curate these datasets, specific class
+                                         to navigate within its environment, i.e to understand which            labels (tree, branch, bush, grass) do not directly correspond to
+                                         areas can be accessed and navigated through and at what                the capabilities of the robotic platform.
+   Self-supervised systems have addressed this challenge by                              II. R ELATED W ORK
+generating labeled datasets from past robot deployments, using      A. Traversability from geometry
+classification carried out in hindsight [36] or using predictions
+of the robot motion [13]. Nevertheless, these previous methods         Classical approaches for traversability estimation analyze
+are still trained on robot-specific datasets and subsequently       the geometry of the environment using 3D sensing [27].
+deployed without further adaptation. If they were to be tested      Recent examples from the DARPA SubT Challenge [7],
+in a new environment or on a new robotic platform, new data         used different representations such as point clouds [4] and
+would need to be collected and the models would need to be          meshes [16] to evaluate navigational metrics such as risk or
+retrained, limiting applicability.                                  stepping difficulty [9].
+                                                                       However, a purely geometric analysis is not sufficient to
+   Achieving online self-supervision and learning are key to        completely capture traversability for a given platform. Data-
+overcoming these aforementioned limitations, as traversability      driven methods can bridge this gap by learning platform-
+could be more easily learned in the field. The Learning Ap-         specific traversability from data or simulations. For example,
+plied to Ground Vehicles (LAGR) program [19, 15] pioneered          Chavez-Garcia et al. [6] learned traversability from simulations
+this direction, generating supervision during the mission and       of a ground robot moving on an elevation map. Yang et al.
+training machine learning models for traversability estimation      [40] extended this approach for legged platforms, capturing
+on the fly. They showed first demonstrations of autonomous          the risk of failure, energy cost and time required for navi-
+robots navigating off-road environments under this approach.        gation. Recently, Frey et al. [11] expanded this approach to
+   In this work, we build upon such advances and present a          volumetric data and massive parallelization in data collection
+system for vision-based traversability estimation that achieves     from simulation. While we recognize the contribution those
+online, self-supervised adaptation, by improving on various         previous works make in using robot-specific geometric data to
+components of previous works. We name the approach Wild             determine traversability, using geometry-only does not succeed
+Visual Navigation (WVN), as it is capable of learning which         in natural environments containing natural growth such as high
+terrain is traversable by a robot after a few minutes of manual     grass, branches or bushes. We instead focus on vision-based
+demonstrations in the wild. The system builds upon four core        methods herein, as they describe semantic features that are
+ideas that we consider the key contributions of our work:           challenging to capture otherwise.
+
+  • A self-supervision system designed for real-time oper-          B. Traversability from semantics
+    ation, which concurrently generates supervision signals            Semantic segmentation methods have been proposed to
+    from vision and traversability measurements from pro-           address the aforementioned challenges by assigning navigation
+    prioception and control performance.                            costs to the different semantic classes. Bradley et al. [3]
+  • A learning approach that leverages high-dimensional,            presented a scene understanding system trained and evaluated
+    self-supervised visual features extracted using pre-trained     using geographically diverse data. Maturana et al. [24] demon-
+    vision transformer models, which are fed into a small           strated autonomous off-road navigation using semantics pro-
+    neural network and efficiently trained online.                  jected onto 3D map around a wheeled platform. Schilling et al.
+  • A new formulation for traversability estimation that            [33] used semantically segmented features that were classified
+    combines supervised learning with anomaly detection,            into fixed classes using a random forest. Recently Shaban et al.
+    accounting for uncertainties due to the sparse supervision.     [35] presented an approach for off-road navigation that learns
+  • Closed-loop integration with local mapping and plan-            a dense traversability map from sparse point-clouds.
+    ning methods which demonstrate that these traversability           We note that these methods typically rely on pre-trained
+    estimates are suitable for autonomous navigation tasks.         or fine-tuned semantic segmentation models. This requires
+                                                                    specific class labels to be defined; and these semantic clas-
+We have extensively validated our approach with ablation stud-      sifiers can be difficult to reuse in different environments.
+ies which compare against similar approaches that are trained       Nevertheless, new advances in self-supervised models, such
+in an offline fashion. Further, we deployed our system on           as DINO-ViT [5], are able to segment semantically mean-
+real hardware, the ANYbotics ANYmal C robot, showing that           ingful classes without manual supervision. We exploit these
+it can be easily trained for navigation tasks in environments       promising tools in this work.
+where it would not be possible to traverse using geometric
+mapping alone. We demonstrate fast adaptation within minutes        C. Traversability from self-supervision
+to determine the traversable areas in a natural environment,           Purely semantic methods are challenging to use in the wild
+achieving closed-loop operation in a forest with different          because (1) it is difficult to represent the relevant classes of
+understory foliage and terrain, and a kilometer-scale path-         these operating environments without labeled data, and (2)
+following task in a park where the semantic class of the path       assigning a traversability cost to each class, which can also be
+was not explicitly labeled. While our experimental results have     arbitrary. Kim et al. [19] exploited information about the areas
+been demonstrated on a legged robot, the principles we present      visited by a wheeled robot to determine positive traversable
+are general and applicable to other ground platforms.               samples, while a bumper was used for negative labeling.
+                                                                                                                         Inference
+Bajracharya et al. [2] used a similar approach combined with                                                Segment
+a height heuristic to determine long-range negative samples.                                                features
+                                                                                        Feature
+                                                                                                                         MLP
+                                                                                       Extractor
+   Modern methods rely on deep-learned models trained from
+weakly supervised data, and the supervision strongly depends          Input        Segment                                  Updated     Predicted
+on the hardware platform. Wellhausen et al. [36] used the            image         features                                 weights   traversability
+                                                                                                        Training
+reprojected footholds from a legged robot to provide super-                         Mission Graph        batch
+                                                                                                                       Learning
+vision; Zürn et al. [41] exploited sounds produced by the                                                              thread
+platform moving on different terrain as a proxy for supervi-
+                                                                                              Supervision
+sion; Gasparino et al. [13] instead used the receding-horizon                                   signal
+
+trajectory of a Model Predictive Controller (MPC). Recently,                        Traversability
+TerraPN [32] used odometry and IMU signals as supervision           Proprio-            score
+                                                                    ception                                               Learning
+and could learn a traversability model in 25 min – including
+data collection and learning. Our work is inspired by these        Fig. 2: System overview: WVN only requires monocular RGB
+approaches and follows similar self-supervision strategies but     images and proprioceptive data as input, which are processed to
+we aim for concurrent supervision signal generation and            extract features and supervision signals used for online learning and
+learning achieving orders of magnitude faster adaptation.          inference of traversability (see Sec. III).
+
+                                                                      Symbol    Definition
+D. Traversability from anomalies
+                                                                         I      RGB image with height H and width W
+   Anomaly detection methods are motivated by one of the                F       Feature map with dimensions E × H × W , E = 90
+key challenges of using self-supervised approaches, namely              M       Weak segmentation mask with height H and width W
+                                                                        S       Reprojected supervision with dimensions H × W ∈ [0, 1]
+an imbalance in the number of positive and negative samples.             τ      Traversability score ∈ [0, 1]
+Instead of training a discriminative model of traversability,           fn      Per-segment embedding of dimension E = 90
+they focus on learning generative models of the traversed               τn      Per-segment traversability score
+terrain. This distribution can then used as a proxy to set out-
+                                                                               TABLE I: Main definitions used in this work
+of-distribution (OOD) inputs as being untraversable. Richter
+and Roy [31] developed a visual navigation system that relied
+on an autoencoder to predict OOD scenes from images,
+                                                                   F. Adaptive traversability estimation
+switching to safer navigation behaviors when traversing novel
+environments. Wellhausen et al. [37] used multi-modal sensing         A few works have demonstrated adaptive traversability
+from haptics, vision and depth to classify as anomalies visual     estimation and navigation behavior. As part of LAGR, Kim
+elements such as flames and water reflections in navigation        et al. [19] ran a clustering algorithm during deployment, and
+tasks. Ji et al. [17] formulated a proactive anomaly detection     assigned positive and negative labels to the clusters through
+approach that evaluated candidate trajectories for local plan-     interactions to determine the traversable areas. Hadsell et al.
+ning depending on their probability of failure. While we do not    [15] followed a similar approach to learn different binary
+explicitly use anomalies to determine traversability, we do use    classifiers during exploration, using features learned from a
+it as a confidence metric to leverage the sparse supervision       Convolutional Neural Network (CNN), making it one of the
+signals. Similar ideas have been recently presented by Seo         first works to use neural models for this purpose. Later Lee
+et al. [34] to determine traversability with point cloud data.     et al. [21] used Bayesian clustering on SLIC superpixels
+                                                                   using color and texture features supervised by motion pri-
+                                                                   ors; this approach was able to propagate the traversability
+E. Traversability from demonstrations
+                                                                   labels to similar segments during operation. More recently,
+   Inverse Reinforcement Learning (IRL) is a framework             BADGR [18] presented an end-to-end policy designed to adapt
+which can learn a reward function from demonstrations. In          from experiences, though it was not framed for online learning.
+our context this can be interpreted as a traversability that          Our approach builds upon the LAGR ideas for self-
+encodes the preference to navigate certain areas. Ratliff et al.   supervision and online learning but we extend them with
+[30] showed how IRL methods could be used to generate              more powerful semantic features from a pre-trained visual
+large-scale mission plans from aerial images. Later, Wulfmeier     transformer that allowed us to deploy our system in a variety
+et al. [39] learned cost maps to encode driving preferences        of natural environments.
+using deep neural networks, which was extended by Gan
+                                                                                               III. M ETHOD
+et al. [12] to guide the navigation of a legged robot in
+natural environments using a local reward map. While our           A. System Overview
+approach uses the examples from a human operator in our self-         The objective of this work is to design a navigation system
+supervised framework instead of IRL; we show that it can also      that estimates dense traversability from RGB images using
+be used to encode preferences depending on the demonstration       a neural network model learned online, in a self-supervised
+and representation of the terrain.                                 manner, using labels generated by a robot interacting with its
+                                                                                         1.5
+                                                                                                                         Velocities                Current
+                                                                                                                                                   Reference
+
+
+
+
+                                                                        Velocity [m/s]
+                                                                                         1.0
+
+                                                                                         0.5
+
+                                                                                         0.0
+                                                                                                                   Traversability
+                                                                                         1.0
+
+
+
+
+                                                                        Score
+                                                                                         0.5
+
+                                                                                         0.0
+                                                                                            0.0   2.5       5.0    7.5       10.0 12.5      15.0     17.5
+Fig. 3: Feature Extraction: Our approach extracts dense DINO-ViT
+                                                                                                                          Time [s]
+features F from an RGB image I, and n = 100 segments M using               Fig. 4: Traversability score generation: We compute a score based on
+SLIC. For each of the n segments we average the corresponding              the difference of an (external) reference velocity command and the
+features to obtain per-segment embeddings fn . A traversability score      current velocity estimated by the robot. Closely tracking the reference
+τn is computed for each segment based on the score resulting from          is interpreted as moving over traversable terrain (in blue ), high
+the graph interaction process (for more detail refer to Sec. III-D).       discrepancies indicate otherwise (red ).
+
+
+
+environment. We target a system which requires only a brief                C. Traversability Score Generation
+demonstration from a human operator for data collection and                   Defining which terrain is traversable or not depends on the
+learning.                                                                  capabilities of the specific platform. We define a continuous
+   Our proposed system WVN, builds upon different mod-                     traversability score τ ∈ [0, 1], where 0 is untraversable and
+ules shown in Fig. 2. Feature extraction (Sec. III-B) and                  1 fully traversable. Previous works have used ground reaction
+traversability score generation (Sec. III-C) process the incom-            forces, audio supervision, or predictions from a MPC as a
+ing sensor data to extract features and traversability scores.             proxy for this score. Instead, we adopt a simpler approach
+The mission and supervision graphs (Sec. III-D) manage                     that uses the discrepancy between the robot’s current linear
+the data and generate the self-supervision signals, while the              (x, y) velocity as estimated by the robot v, and the reference
+learning thread (Sec. III-E) performs online traversability                velocity command v̄ given by an external human operator or
+and anomaly learning. The interaction between the different                planning systems. The intuition is that when the robot moves
+modules is illustrated in Fig. 2, and their implementation is              on terrain that is easily traversable it should closely track the
+covered in the following sections. The main definitions used               reference command. In contrast, if the robot struggles to track
+in the rest of the paper are summarized in Tab. I.                         the reference, the discrepancy will grow, and we can interpret
+                                                                           it as a less traversable terrain. We define the mean squared
+                                                                           velocity error as:
+B. Feature Extraction                                                                          1                            
+                                                                                                             2             2
+                                                                                      verror =    (v̄x − vx ) + (v̄y − vy ) ∈ R          (1)
+   Given an RGB image I, we first extract dense, pixel-wise                                    2
+visual feature maps (embeddings) F. In contrast to previous                As verror will be a noisy scalar signal, we smooth it with a 1-D
+works based on fine-tuned CNNs, we rely on recent self-                    Kalman Filter before passing it through a sigmoid function to
+supervised network architectures to leverage a Vision Trans-               obtain a valid traversability score:
+former (ViT) trained using the DINO method [5] – DINO-ViT.
+                                                                                                        τ = sigmoid (−k (verror − vthr ))                   (2)
+These learned representations have been demonstrated to en-
+code meaningful semantic and instance information without                  with k the steepness of the sigmoid, and vthr the midpoint
+requiring any labels.                                                      of the sigmoid that assigns a traversability score of 0.5.
+   Since we aim for real-time operation, the processing and                These values can be calibrated depending on the motion
+storage of the full dense features on a mobile robot is                    specifications of each platform and determine how the velocity
+prohibited by the limited compute and storage availability.                error is stretched to the [0, 1] interval.
+Instead, we follow previous works [21] and compute a weak
+segmentation mask M of the input image I using superpixels.                D. Supervision and Mission Graphs
+We use SLIC [1] to extract 100 segments per image. We then                    In contrast to other methods that generate the supervision
+average the feature maps segment-wise resulting in a single                signal in post-processing [36, 13, 32], we execute this process
+embedding fn per segment. Fig. 3 illustrates the complete                  online by accumulating information about the recent history
+feature extraction process.                                                of operation. Our approach is inspired by graphical SLAM
+Fig. 5: Supervision and mission graphs: (a) Information stored in each graph over the mission. While the Supervision Graph only stores
+temporary information about the robot’s footprint in a sliding window, the Mission Graph saves the data required for online learning over
+the full mission. The color of the footprint patches indicates the generated traversability score. (b) The interaction between graphs updates
+the traversability in the mission nodes by reprojecting the robot’s footprint and traversability scores.
+
+
+pipelines that often leverage both local and global graphs to           fn and traversability score τn for each mission node ready for
+integrate measurements: we maintain a Supervision Graph to              training.
+store short-horizon traversability data, and a global Mission              Fig. 5 illustrates the supervision and mission graphs, and
+Graph which stores the generated training data during a                 their interaction to generate supervision signals online.
+mission, shown in Fig. 5.
+   1) Supervision Graph: The supervision graph stores within            E. Traversability and Anomaly Learning
+its nodes information about the current time, robot pose,                  We aim to train a small neural network in an online fashion
+and estimated traversability score (Sec. III-C). This graph             that determines the feature traversability score τn from a given
+is implemented as a ring buffer, which only keeps a fixed               segment feature fn . This allows us to predict the traversability
+number of nodes Nsup , separated from each other by a distance          of the scene in front of the robot from a full image by inferring
+distance dsup . The product Nsup dsup determines the maximum            only about those segments. Additionally, we explicitly model
+length (in physical distance) of the supervision graph.                 the uncertainty about the unvisited (and hence, unlabeled)
+   The stored information is a footprint track with traversability      areas by using anomaly detection techniques to bootstrap a
+scores τ, used to generate supervision signals in hindsight             confidence estimate. Our formulation also deals with non-
+that are reprojected onto previous camera viewpoints as it is           stationary data distributions induced by continuously updating
+explained in the following sections.                                    the training data and model weights.
+   2) Mission Graph: On the other hand, the mission graph                  First, we will elaborate on how a confidence score for a seg-
+stores all the information required for learning over the mis-          ment is obtained; and then we will describe the traversability
+sion. The mission nodes are added to the graph after feature            estimation task which takes as input the confidence and is
+extraction if the distance w.r.t the last added node is larger          jointly trained.
+than dmis . Each mission node contains the RGB image I, the                1) Confidence Estimation: To obtain a segment-wise con-
+weak segmentation mask M and per-segment features fn with               fidence estimate we aim to learn the distribution over all
+their corresponding traversability supervision τn .                     traversed segment features fn . A encoder-decoder network
+                                                                          θr
+   3) Graph interaction for supervision generation: When a              freco is trained to compress the segment feature fn into a
+new mission node is added, it triggers an interaction between           low dimensional latent space and consecutively reconstruct the
+the graphs to update the supervision labels τn stored in each           original input features fn . The reconstruction loss is given by
+mission node (Fig. 5b). We reproject the footprint track and            the Mean Squared Error (MSE) between the predicted features
+corresponding traversability scores τ onto all the images of            and the original feature compute over all channels E:
+the mission nodes that are within the range of the supervision                                         1 X θr
+graph. This ensures the information we reproject stays locally                   Lreco (fn ) = δτn 6=0      kfreco (fn,e ) − fn,e k2 , (3)
+                                                                                                       E e
+consistent in spite of potential state estimator drift.
+   Each mission node then has an auxiliary image with the               where δτ6=0 is 1 if the segments feature traversability score
+reprojected path, S. We use the weak segmentation mask M                τn is not zero, and 0 otherwise; this ensures that the network
+to assign per-segment traversability supervision values τn by           only learns to reconstruct the embeddings that are labeled in
+averaging the score over each segment. Segments that do not             an anomaly detection fashion. As a consequence, the trained
+overlap with the reprojected footprint track are set to zero (i.e       network reconstructs known (positive) feature embeddings, i.e.
+untraversable). Then we obtain pairs of per-segment features            similar to the traversable segments, with small reconstruction
+loss; feature embeddings of unknown (anomalous) segments                           30                          Step 0
+the network was never tasked to reconstruct, such as trees                                                                                         1.0
+
+
+
+
+                                                                                                                                                     Probability
+                                                                       Frequency
+or sky, induce a high reconstruction loss. Since the network                       20
+is trained online, this results in a multi-modal reconstruction                                                                                    0.5
+                                                                                   10
+loss distribution that evolves over time, as shown in Fig. 6.
+   The unbounded reconstruction loss Lreco for a segment is                         0                                                              0.0
+mapped to a confidence measure c(Lreco ) ∈ [0, 1] by first
+identifying the mode of the traversed segment losses. For
+                                                                                   30                        Step 100
+                                                                                                                                                   1.0
+
+
+
+
+                                                                                                                                                     Probability
+                                                                       Frequency
+this we fit a Gaussian distribution N (µpos , σpos ) over the                      20
+reconstruction losses per batch of the traversed segments (i.e,
+                                                                                                                                                   0.5
+positive samples):                                                                 10
+                   X
+           ntrav =     δτn 6=0 ,                            (4)                     0                                                              0.0
+                    f
+                     1                                                             30                        Step 500
+                                                                                                                                   Confidence 1.0
+                           X
+          µpos =                  Lreco (fn ),                  (5)
+
+
+
+
+                                                                                                                                                     Probability
+                                                                       Frequency
+                 ntrav                                                             20
+                       f : τn 6=0                                                                                                  Gaussian fit
+                 s
+                      1                                                                                                            All samples 0.5
+                                                                                   10                                              Positive
+                             X                            2
+          σpos =                    (Lreco (fn ) − µpos )       (6)
+                    ntrav
+                              f : τn 6=0
+                                                                                   0                                                               0.0
+  We set the segment confidence to 1 if the loss of the seg-                            0        2       4         6       8       10         12
+ment is smaller than µpos and otherwise to the unnormalized                                                      Loss
+Gaussian likelihood:                                                     Fig. 6: Histogram of the reconstruction loss Lreco distribution for
+                              
+                                (Lreco (fn ) − µpos )2
+                                                                        all segments within a batch at optimization step 0, 100, and 500.
+         c(Lreco (fn )) = exp                            , (7)           Traversed segments (positive samples) are shown in blue and non-
+                                    2(σpos kσ )2                         traversed segments in grey. We observed that the total loss distribution
+where we introduce the tuning parameter kσ , which allows to             becomes bi-modal as the training develops, which we use to deter-
+                                                                         mine a threshold to scale the confidence estimate (see Sec. III-E1).
+scale the confidence.                                                    At 500 steps all segments with a reconstruction loss Lreco over 2 are
+                                                        θt
+   2) Traversability Estimation: A small network ftrav      with a       identified as fully anomalous (unconfident) and therefore induce a
+single channel output is trained to regress on the provided              high loss in the traversability score when identified as traversable.
+segment traversability score τ. For the untraversed segments             The vertical grey dashed line indicates the decision boundary if a
+with unknown traversability score we follow a conservative               segment is detected as traversable or untraversable by the anomaly
+                                                                         detection.
+approach and we assume it to be zero τ = 0, though we
+use the confidence score to scale their overall contribution.
+The loss for traversability estimation is computed using the
+                                                                         segments as positive labels. Then, we decide on the traversabil-
+confidence-weighted MSE:
+                         X                                               ity threshold only by setting the desired False Positive Ratio
+                                           θt
+      Ltrav (f) = δτn =0   (1 − c(fn )) kftrav (fn ) − 0k2 +             (FPR), though other metrics such as the Youden’s index can
+                          n                                              also be used.
+                           X                                                                                                      θr
+                  δ τn =
+                       6 0
+                               θt
+                            kftrav (fn ) − τn k2 .                          3) Implementation details: In our implementation, freco  and
+                                                                           θt
+                          n                                              ftrav are implemented by a two-layer Multi-Layer Perceptron
+Effectively, for segments where a traversability score is avail-         (MLP) with [256, 32] unit dense layers and ReLU non-linear
+able by interaction the MSE is computed. For unlabeled                   activation functions. Both networks share the weights of the
+                                                                                           θr
+segments, the traversability is assumed to be zero but weighted          hidden layers. freco has a reconstruction head with E output
+                                                                                        θt
+based on the confidence score. Areas similar to the one                  neurons and ftrav a single channel traversability head followed
+traversed should be assigned a c(f) close to 1, therefore                by a sigmoid activation. The 32-channel hidden layer functions
+contributing insignificantly to the total loss. On the other hand        as the bottleneck of the encoder-decoder structure. The total
+anomaly areas (never traversed before, low c(f) score) induce            loss per segment during training is given by:
+a high loss if predicted with a high traversability score by ftrav .                        Ltotal (f) = wtrav Ltrav (f) + wreco Lreco (f).           (8)
+   As we aim to provide the estimated traversability as input
+for a local planning system, it is desired to automatically define       with wtrav and wreco allowing to weigh the traversability and
+a threshold to determine the traversable and untraversable ar-           reconstruction loss respectively. We used Adam [20] to jointly
+eas. We propose a strategy to select the traversability threshold        train the networks with a fixed constant learning rate of 0.001.
+τthr by measuring the current performance of the system in a             For a single update step, 8 valid mission nodes are randomly
+self-supervised manner. We compute the Receiver Operating                chosen to form a data batch; we defined a node as valid if at
+Characteristic (ROC) throughout training by classifying all              least a single segment of the node has non-zero traversability
+segments with confidence under 0.5 as negative and traversed             score. For all our experiments we set kσ = 2, wtrav = 0.03,
+                                                     Training Loss
+                                                                      by Miki et al. [25], which is able to traverse rough terrain
+                                                                      typically inaccessible to wheeled robots.
+                                                             +
+                                                                      C. Smart carrot for autonomous exploration
+                                                                         Lastly, to generate an autonomous navigation behavior we
+                                                                      implemented a simple exploration strategy by analyzing the
+                                                                      robot-centric SDF created by the local planner, by choosing a
+Input        MLP       Prediction   Target                            moving carrot that drives the robot forward.
+                                                                         The goal pose is given by analyzing a section of the SDF
+Fig. 7: Network architecture and per-segment losses used for online   in front of the robot and selecting the position with the
+training.
+                                                                      largest distance from all obstacles, ensuring the robot stays at
+                                                                      the center of the traversable space. The goal is continuously
+                                                                      updated when the SDF is recomputed with new traversability
+wreco = 0.5 and use a maximum FPR of 0.15 to determine the
+                                                                      information. While this strategy was simple it could safely
+traversability threshold.
+                                                                      guide the robot to follow a footpath autonomously using the
+   In Sec. V-C, we present and evaluate different design
+                                                                      predicted traversability without requiring a global plan or a
+choices for learning methods, features and architectures. We
+                                                                      large-scale representation of the environment. Nevertheless,
+also evaluate the advantages of our loss formulation com-
+                                                                      further improvement could be achieved by using a sophisti-
+pared to other common approaches for traversability, such
+                                                                      cated exploration planning system.
+as anomaly detection (learning a distribution over positive
+samples) and regression on the traversability score without                                 V. E XPERIMENTS
+modeling the uncertainty.                                             A. Platform Description
+              IV. C LOSED - LOOP I NTEGRATION                            For our experiments we used an ANYbotics ANYmal C
+  We integrated the learned traversability into a standard            legged robot. The robot is equipped with an additional NVidia
+navigation pipeline to achieve autonomous navigation with             Jetson Orin AGX to run WVN onboard, which was imple-
+a quadrupedal platform. The details of each module of the             mented in pure Python code using PyTorch [28] and ROS 1
+system are explained in the following sections.                       [29].
+                                                                         The main sensing input for our system are monocular,
+A. Local terrain mapping                                              wide Field of View (FoV) color images from a single global
+   To map the environment surrounding the robot we used an            shutter Sevensense Alphasense Core camera. Additionally, the
+open-source terrain mapping framework [26] to efficiently ob-         default state estimator provides SE(3) pose and body velocity
+tain a robot-centric 2.5D elevation map from the onboard depth        measurements. The LiDAR and depth cameras available on the
+cameras and LiDAR sensing. We extended this framework                 robot were only used for the local terrain mapping module as
+in Erni et al. [8] to fuse our predicted traversability into the      described in Sec. IV-A.
+local map representation. As our predicted traversability is an       B. Real-world deployments
+image, we used raycasting to take into account the occlusions
+with the terrain, establishing correspondences between pixel-            We executed different deployments to validate WVN in
+wise traversability values in the image plane and the local           different environments. The first experiments highlight adap-
+map’s grid cells. This procedure allows for temporal fusion of        tation to new environments and the advantages of the visual
+the traversability information in the map while preserving the        traversability estimation for local planning tasks. The last
+values of previously observed areas via exponential averaging.        two experiments demonstrate autonomous navigation among
+Since this indirectly uses geometry, the projection method is         obstacles and fully autonomous large-scale path following.
+susceptible to artifacts due to spikes in the elevation map.             1) Fast adaptation on hardware: Our first experiment
+                                                                      involved teleoperating the robot around 3 loops of a park
+B. Local planning                                                     environment walking on grass and dirt, on open areas and
+   We used the projected visual traversability from the lo-           around trees. The goal was to evaluate the fast adaptation
+cal map as a costmap for local planning. A median filter              capabilities of WVN while running on the robot.
+removed undesired noise and artifacts before the distance                Fig. 8 illustrates the main outcomes of the experiment,
+transform method [10] was used to obtain a Signed Distance            showing that the system learned to predict robot-specific
+Field (SDF), which represents the distance to the closest             traversability over the 3 loops. In particular, section (a) shows
+untraversable object. We implemented a local planner method           how the robot starts with a very poor segmentation after 9
+based on Mattamala et al. [23], which exploits the SDF and            steps of training (21 s), this greatly improves after 800 steps
+the local goal to generate a SE(2) twist command which                (2 min) where it can correctly segment the dirt as traversable
+drives the robot towards the goal while avoiding untraversable        terrain while keeping the tree untraversable. Similar behavior
+terrain. Finally, the twist command becomes the input to a            occurs in section (b) in which the segmentation is conservative
+robust learning-based locomotion controller based on the work         at the beginning but it extends across the other grass patches in
+                                                                       the terrain mapping module described in Sec. IV-A, as it
+                                                                       allowed us to compare geometry-only and visual traversability.
+                                                                       In particular, we compared against two geometric methods that
+                                                                       are real-time capable and have been used in previous literature:
+                                                                         • Geometric method based on heuristics such as height and
+                                                                           slope of the terrain [38].
+                                                                         • Geometric method based on a learned model of
+                                                                           traversability, which is part of the terrain mapping sys-
+                                                                           tem [26].
+                                                                         • Visual traversability provided by WVN, raycasted onto
+                                                                           the terrain map.
+                                                                       The geometric methods only require an elevation representa-
+                                                                       tion of the surface, and can directly determine traversability
+                                                                       from the 2.5D geometry. For WVN we executed a training
+                                                                       procedure driving the robot around the environment for a few
+                                                                       minutes first.
+                                                                          Fig. 9 illustrates the output traversability map obtained by
+                                                                       all the methods (bottom), as well as the corresponding SDFs
+                                                                       generated from them. (top) The geometric methods correctly
+                                                                       determine the trees as untraversable areas, as they are based on
+                                                                       the 2.5D representation. Our system is also able to successfully
+                                                                       discriminate the trees, confirming the findings observed in
+                                                                       Sec. V-B1. However, the important advantages of our method
+                                                                       are observed in high-grass areas, which are represented as
+                                                                       elevation spikes in the map that are classified as untraversable
+                                                                       by the geometric approaches. WVN correctly characterized the
+                                                                       capabilities of the robot to successfully traverse the terrain, as
+                                                                       demonstrated by the human operator.
+                                                                          When comparing the SDFs such differences become more
+                                                                       evident, as all the areas with low traversability scores become
+                                                                       obstacles. Our system correctly determines that all the grass
+                                                                       patches are traversable, hence the SDFs displays the right
+                                                                       classification and disregards the geometry. The only limitation
+                                                                       of our current method is that we use just a single camera and
+                                                                       can only predict traversability for the areas in sight. To ensure
+Fig. 8: Adaptation on real hardware: We tested the online adaptation
+capabilities of our system by teleoperating the robot to complete 3
+                                                                       safety, unknown areas are assumed to be untraversable but
+loops in a park (top, route shown in ). The columns show different    future work will take advance of the robot’s other cameras.
+parts of the loop (a,b,c); each row displays the improvement of the       3) Point-to-point autonomous navigation between trees:
+traversability estimate over time and training steps.
+                                                                       After validating our approach in teleoperated settings, we
+                                                                       executed closed-loop navigation tasks to demonstrate WVN
+                                                                       can easily adapt to a new environment, and the learned
+later iterations. Section (c) also illustrates some issues related     traversability estimate can be used to deploy the robot au-
+to the SLIC segmentation, as some segments of the wooden               tonomously.
+wall (step 1186) are incorrectly clustered with patches of the            We taught the robot to navigate in a woodland area con-
+grass, which is not observed in the other captures.                    taining dirt, high grass, and trees. A human operator drove
+   2) Benefits of visual traversability vs geometric methods:          the robot for 2 min through loose dirt and grass — an area
+Our second experiment aimed to illustrate the advantages of            that can be easily traversed by the legged platform. Then we
+visual traversability estimation in challenging natural environ-       commanded the local planner to execute autonomous point-
+ments. Similarly to the previous experiment, we teleoperated           to-point navigation avoiding obstacles, only using the visual
+the robot — but in a forest with high grass, loose branches,           traversability for closed-loop planning Sec. IV.
+and bushes. Fig. 9, bottom right, shows a representative shot             Fig. 10 illustrates the scene used for the experiment and
+of the experiment, a robot’s view input image and WVN’s                the trajectories used for training and testing autonomous
+prediction, which illustrates the challenges of the environment        navigation. The robot successfully managed to reach 8 out of
+for both vision and geometry based approaches.                         8 goals, where the human operator deliberately chose targets
+   To compare the different traversability methods, we used            behind trees to challenge the system. This was achieved even
+Fig. 9: Visual vs geometric traversability: Illustration of traversability map (bottom row) and corresponding SDF (top row) for three different
+traversability estimation methods applied to the same terrain patch. Our visual traversability estimate provides clear advantages for local
+planning compared to geometric methods, where the latter get heavily affected by traversable high grass or branches (bottom row). This is
+evident when comparing the SDF’s, where geometry-based methods are more sensitive to the spikes produced by high grass areas (top row).
+
+
+
+
+Fig. 10: Point-to-point autonomous navigation: (a) After teleoperating the robot for 2 min (path shown in ), we successfully achieved
+autonomous navigation in a woodland environment (path shown in ). (b) Some of the SDFs generated from the predicted traversability
+during autonomous operation. (c) Global 2.5D reconstruction of the testing area and predicted traversability, generated in post-processing to
+illustrate the capabilities of our approach.
+
+
+though neither geometry nor any additional assumptions about             capabilities of the system.
+the environment were used during training.                                  We executed 3 experiments to demonstrate this in a park.
+   We also show some examples of the SDFs generated during               Similarly to our previous experiments, we trained the system
+operation used by the local planner in subfigure (b), which              for less than 2 min along the footpath. However, we then
+indicate the trees as obstacles. Lastly, in processing we fused          disabled the learning thread to ensure that the predicted
+the predicted traversability measures into a complete map in             traversability strictly mimics the human preference during the
+subfigure (c), which correctly aligned with the trees. However,          demonstration run. The goal for the robot to follow is given
+we did observe some obstacle artifacts due to limitations                by the smart carrot module described in Sec. IV-C, which
+of the approach, namely the use of a single camera for                   autonomously guided the robot forward along the path.
+the predictions, the coarse segmentation from SLIC, and the
+                                                                            In the 3 runs the robot was able to follow the path for
+raycasting process, which we further discuss in Sec. V-D.
+                                                                         hundreds of meters — mostly staying in the center of the
+   4) Kilometer-scale autonomous navigation in the park: As              path, avoiding grass, bushes, benches, and pedestrians. Fig. 11
+a last experiment, we demonstrated that WVN can also be                  shows the trajectories followed in each run, starting from
+used to achieve preference-aware path-following behavior as              different points in the footpath. For runs 1 and 3 we used
+a result of the human demonstrations and the online learning             the same parameters, kσ = 2 and FPR= 0.15. In run 2 we
+Fig. 11: Kilometer-scale navigation: We deployed our system to learn to segment the footpath of a park after training for a few steps. We
+executed 3 runs starting from different points in the park:  run 1 (0.55 km),  run 2 (0.5 km), and  run 3 (1.4 km). Minor interventions
+were applied to guide the robot in intersections; major interventions (?) were required for some areas when the robot miss-classified muddy
+patches for the path.
+
+
+relaxed the parameters to kσ = 3 and FPR= 0.3, producing a                We organized the collected data into training, validation,
+less conservative behavior that drove the robot to other visually      and testing data, which is summarized in Tab. II. The longest
+similar areas in the park (very muddy grass) requiring manual          sequence recorded in each site (Fig. 12, shown in purple )
+intervention to correct the heading. When the robot approached         is used for training and validation purposes. The first 80%
+an intersection we adjusted, if necessary, the heading to follow       of the sequence are used to generate training data, with the
+the desired footpath.                                                  remaining 20% kept for validation. The remaining sequences
+   Overall, we achieved autonomous behavior that would have            of each scene are subsampled and exclusively used for testing.
+been difficult to achieve using only geometry, as the path                Regarding the labels, we manually segmented images from
+boundaries were often geometrically not distinguishable. On            the test split into traversable (1) and untraversable (0) classes,
+the other hand, instead of training and using a semantic seg-          which we named ground truth labels (GT). These binary labels
+mentation system to learn all the possible traversable classes         reflect the intuition of an expert robot operator on which places
+in the park (pavement, gravel path, roadway or grass), we              are safely accessible for the robot, and were used for quan-
+showed that this short teleoperated demonstration of the gravel        titative assessment of the design decisions. While simulation-
+footpath was enough for WVN to generate semantic cues to               based evaluations could provide a precise traversability score,
+achieve the desired path following behavior.                           we disregarded it because of the limitation of sim-to-real
+                                                                       transfer of vision-based methods. Human supervision was
+C. Offline validation via ablation studies                             straightforward and could incorporate more subtle risks and
+   To complement the results of our hardware experiments               preferences.
+and validate our design decisions, we performed different                 On the other hand, we also used the labels generated by
+ablation studies of the individual components of WVN. All              executing WVN over the sequences using the self-supervision
+the experiments were executed offline on an Nvidia RTX3080             approach, which we name SELF. Since the GT labels were
+Laptop GPU with Intel i7-11800H CPU.                                   binary due to intrinsic challenges of producing ground truth
+   1) Dataset overview: For offline analysis we used 3 large-          continuous traversability signals, we also binarized the SELF
+scale datasets of new areas not used for the real experiments:         labels for a fair comparison.
+   • Hilly: a hillside with dense vegetation and fruit trees.             Lastly, even though we only had access to binary ground
+   • Forest: a fir forest with hiking paths.                           truth labels we did not change the regression formulation
+   • Grass: a grassland area with moderate inclines and vary-          presented in Sec. III-E, as we could also obtain a binary output
+     ing vegetation surrounding a small lake.                          by thresholding the continuous signal proposed by our system.
+                                                                       This resulted in a classification task that could be evaluated
+The datasets were also recorded with a teleoperated ANY-
+                                                                       using metrics such as Accuracy (Acc).
+mal C platform and similar sensing setup to the previous
+experiments. Fig. 12 shows aerial views of the paths that                 2) Evaluation method: For all of our experiments we
+were used for data collection, as well as some samples of              trained and tested in the same environment using the splits
+the specific areas that were traversed during this operation.          previously presented, unless stated otherwise. Regarding the
+Fig. 12: Aerial views of the 3 environments used for offline testing of our system, illustrating the paths used for data collection and scene
+examples. The purple  trajectories are used for training and the remaining for validation.
+
+
+                       TABLE II: Dataset Overview                        Env     Metric       RF       SVC-RBF      SVC-Poly       WVN
+       Env     Split Duration Distance # Traj # Image Label              Hilly   GT       71.36 ± 0.0 65.46 ± 0.53 73.96 ± 1.61 81.05 ± 1.11
+                                                                                 SELF     88.32 ± 0.0 87.51 ± 0.25 84.81 ± 0.31 78.58 ± 0.82
+       Hilly   Train 512.4 s       262 m      1       920    SELF
+               Val   121.1 s        66 m      1       230    SELF        Forest GT   83.07 ± 0.44 74.66 ± 0.55 76.28 ± 1.34 82.45 ±1.10
+               Test 1202.2 s       840 m      4        55     GT                SELF 81.95 ± 0.44 90.19 ± 0.20 88.09 ± 0.53 85.26 ± 1.24
+       Forest? Train    402.1 s    606 m      1       991    SELF        Grass GT         59.16 ± 0.0 63.64 ± 0.33 69.02 ± 2.00 78.21 ± 2.39
+               Val      134.0 s    151 m      1       247    SELF
+                                                                               SELF       88.14 ± 0.0 87.79 ± 0.14 86.74 ± 0.39 82.60 ± 0.29
+               Test     970.5 s    896 m      2        41     GT
+       Grass Train 860.3 s         857 m      1       2050   SELF       TABLE III: Learning Method: Traversability Accuracy of Random
+             Val   242.5 s         214 m      1        512   SELF       Forest (RF), Support Vector Classifier (SVC), and WVN with respect
+             Test 2196.2 s        1224 m      3        113    GT        to the binary ground truth labels GT and self-supervised labels SELF
+        ? Length measured using RTK-GPS and may not reflect the         on the ablation environments.
+         real-distance traversed within the forest.
+
+
+                                                                        and still performs strongly across scenes, specially well in the
+metrics, we evaluated our system in a binary classification             Forest scene. The results confirm that our chosen model overall
+setting due to the limitations of the GT labels previously              outperforms machine learning methods previously used in the
+discussed. Hence, we reported the Acc for all of our ex-                literature, while allowing us to continuously adapt the model
+periments. The accuracy is computed in image space (i.e.                using gradient descent during the mission.
+pixel-wise) as opposed to segment-wise, which accounts for                 4) Study 2: Training Objective: We then studied the impact
+misclassifications induced by image segments containing both            of various training objectives on the model performance. In
+traversable and untraversable terrain.                                  particular, we compared four approaches:
+   Lastly, all compared neural network models are trained for              • Trav: We trained our network to directly regress on the
+1000 steps with 5 different random seeds, and we report                       traversability by assuming all untraversed segments are
+confidence intervals for all the metrics.                                     untraversable: no reconstruction loss wreco = 0, with full
+   3) Study 1: Learning Methods: Our first study compared                     confidence c(f) = 1, and without self-supervised τthr
+our approach to classical machine learning methods previously                 thresholding.
+used for traversability estimation, namely Random Forest                   • Fixed threshold: We fixed the traversability threshold τthr
+(RF) [33] and Support Vector Classifier (SVC) [2]. For SVC                    to a value of 0.5.
+we followed their work and use a polynomial kernel of degree               • Anomaly detection: We used the confidence score to
+2 and Radial Basis Function (RBF) kernel. All methods are                     classify features with a confidence over 0.5 as traversable.
+trained using the DINO-ViT features.                                       • WVN: Our full method.
+
+   Tab. III summarizes the main results of this study. We               Our proposed method consistently outperforms the other set-
+observed that our method based on an MLP performs consis-               tings (Tab. IV). A significant performance increase (+5.17%)
+tently good across all three environments with respect to the           was achieved over the Trav simplest traversability setting by
+GT labels (see Tab. III). Interestingly, the RF is competitive          adding the confidence-weighted traversability loss formulation
+Env     Metric    Trav      Fixed-Threshold      Anom         WVN                   Architecture     Param     Time              GT              SELF
+Hilly   GT   65.46 ± 0.53    73.96 ± 1.61     72.92 ± 0.82 81.05 ± 1.11             DINO-ViT         21M      17.0 ms     65.46 ± 0.53     87.51 ± 0.25
+        SELF 87.51 ± 0.25    84.81 ± 0.31     69.21 ± 0.85 78.58 ± 0.82             DINO-ReN        23.5M     15.9 ms     64.05 ± 0.08     86.71 ± 0.03
+
+
+
+
+                                                                           Hilly
+                                                                                    EffNet-B4       17.5M     26.1 ms     62.55 ± 0.07     86.09 ± 0.02
+Forest GT   74.66 ± 0.55     76.28 ± 1.34     70.31 ± 1.12 82.45 ±1.10
+                                                                                    ResNet-50       23.5M     15.9 ms     61.87 ± 0.08     85.37 ± 0.02
+       SELF 90.19 ± 0.20     88.09 ± 0.53     68.37 ± 1.44 85.26 ± 1.24
+                                                                                    SIFT              0          -        58.78 ± 0.73     82.80 ± 0.03
+Grass GT   63.64 ± 0.33      69.02 ± 2.00     77.64 ± 0.44 78.21 ± 2.39
+                                                                                    DINO-ViT         21M      17.0 ms     74.66 ± 0.55     90.19 ± 0.20
+      SELF 87.79 ± 0.14      86.74 ± 0.39     75.29 ± 0.21 82.60 ± 0.29
+                                                                                    DINO-ReN        23.5M     15.9 ms     74.14 ± 0.24     89.12 ± 0.21
+
+
+
+
+                                                                           Forest
+TABLE IV: Training Objective: Traversability Accuracy for different                 EffNet-B4       17.5M     26.1 ms     73.00 ± 0.76     89.63 ± 0.29
+                                                                                    ResNet-50       23.5M     15.9 ms     72.71 ± 0.22     88.49 ± 0.10
+learning objectives with respect to the binary ground truth labels GT
+                                                                                    SIFT              0          -        60.94 ± 0.00     83.27 ± 0.00
+and self-supervised labels SELF on the ablation environments. Refer
+to Study 2: Training Objective for further details.                                 DINO-ViT         21M      17.0 ms     63.64 ± 0.33     87.79 ± 0.14
+                                                                                    DINO-ReN        23.5M     15.9 ms     67.08 ± 0.36     88.15 ± 0.13
+
+
+
+
+                                                                           Grass
+                                                                                    EffNet-B4       17.5M     26.1 ms     61.01 ± 0.78     85.91 ± 0.00
+                                                                                    ResNet-50       23.5M     15.9 ms     62.99 ± 0.03     85.23 ± 0.12
+(Fixed-threshold). Generally, in the Trav-setting more regions                      SIFT              0          -        57.61 ± 0.91     83.79 ± 0.02
+are classified as untraversable leading to an over-conservative
+traversability estimation, which performed well on the SELF-                        TABLE V: Comparison of feature extraction backbones.
+labels but does not reflect the GT traversability. Further
+improvement of 7.33% can be achieved by adding the online                            Training         Hilly             Forest           Grass
+traversability threshold scaling. Here it is important to mention                     Hilly        81.05 ±1.11    82.14 ± 1.78        82.14 ± 0.63
+that a fixed threshold is insufficient during deployment given                        Forest       75.86 ± 2.18   82.45 ±1.10         75.80 ± 2.80
+the online adaptation of the network. Lastly, the experiment                          Grass        77.49 ± 4.36   73.22 ± 6.38        78.21 ±2.39
+using only Anom detection performs reasonably well, suggest-
+                                                                          TABLE VI: Scene Adaptation: Traversability Accuracy with respect
+ing that a meaningful confidence score was learned across                 to the GT labels. Each row corresponds to a training run on the
+various environments. This indicates that the learned anomaly             specific environment and testing on all environments.
+detection is useful for guiding the traversability learning of
+our method.
+   5) Study 3: Features: The quality of extracted segment                 forms overall the best and showed specially good performance
+features can have a significant impact on the performance of              on Grass, which we suspect is due to the visual similarity of
+traversability prediction, given that we only consider a fixed            the scenes (see Fig. 12).
+feature extraction backbone. Hence, we evaluated the perfor-                 In general, we remark that even though the robot was
+mance of the selected self-supervised pre-trained DINO-ViT                deployed within scenes featuring similar semantic classes
+backbone against popular residual network architectures pre-              (e.g. trees or high grass), on the same day and within a
+trained on ImageNet (ResNet-50, EfficientNet-B4), and also                few kilometers radius, the performance still degraded. This
+trained using self-supervised learning, such as ResNet-50                 suggests even worse performance drops for changing seasons
+trained with DINO (DINO-ReN). We also compared against                    or urban to natural environment scene changes. We argue that
+other classical features, such as dense SIFT [22] features over           even though this can be hypothetically mitigated by increasing
+RGB channels. We fed the features to the trav-setting model               the amount of training data, this is costly, and online adaptation
+introduced in the previous study, to isolate the impact of the            provides a practical solution to enable the deployment of
+feature extractor on the traversability estimation performance            robots in new or changing environments.
+from other procedures. We present the model parameter count                  7) Study 5: Adaptation Speed & Dataset Size: For our final
+for each feature extractor and inference time of all network              study we investigated how fast can WVN adapt to the new
+architectures on a Jetson Orin in Tab. V. The features gen-               environments and how many data samples are needed. To
+erated by methods using self-supervised pre-training clearly              examine this we designed an experiment in which we trained
+outperformed pre-trained models on ImageNet, even when                    the network for 1000 steps for different training dataset sizes,
+using the same architecture, aligning with the findings of                ranging from 10% to 100% of the original size. We measured
+Caron et al. [5]. The short inference time measured on the Orin           the accuracy each 2nd step and every 10% increment of the
+board also validates the choice of DINO-ViT as the backbone               dataset size.
+suitable for WVN.                                                            As a result, we obtained heatmaps displaying the perfor-
+   6) Study 4: Scene Adaptation: We evaluated the perfor-                 mance evolution across these 2 variables, shown in Fig. 13. For
+mance of WVN when trained on one environment and tested                   all environments starting from a randomly initialized network,
+on all the others, to test the necessity for online adaptation.           we observed that good performance can be achieved within
+Tab. VI shows the resulting accuracy for each scene com-                  200 steps. We argue that this is due to use of segments: adding
+bination. We observed that in general the best performance                a single image provides 100 new training samples for the
+is achieved when testing on the same training environment as              network. During continuous training, we also observed some
+expected, dropping otherwise. The model trained on Hilly per-             slight fluctuation with respect to the test accuracy. Fig. 14
+Fig. 13: Adaptation Speed vs Dataset Size: The performance measured by the accuracy increases over training as expected. In the limit case
+of training for a few steps (< 50), the performance is equally degraded — independent of the dataset size. A small dataset size is sufficient
+for good performance. Please observe the different color scales for each environment. In the Grass environment the color scale is distorted
+by an outlier when using 100% of the data after 70 steps.
+
+
+
+
+Fig. 14: Training Process: We detail the incremental training process executed by WVN in terms of the loss (top left), accuracy (top right),
+and visual examples (bottom).
+
+
+shows the training loss accuracy over time, illustrating some               characterize the different interactions the robot can have
+of the fluctuating behavior, as well as example images of the               with the environment. Further investigation is required to
+output segmentation over training.                                          determine alternative metrics that can be more suitable
+                                                                            for specific platforms.
+D. Limitations                                                            • For closed-loop integration we projected the traversabil-
+   We have demonstrated that WVN can learned a traversabil-                 ity prediction onto a local terrain map, which allowed
+ity estimate online, allowing immediate deployment of robots                for a straightforward integration with the local planner.
+in new environments. However, we observed some limitations                  However, this presented important drawbacks due to
+during our ablation studies and field deployment.                           perspective projection, limited FoV due to single camera
+   • WVN runs at 2.5 Hz on the NVidia Orin board with un-                   usage, and raycasting on an inaccurate 2.5D map that
+     optimized code. Improving the efficiency of the pipeline               required additional filtering stages.
+     would allow for faster training and better autonomous                • Lastly, our system could be also framed within the
+     navigation performance.                                                continual learning paradigm. While we do not address
+   • The use of superpixels to reduce the computational com-                it explicitly, we believe that WVN could greatly benefit
+     plexity limits the accuracy of the output segmentation, as             from the advances of continual learning — not only to
+     the SLIC segments are only similar from a color-space                  adapt within a single mission — but between different
+     sense, consequently affecting the computation of features              test environments.
+     per segment by averaging semantically different features.
+   • While the use of velocity tracking error was a sim-
+     ple proxy for the traversability score, it does not fully
+                        VI. C ONCLUSION                                    Robots and Systems (IROS), pages 1144–1151, 2015.
+   We presented Wild Visual Navigation (WVN), a system                     II-B
+that leverages the latest advances in pre-trained self-supervised      [4] Chao Cao, Hongbiao Zhu, Fan Yang, Yukun Xia, Howie
+networks with a scheme to generate supervision signals while a             Choset, Jean Oh, and Ji Zhang. Autonomous Exploration
+robot operates, to achieve online, onboard visual traversability           Development Environment and the Planning Algorithms.
+estimation. The fast adaptation capabilities of our system                 In IEEE Intl. Conf. on Robotics and Automation (ICRA),
+allowed us to easily deploy robots for navigation tasks in new             page 8921–8928, 2022. II-A
+environments after just a few minutes of learning from human           [5] Mathilde Caron, Hugo Touvron, Ishan Misra, Hervé
+demonstrations. We validated WVN through different ablation                Jégou, Julien Mairal, Piotr Bojanowski, and Armand
+studies and real-world experiments, illustrating its fast adapta-          Joulin. Emerging Properties in Self-Supervised Vision
+tion capabilities, the consistency of its traversability prediction        Transformers. In International Conference on Computer
+for local planning, and 1.4 km closed-loop navigation experi-              Vision (ICCV), 2021. II-B, III-B, V-C5
+ments in natural scenes. Our experiments show that WVN can             [6] R. Omar Chavez-Garcia, Jérôme Guzzi, Luca M. Gam-
+enable autonomous robot navigation by learning from small                  bardella, and Alessandro Giusti.      Learning Ground
+data in the wild. We aim to tackle the current limitations of              Traversability From Simulations. IEEE Robotics and
+our system by exploring data-driven self-supervised methods                Automation Letters, 3(3):1695–1702, 2018. II-A
+for segment extraction, possibly mitigating artifacts induced          [7] Timothy H. Chung, Viktor Orekhov, and Angela Maio.
+by segments containing traversable and untraversable terrain.              Into the Robotic Depths: Analysis and Insights from
+We also plan to extend the current implementation to multiple              the DARPA Subterranean Challenge. Annual Review of
+cameras — allowing the system to learn from different inputs               Control, Robotics, and Autonomous Systems, 6(1), 2023.
+and estimate traversability in different directions for more               II-A
+complex local planning. For future work specific to legged             [8] Gian Erni, Frey Jonas, Miki Takahiro, Matias Mattamala,
+systems capable to negotiate challenging terrain, we aim to                and Hutter Marco. MEM: Multi-Modal Elevation Map-
+further close the loop between WVN’s traversability prediction             ping for Robotics and Learning. 2023. IV-A
+and feedback provided directly by the locomotion policy about          [9] David D. Fan, Kyohei Otsu, Yuki Kubo, Anushri Dixit,
+the traversability of the terrain.                                         Joel Burdick, and Ali-Akbar Agha-Mohammadi. STEP:
+                                                                           Stochastic Traversability Evaluation and Planning for
+                    ACKNOWLEDGMENTS                                        Safe Off-road Navigation. In Robotics: Science and
+   This work was supported by the Swiss National Science                   Systems, 2021. II-A
+Foundation (SNSF) through project 188596, the National Cen-           [10] Pedro F. Felzenszwalb and Daniel P. Huttenlocher. Dis-
+tre of Competence in Research Robotics (NCCR Robotics),                    tance Transforms of Sampled Functions. Theory of
+the European Union’s Horizon 2020 research and innova-                     Computing, 8(19):415–428, 2012. IV-B
+tion program under grant agreement No 101016970, No                   [11] Jonas Frey, David Hoeller, Shehryar Khattak, and Marco
+101070405, and No 852044, and an ETH Zurich Research                       Hutter. Locomotion Policy Guided Traversability Learn-
+Grant. Jonas Frey is supported by the Max Planck ETH Center                ing using Volumetric Representations of Complex Envi-
+for Learning Systems. Matias Mattamala is supported by the                 ronments. In IEEE/RSJ Intl. Conf. on Intelligent Robots
+National Agency for Research and Development (ANID) /                      and Systems (IROS), 2022. II-A
+DOCTORADO BECAS CHILE/2019 - 72200291 and NCCR                        [12] Lu Gan, Jessy W. Grizzle, Ryan M. Eustice, and
+Robotics. Maurice Fallon is supported by a Royal Society                   Maani Ghaffari. Energy-Based Legged Robots Terrain
+University Research Fellowship.                                            Traversability Modeling via Deep Inverse Reinforcement
+                          R EFERENCES                                      Learning. IEEE Robotics and Automation Letters, 7(4):
+                                                                           8807–8814, 2022. II-E
+ [1] Radhakrishna Achanta, Appu Shaji, Kevin Smith, Aure-             [13] Mateus V. Gasparino, Arun N. Sivakumar, Yixiao Liu,
+     lien Lucchi, Pascal Fua, and Sabine Süsstrunk. SLIC                  Andres E. B. Velasquez, Vitor A. H. Higuti, John Rogers,
+     Superpixels Compared to State-of-the-Art Superpixel                   Huy Tran, and Girish Chowdhary. WayFAST: Naviga-
+     Methods. IEEE Transactions on Pattern Analysis and                    tion With Predictive Traversability in the Field. IEEE
+     Machine Intelligence, 34(11):2274–2282, 2012. III-B                   Robotics and Automation Letters, 7(4):10651–10658,
+ [2] Max Bajracharya, Andrew Howard, Larry H. Matthies,                    2022. I, II-C, III-D
+     Benyang Tang, and Michael Turmon. Autonomous off-                [14] James J Gibson. The Ecological Approach to Visual
+     road navigation with end-to-end learning for the lagr                 Perception. Boston: Houghton Mifflin, 1979. I
+     program. Journal of Field Robotics, 26(1):3–25, 2009.            [15] Raia Hadsell, Pierre Sermanet, Jan Ben, Ayse Erkan,
+     II-C, V-C3                                                            Marco Scoffier, Koray Kavukcuoglu, Urs Muller, and
+ [3] David M. Bradley, Jonathan K. Chang, David Silver,                    Yann LeCun. Learning Long-range Vision for Au-
+     Matthew Powers, Herman Herman, Peter Rander, and                      tonomous Off-road Driving. Journal of Field Robotics,
+     Anthony Stentz. Scene understanding for a high-mobility               26(2):120–144, 2009. I, II-F
+     walking robot. In IEEE/RSJ Intl. Conf. on Intelligent
+[16] Nicolas Hudson, Fletcher Talbot, Mark Cox, Jason             [27] Hans Moravec and Alberto Elfes. High Resolution Maps
+     Williams, Thomas Hines, Alex Pitt, Brett Wood, Den-               from Wide Angle Sonar. In IEEE Intl. Conf. on Robotics
+     nis Frousheger, Katrina Lo Surdo, Thomas Molnar,                  and Automation (ICRA), volume 2, pages 116–121, 1985.
+     Ryan Steindl, Matt Wildie, Inkyu Sa, Navinda Kottege,             I, II-A
+     Kazys Stepanas, Emili Hernandez, Gavin Catt, William         [28] Adam Paszke, Sam Gross, Francisco Massa, Adam
+     Docherty, Brendan Tidd, Benjamin Tam, Simon Mur-                  Lerer, James Bradbury, Gregory Chanan, Trevor Killeen,
+     rell, Mitchell Bessell, Lauren Hanson, Lachlan Tychsen-           Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban
+     Smith, Hajime Suzuki, Leslie Overs, Farid Kendoul,                Desmaison, Andreas Köpf, Edward Yang, Zach DeVito,
+     Glenn Wagner, Duncan Palmer, Peter Milani, Matthew                Martin Raison, Alykhan Tejani, Sasank Chilamkurthy,
+     O’Brien, Shu Jiang, Shengkang Chen, and Ronald Arkin.             Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chin-
+     Heterogeneous Ground and Air Platforms, Homogeneous               tala. PyTorch: An Imperative Style, High-Performance
+     Sensing: Team CSIRO Data61’s Approach to the DARPA                Deep Learning Library. In International Conference on
+     Subterranean Challenge. Field Robotics, 2(1):595–636,             Neural Information Processing Systems (NeurIPS), 2019.
+     2022. II-A                                                        V-A
+[17] Tianchen Ji, Arun Narenthiran Sivakumar, Girish Chowd-       [29] Morgan Quigley, Brian Gerkey, Ken Conley, Josh Faust,
+     hary, and Katherine Driggs-Campbell.             Proactive        Tully Foote, Jeremy Leibs, Eric Berger, Rob Wheeler,
+     Anomaly Detection for Robot Navigation With Multi-                and Andrew Ng. ROS: an open-source Robot Operating
+     Sensor Fusion. IEEE Robotics and Automation Letters,              System. In IEEE Intl. Conf. on Robotics and Automation
+     7(2):4975–4982, 2022. II-D                                        (ICRA), 2009. V-A
+[18] Gregory Kahn, Pieter Abbeel, and Sergey Levine.              [30] Nathan D. Ratliff, J. Andrew Bagnell, and Martin A.
+     BADGR: An Autonomous Self-Supervised Learning-                    Zinkevich. Maximum margin planning. In International
+     Based Navigation System. IEEE Robotics and Automa-                Conference on Machine Learning (ICML), ICML ’06,
+     tion Letters, 6(2):1312–1319, 2021. II-F                          page 729–736, 2006. II-E
+[19] Dongshin Kim, Jie Sun, Sang Min Oh, J.M. Rehg, and           [31] Charles Richter and Nicholas Roy. Safe visual navigation
+     A.F. Bobick. Traversability Classification using Unsuper-         via deep learning and novelty detection. In Robotics:
+     vised On-line Visual Learning for Outdoor Robot Navi-             Science and Systems, Cambridge, Massachusetts, July
+     gation. In IEEE Intl. Conf. on Robotics and Automation            2017. doi: 10.15607/RSS.2017.XIII.064. II-D
+     (ICRA), pages 518–525, 2006. I, II-C, II-F                   [32] Adarsh Jagan Sathyamoorthy, Kasun Weerakoon, Tianrui
+[20] Diederick P Kingma and Jimmy Ba. Adam: A Method                   Guan, Jing Liang, and Dinesh Manocha. Terrapn: Un-
+     for Stochastic Optimization. In International Conference          structured terrain navigation using online self-supervised
+     on Learning Representations (ICLR), 2015. III-E3                  learning. In IEEE/RSJ Intl. Conf. on Intelligent Robots
+[21] Honggu Lee, Kiho Kwak, and Sungho Jo. An Incremen-                and Systems (IROS), pages 7197–7204, 2022. II-C, III-D
+     tal Nonparametric Bayesian Clustering-based Traversable      [33] Fabian Schilling, Xi Chen, John Folkesson, and Patric
+     Region Detection Method. Autonomous Robots, 41(4):                Jensfelt. Geometric and Visual Terrain Classification for
+     795–810, 2017. II-F, III-B                                        Autonomous Mobile Navigation. In IEEE/RSJ Intl. Conf.
+[22] David G. Lowe. Distinctive image features from scale-             on Intelligent Robots and Systems (IROS), pages 2678–
+     invariant keypoints. International Journal of Computer            2684, 2017. II-B, V-C3
+     Vision, 60(2):91–110, 2004. V-C5                             [34] Junwon Seo, Taekyung Kim, Kiho Kwak, Jihong Min,
+[23] Matias Mattamala, Nived Chebrolu, and Maurice Fallon.             and Inwook Shim. Scate: A scalable framework for
+     An Efficient Locally Reactive Controller for Safe Naviga-         self- supervised traversability estimation in unstructured
+     tion in Visual Teach and Repeat Missions. IEEE Robotics           environments. IEEE Robotics and Automation Letters, 8
+     and Automation Letters, 7(2):2353–2360, 2022. IV-B                (2):888–895, 2023. II-D
+[24] Daniel Maturana, Po-Wei Chou, Masashi Uenoyama,              [35] Amirreza Shaban, Xiangyun Meng, JoonHo Lee, Byron
+     and Sebastian Scherer. Real-time Semantic Mapping                 Boots, and Dieter Fox. Semantic Terrain Classification
+     for Autonomous Off-Road Navigation. In International              for Off-Road Autonomous Driving. In Aleksandra Faust,
+     Conference on Field and Service Robotics (FSR), pages             David Hsu, and Gerhard Neumann, editors, Proceedings
+     335 – 350, 2017. I, II-B                                          of the 5th Conference on Robot Learning, volume 164 of
+[25] Takahiro Miki, Joonho Lee, Jemin Hwangbo, Lorenz                  Proceedings of Machine Learning Research, pages 619–
+     Wellhausen, Vladlen Koltun, and Marco Hutter. Learning            629, 2022. II-B
+     Robust Perceptive Locomotion for Quadrupedal Robots          [36] Lorenz Wellhausen, Alexey Dosovitskiy, René Ranftl,
+     in the Wild. Science Robotics, 7(62), 2022. I, IV-B               Krzysztof Walas, Cesar Cadena, and Marco Hutter.
+[26] Takahiro Miki, Lorenz Wellhausen, Ruben Grandia,                  Where Should I Walk? Predicting Terrain Properties from
+     Fabian Jenelten, Timon Homberger, and Marco Hutter.               Images via Self-Supervised Learning. IEEE Robotics and
+     Elevation Mapping for Locomotion and Navigation using             Automation Letters, 4(2):1509 – 1516, 2019-04. I, II-C,
+     GPU. In IEEE/RSJ Intl. Conf. on Intelligent Robots and            III-D
+     Systems (IROS), pages 2273–2280, 2022. IV-A, V-B2            [37] Lorenz Wellhausen, René Ranftl, and Marco Hutter. Safe
+     Robot Navigation Via Multi-Modal Anomaly Detection.            Robotics Research, 36(10):1073–1087, 2017. II-E
+     IEEE Robotics and Automation Letters, 2020. I, II-D       [40] Bowen Yang, Lorenz Wellhausen, Takahiro Miki, Ming
+[38] Martin Wermelinger, Péter Fankhauser, Remo Diethelm,          Liu, and Marco Hutter. Real-time Optimal Navigation
+     Philipp Andreas Krüsi, Roland Siegwart, and Marco             Planning Using Learned Motion Costs. In IEEE Intl.
+     Hutter. Navigation Planning for Legged Robots in Chal-         Conf. on Robotics and Automation (ICRA), pages 9283
+     lenging Terrain. In IEEE/RSJ Intl. Conf. on Intelligent        – 9289, 2021. II-A
+     Robots and Systems (IROS), 2016. V-B2                     [41] Jannik Zürn, Wolfram Burgard, and Abhinav Valada.
+[39] Markus Wulfmeier, Dushyant Rao, Dominic Zeng Wang,             Self-supervised visual terrain classification from unsu-
+     Peter Ondruska, and Ingmar Posner. Large-scale cost            pervised acoustic feature learning. IEEE Transactions
+     function learning for path planning using deep inverse         on Robotics, 37(2):466–481, 2021. II-C
+     reinforcement learning. The International Journal of
+

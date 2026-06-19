@@ -1,0 +1,562 @@
+                                  GOAT: GO to Any Thing
+                 Matthew Chang∗† , Theophile Gervet∗† , Mukul Khanna∗† , Sriram Yenamandra∗† ,
+              Dhruv Shah† , So Yeon Min† , Kavit Shah† , Chris Paxton† , Saurabh Gupta, Dhruv Batra† ,
+                           Roozbeh Mottaghi† , Jitendra Malik, Devendra Singh Chaplot†
+                                      ∗ Indicates equal contribution, † Work done at Fair, Meta
+
+
+
+
+   Abstract—In deployment scenarios such as homes and ware-
+houses, mobile robots are expected to autonomously navigate
+for extended periods, seamlessly executing tasks articulated in
+terms that are intuitively understandable by human operators.
+We present GO To Any Thing (GOAT), a universal navigation
+system capable of tackling these requirements with three key
+features: a) Multimodal: it can tackle goals specified via category
+labels, target images, and language descriptions, b) Lifelong:
+it benefits from its past experience in the same environment,
+and c) Platform Agnostic: it can be quickly deployed on robots
+with different embodiments. GOAT is made possible through a
+modular system design and a continually augmented instance-
+aware semantic memory that keeps track of the appearance of
+objects from different viewpoints in addition to category-level
+semantics. This enables GOAT to distinguish between different
+instances of the same category to enable navigation to targets
+specified by images and language descriptions.
+   In experimental comparisons spanning over 90 hours in 9
+different homes consisting of 675 goals selected across 200+
+different object instances, we find GOAT achieves an overall
+success rate of 83%, surpassing previous methods and ablations
+by 32% (absolute improvement). GOAT improves with experience
+in the environment, from a 60% success rate at the first goal to a
+90% success after exploration. In addition, we demonstrate that       Fig. 1.  GOAT (GO to Any Thing) task. The GOAT task requires
+GOAT can readily be applied to downstream tasks such as pick          lifelong learning, meaning taking advantage of past experience in
+and place and social navigation.                                      the same environment, for multimodal navigation. The robot must be
+                                                                      able to reach any object specified in any way and remember object
+                       I. I NTRODUCTION                               locations to come back to them.
+
+   Consider a robot starting in an unseen environment as shown
+in Figure 1, and suppose it is asked to find a dining table           control to reach the goal while avoiding obstacles.
+image (goal 1). Navigating to this goal requires recognizing             In this paper, we present GO to Any Thing (GOAT), a
+that the picture shows a dining table and having the semantic         universal navigation system with three key features:
+understanding of indoor spaces to efficiently explore the home        a) Multimodal: it can tackle goals specified via category
+(e.g. dining tables are not found in the bathroom). Suppose           labels, target images, and language descriptions, b) Lifelong:
+the robot is then asked to Go to the potted plant next to             it benefits from its past experience in the same environment
+the couch (goal 2). This requires visual grounding of the text        in the form of a map of objects instances (as opposed to
+instruction in the physical space. The next instruction is to Go      stored implicitly within the parameters of a machine learning
+to a SINK (goal 3), the capitalization emphasizing that any           model) updated over time, and c) Platform Agnostic: it can be
+object of the category SINK is a valid goal. In this example,         seamlessly deployed on robots with different embodiments —
+the robot has already seen a sink in the house during the             we deploy GOAT on a quadruped and a wheeled robot. GOAT
+first task, so it should remember its location and be able to         is made possible through the design of an Object Instance
+plan a path to reach it efficiently. This requires the robot to       Memory that keeps track of the appearance of objects from
+build, maintain and update a lifelong memory of the objects           different viewpoints in addition to category-level semantics.
+in the environment, their visual and linguistic properties and        This enables GOAT to distinguish between different instances
+their latest location. Given any new multimodal goal, the             of the same category to enable navigation to targets specified
+robot should also be able to query the memory to determine            by images and fine-grained language descriptions. This mem-
+whether the goal object already exists in the memory or               ory is continually augmented as the agent spends more time
+requires further exploration. In addition to these capabilities       in the environment, leading to improved efficiency in reaching
+of multimodal perception, exploration, lifelong memory, and           goals over time.
+goal localization, the robot also needs effective planning and           In experimental comparisons spanning over 90 hours in 9
+different homes consisting of 675 goals selected across 200+       Pretraining (CLIP) [46] for image-language matching and
+different object instances, we find GOAT achieves an overall       SuperGlue [50] for image-image matching. CLIP follows a
+success rate of 83%, surpassing previous methods and abla-         long history of associating text with images or regions in
+tions by 32% (absolute improvement). GOAT performance im-          images [25, 16, 17, 15, 31, 35, 44] and has led to the
+proves with experience in the environment from a 60% success       development of language-conditioned open-vocabulary object
+rate at the first goal to 90% success rate once the environment    detectors [62, 37, 43]. CLIP itself, or object detectors derived
+is fully explored. In addition, we demonstrate that GOAT,          from CLIP have recently been used for robotic tasks, e.g.
+as a general navigation primitive, can readily be applied to       object search [18], mobile manipulation [61], and table-top
+downstream tasks like pick and place and social navigation.        manipulation [54]. Similarly, SuperGlue follows a long history
+GOAT’s performance can in part be attributed to the modular        of geometric image matching [27, 38] with recent learning-
+nature of the system: it leverages learning in the components      based methods [50] leading to better performance in certain
+in which it is required (i.e. object detection, image/language     situations. Recent work has started evaluating these in embod-
+matching) while still leveraging strong classical methods (i.e.    ied settings where a robot must navigate either to an image in
+mapping and planning). Modularity is also responsible for          the world [33, 9] or to an image corresponding to a particular
+the ease of deployment across different robot embodiments          object instance [34].
+and downstream applications, as individual components can             GOAT’s memory representation builds upon a rich set of
+be easily adapted or new components introduced.                    scene representation in robotics over the last 40 years: occu-
+                                                                   pancy maps (with geometry [14], explicit semantics [49, 10],
+                     II. R ELATED W ORK
+                                                                   or implicit semantics [21]), topological representations [9, 12,
+   While there is a large body of work on navigation [58],         36, 51], and neural feature fields [55, 52, 41, 5]. Many of these
+most only evaluate in simulation or develop specialized so-        works have started using pre-trained vision-language features
+lutions to tackle a subset of these tasks. Classical robotics      like CLIP [46] and either projecting them into 3D directly [29]
+works [57] employed geometric reasoning to solve navigation        or capturing them in an implicit neural field [52, 5]. Para-
+to geometric goals. With advances in semantic understanding        metric representations summarize the environment into low-
+of images, researchers started using semantic reasoning to         dimensional abstract features, while non-parametric represen-
+improve exploration efficiency in novel environments [8] and       tations view the collection of images itself as a representation.
+tackling semantic goals specified via categories [47, 21, 3,       Our work leverages aspects of both. We build a semantic map
+7, 32, 53, 6], images [63, 9, 22, 33, 34] and language             for navigating to objects but also store raw images associated
+instructions [42, 56, 18, 40, 11, 26]. Most of these methods       with discovered objects (landmarks). Dense representations
+are a) specialized to a single task (i.e. are designed only        storing CLIP features at every location [26] don’t yet scale to
+for language goals or only for image goals), b) only tackle        entire homes without server-grade GPUs, whereas our sparse
+a single goal in each episode (i.e. are not lifelong), and         landmark representation does.
+c) evaluated only in simulation (or rudimentary real-world
+environments). GOAT advances upon these works on all three
+fronts and tackles multiple goal specifications in a lifelong
+                                                                                          III. GOAT TASK
+manner in the real world. This supersedes past works that
+only innovate along one axis, e.g. past works [59, 9] tackle
+a sequence of goal but goals are limited to either be object          We formalize the Go to Any Thing task T as follows.
+goals [59] or image goals [9] in simulation, or rely on a pre-     We construct navigation episodes consisting of a sequence of
+exploration phase [11]. [1] tackles flexible goal specifications   unseen goal objects to be reached in unseen environments. The
+but only shows simulated results for one goal per episode.         robot is spawned at a random location. At every timestep t,
+This work builds on top of the system from [19], leveraging the    the robot receives observations consisting of an RGB image It ,
+same modular structure; using SLAM and pre-trained object          depth image Dt , and pose reading xt from onboard sensors,
+detectors to maintain a semantic map for planning. While [19]      as well as the current object goal gk , k ∈ {1, 2, .., N }, which
+can only reach one categorical goal, in this paper, we introduce   consists in an object category (SINK, CHAIR), an image or
+a lifelong memory that enables this system to reach a sequence     language description (“the potted plant next to the couch”,
+of goals including language and image goals.                       “the black and white striped bed”) uniquely identifying an
+   GOAT maintains a map of the environment as well as              object instance in the environment. The robot must reach the
+visual landmarks - egocentric views of object instances -          goal object gk as efficiently as possible within a limited time
+which are stored in our novel instance-aware object mem-           budget. As soon as it reaches the current goal or when the
+ory. This memory should be queryable with both images              time budget is exhausted, the robot receives the next goal
+and natural language to satisfy GOAT’s multimodality re-           to navigate to, gk+1 . In searching for this sequence of goals
+quirement. We enable this by storing raw images for visual         the agent is allowed to maintain a memory computed using
+landmarks, as opposed to features, allowing us to leverage         incoming observations. In this way, if gk+1 has been observed
+recent advances in image-image matching and image-language         during the process of reaching gk the agent can often more
+matching independently. We use Contrastive Language-Image          efficiently navigate to gk+1 .
+Fig. 2. GOAT system overview. The perception system detects and localizes object instances, the global policy outputs high-level navigation
+commands depending on whether the robot should explore or reach a goal already in memory, and the local policy executes these commands.
+
+                      IV. GOAT M ETHOD                                 experiments. We also estimate depth to fill in holes for
+                                                                       reflective objects in raw sensor readings using MiDaS [48]
+      a) GOAT Agent: Figure 2 shows an overview of the
+                                                                       monocular depth estimation (additional details in supplemen-
+GOAT system. As the agent moves through the scene, the
+                                                                       tary). We project the first-person semantic segmentation into
+perception system processes RGB-D camera inputs to detect
+                                                                       a point cloud, bin the point cloud into a 3D semantic voxel
+object instances and localize them into a top-down semantic
+                                                                       map, and finally sum over the height to compute a 2D instance
+map of the scene. When searching for image or language
+                                                                       map mt . For each detected object instance, we also store the
+goals, it is insufficient to simply find objects of the correct
+                                                                       image in which the object was detected as part of the object
+class (i.e. if the goal is an image of a specific black chair,
+                                                                       instance memory.
+finding a brown chair is incorrect). Previous works that only
+maintain a semantic map ([19]) are unable to solve this                      c) Semantic Map Representation: The semantic map (mt
+problem.                                                               at timestep t) is a spatial representation of the environment that
+   To this end, in addition to the semantic map, GOAT main-            keeps track of object locations, obstacles, and explored areas.
+tains an Object Instance Memory that localizes individual in-          Concretely, it is a K×M ×M matrix of integers where M ×M
+stances of objects in the map and stores images in which each          is the map size, and K is the number of map channels. Each
+instance has been viewed. This Object Instance Memory gives            cell of this spatial map corresponds to 25cm2 (5cm × 5cm)
+GOAT the ability to perform lifelong learning for multimodal           in the physical world. Map channels K = C + 4 where
+navigation. When a new goal is specified to the agent, a global        C is the number of semantic object categories (C = 15 in
+policy first searches the Object Instance Memory to see if the         our experiments), and the remaining 4 channels represent the
+goal has already been observed. After an instance is selected,         obstacles, the explored area, and the agent’s current and past
+its stored location in the map is used as a long-term point            locations. An entry in the map is non-zero if the cell contains
+navigation goal. If no instance is localized, the global policy        an object of a particular semantic category, an obstacle, or is
+outputs an exploration goal. A local policy finally computes           explored, depending on the channel, and zero otherwise. In
+actions towards the long-term goal.                                    this semantic map representation, the first C channels store
+      b) Perception: Figure 3 shows the perception system. It          the unique instance ids of the projected objects. The map is
+takes as input the current depth image Dt , RGB image It ,             initialized with all zeros at the beginning of an episode, and
+and pose reading xt from onboard sensors. It uses an off-the-          the agent starts at the center of the map facing east. While
+shelf model to segment instances in the RGB image. We use              this map representation has been used for previous methods for
+MaskRCNN [24] with a ResNet50 [23] backbone pretrained                 object goal navigation, this is insufficient for reaching specific
+on MS-COCO for object detection and instance segmentation.             objects specified by language or image goals (i.e. find the
+We chose MaskRCNN as current open-set models, such as                  specific book depicted in an image instead of just finding
+Detic [62], were less reliable for common categories in early          any book). To solve this problem we must track and store
+Fig. 3. Perception and memory update. The perception system processes RGB-D input to infill depth, segment object instances, project
+them into a top-down semantic map, and store views in the Object Instance Memory.
+
+
+information about individual object instances. To achieve this        When a new goal is specified to the agent, the global policy
+we maintain an Object Instance Memory (Figure 4 A).                πG first searches the Object Instance Memory to see if the
+      d) Object Instance Memory: Our Object Instance Mem-          goal has already been observed. The method for matching
+ory tracks individual instances of objects and stores every        goals to object instances is tailored to the modality of the
+image (along with the detection bounding box) in which that        goal specification. For category goals, we simply find the
+object has been detected. Every time an object oi is detected      nearest object of the goal category in the semantic map. For
+in the incoming RGB observation I, the depth image is used         language goals, we first extract an object category from the
+to project the location of the detected object into the map. If    language description (by prompting with Mistral 7B [30] in
+the projection of oi spatially overlaps an existing object oj ,    our experiments), then match CLIP features of the language
+they are considered to be the same object, and I is added to       description with CLIP [46] features of each object instance
+the list of images associated with oj . If oi does not overlap     of the inferred category in our Object Instance Memory.
+an existing object, it is considered a new instance.               Similarly, for image goals, we first extract an object category
+      e) Dynamic Memory: In real-world settings, the envi-         from the image with MaskRCNN, then match keypoints of
+ronment may be dynamic, with humans creating or removing           the goal image with keypoints of each object instance of the
+obstacles, and relocating objects. To handle these cases we        inferred category with an off-the-shelf SuperGlue [50] model
+allow our scene representation to be dynamic as well. We take      (additional details and ablations about image and language
+a simple approach: when new observations are received from         matching in supplementary).
+the sensors, we overwrite the relevant cells in the semantic map      While the environment is being explored, we consider the
+based on the updated occupancy information. If a region was        object instance to match a given goal if the similarity score
+previously observed to contain an object and a new observation     crosses a threshold (0.28 for CLIP, 6.0 for Superglue). When
+shows that it is vacant, it is marked as vacant. If a region was   the environment is fully explored, we simply select the object
+previously unoccupied and is observed to be traversable, it        instance with the highest similarity score. After an instance is
+is marked as traversable. With this approach, the agent will       selected, its stored location in the top-down map is used as
+still be able to navigate through regions that were previously     a long-term point navigation goal. If no instance is localized,
+marked as occluded and remove objects from the map that            the global policy outputs an exploration goal. We use frontier-
+have been moved.                                                   based exploration [60], which selects the closest unexplored
+      f) Global Policy: shows the global policy. When only         region as the goal.
+searching for category goals (the ObjectNav task) goal local-           g) Local Policy: Given a long-term goal output by the
+ization is trivial. Simply find the closest cell in the semantic   global policy πG , the local policy πL uses the Fast Marching
+map that matches the desired class. However, when seeking          Method to plan a path towards it. On the Spot robot, we
+image or language goals, finding the correct object instance is    use the built-in point navigation controller to reach waypoints
+not so simple. In the GOAT system, the global policy (Figure       along this path. On the Stretch robot with no such built-in
+4 (B)) selects the correct object instance for each goal.          controller, we plan the first low-level action along this path
+deterministically as in [19].                                            in the Discussions section). CLIP on Wheels [18] attains a
+                                                                         51% success rate, showing that using GOAT’s Object Instance
+                           V. R ESULTS                                   Memory for goal matching is more effective than CLIP feature
+   We evaluate the ability of the GOAT agent to tackle the               matching against all previously viewed images. GOAT w/o
+GOAT task, i.e., reach a sequence of unseen multimodal object            Instances achieves a 49% success rate, with 29% and 28%
+instances in unseen environments.                                        success rates for image and language goals, respectively. This
+   We deployed GOAT on and conducted qualitative experi-                 shows the need to keep track of enough information in memory
+ments with Boston Dynamics Spot and Hello Robot Stretch                  to distinguish between different object instances, which [19]
+robots. We conducted large-scale quantitative experiments with           couldn’t do. GOAT w/o memory achieves 61% success rate
+GOAT on Spot (due to its higher reliability) against 3 baselines         with an SPL of only 0.19 compared to the 0.64 of GOAT. It
+in 9 real-world homes to reach a total of 200+ different                 has to re-explore the environment with every goal, explaining
+object instances (see Figure 5). A demo video qualitatively              the low SPL and low success rate due to many time-outs. This
+illustrating our results can be found in the supplementary.              shows the need to keep track of a lifelong memory. Figure 6
+      a) Experimental Setting: We evaluate the GOAT agent                further emphasizes this point: GOAT performance improves
+as well as three baselines in nine visually diverse homes                with experience in the environment from a 60% success rate
+(see Figure 5) with 10 episodes per home consisting of 5-                (0.20 SPL) at the first goal to 90% (0.80 SPL) for goals
+10 object instances randomly selected out of objects available           5-10 after thorough exploration. Conversely, GOAT without
+in the home, representing 200+ different object instances                memory shows no improvement from experience, while COW
+in total (more visualizations in supplementary). We selected             benefits but plateaus at much lower performance. Figure 7
+goals across 15 different object categories (‘chair’, ‘couch’,           shows example trajectories from GOAT and baselines.
+‘potted plant’, ‘bed’, ‘toilet’, ‘tv’, ‘dining table’, ‘oven’, ‘sink’,
+‘refrigerator’, ‘book’, ‘vase’, ‘cup’, ‘bottle’, ‘teddy bear’).                               VI. A PPLICATIONS
+These categories were chosen to cover a wide range of object                As a general navigation primitive, the GOAT policy can
+sizes (from cups to couches), classes with multiple instances            readily be applied to downstream tasks such as pick and place
+(there may be many chairs), and objects that may be co-located           and social navigation.
+in a 2D map (book resting on a dining table). We took a                  Open Vocabulary Mobile Manipulation: The ability to
+picture of each object for image goals following the protocol            perform rearrangement tasks is essential in any deployment
+in Krantz et al. [34], and annotated 3 different language                scenarios for mobile robots (homes, warehouses, factories)
+descriptions uniquely identifying the object. To generate an             [4, 61, 13, 28, 20]. These are commands such as “pick up
+episode within a home, we sampled a random sequence of 5-10              my coffee mug from the coffee table and bring it to the sink,”
+goals split equally among language, image, and category goals            requiring the agent to search for and navigate to an object, pick
+among all object instances available. We evaluate approaches             it up, search for and navigate to a receptacle, and place the ob-
+in terms of success rate to reach the goal and SPL [2], which            ject on the receptacle. The GOAT navigation policy can easily
+measures path efficiency as the ratio of the agent’s path length         be combined with pick and place skills (we use built-in skills
+over the optimal path length. We report evaluation metrics per           from Boston Dynamics) to fulfill such requests. We evaluate
+goal within an episode with two standard deviation error bars.           this ability on 30 such queries with image/language/category
+      b) Baselines: We compare GOAT to three baselines:                  objects and receptacles across 3 different homes. GOAT can
+1. CLIP on Wheels [18] - the existing work that comes closest            find objects and receptacles with 79% and 87% success rates,
+to being able to address the GOAT problem setting - which                respectively. Demo video and visualizations can be found in
+keeps track of all images the robot has seen and, when given a           supplementary.
+new goal object, decides whether the robot has already seen it           Social Navigation: To operate in human environments, mobile
+by matching CLIP [46] features of the goal image or language             robots need the ability to treat people as dynamic obstacles,
+description with CLIP features of all images in memory,                  plan around them, and search for and follow people [39, 45].
+2. GOAT w/o Instances, an ablation that treats all goals as              To give the GOAT policy such skills, we treat people as
+object categories, i.e., always navigating to the closest object         image object instances with the PERSON category. For
+of the correct category instead of distinguishing between                each participant, we take a front-facing full-body image to
+different instances of the same category as in [19], allowing            be used as the image goal for that participant. This enables
+us to quantify the benefits of GOAT’s instance awareness, and            GOAT to deal with multiple people, just like it can deal with
+3. GOAT w/o Memory, an ablation that resets the semantic                 multiple instances of any object category. Using the dynamic
+map and Object Instance Memory after every goal, allowing                memory protocol described in Section IV GOAT will remove
+us to quantify the benefits of GOAT’s lifelong memory.                   someone’s previous location from the map after they have
+      c) Quantitative Results: Table I reports metrics for each          moved, and continue mapping their new location. This allows
+method aggregated over the 90 episodes. GOAT achieves 83%                GOAT to track a moving person.
+average success rate (94% for object categories, 86% for                    To evaluate GOAT’s ability to treat people as dynamic
+image goals, and 68% for language goals). We observed that               obstacles, we conducted a pilot study including moving people
+localizing language goals is harder than image goals (detailed           as obstacles. In one of the novel homes used for evaluation,
+Fig. 4.   (A) Object Instance Memory. We cluster object detections, along with image views in which they were observed, into instances
+using their location in the semantic map and their category. (B) Global Policy. When a new goal is specified, the global policy first tries to
+localize it within the Object Instance Memory. If no instance is localized, it outputs an exploration goal.
+Fig. 5. “In-the-wild” evaluation. We deploy the GOAT navigation policy in 9 visually diverse homes and evaluate in on reaching 200+
+different object instances as category, image, or language goals. GOAT is platform-agnostic: we deploy it on both Boston Dynamics Spot
+and Hello Robot Stretch.
+                                                               TABLE I
+N AVIGATION P ERFORMANCE IN U NSEEN N ATURAL H OME E NVIRONMENTS . W E COMPARE GOAT TO THREE BASELINES IN 9 UNSEEN HOMES WITH
+10 EPISODES PER HOME CONSISTING OF 5-10 IMAGE , LANGUAGE , OR CATEGORY GOAL OBJECT INSTANCES IN TERMS OF SUCCESS RATE AND SPL [2], A
+                                           MEASURE OF PATH EFFICIENCY, PER GOAL INSTANCE .
+
+
+                                                         SR per Goal                                                               SPL Per Goal
+                                      Image         Language     Category         Average                Image              Language         Category                   Average
+             GOAT                 86.4 ± 1.1       68.2 ± 1.5     94.3 ± 0.8     83.0 ± 0.7        0.679 ± 0.013         0.511 ± 0.014       0.737 ± 0.010           0.642 ± 0.007
+   CLIP on Wheels                 46.1 ± 1.8       40.8 ± 1.9     65.3 ± 1.5     50.7 ± 1.0         0.368 ± 0.014         0.317 ± 0.013       0.569 ± 0.015           0.418 ± 0.008
+ GOAT w/o Instances               28.6 ± 1.7       27.6 ± 1.6     94.1 ± 0.8     49.4 ± 0.8         0.219 ± 0.013         0.222 ± 0.012      0.739 ± 0.011            0.398 ± 0.007
+ GOAT w/o Memory                  59.4 ± 1.5       45.3 ± 1.6     76.4 ± 1.3     60.3 ± 0.8         0.193 ± 0.020         0.134 ± 0.022       0.239 ± 0.021           0.188 ± 0.012
+
+
+                                         GOAT          COW          GOAT w/o Memory                              GOAT          COW          GOAT w/o Memory
+                            1.0                                                                    1.0
+                            0.9
+                                                                                                   0.8
+                            0.8
+             Success Rate
+
+
+
+
+                            0.7                                                                    0.6
+
+
+
+
+                                                                                             SPL
+                            0.6
+                                                                                                   0.4
+                            0.5
+                            0.4                                                                    0.2
+                            0.3
+                                                                                                   0.0
+                                  1            2             3           4            5-10               1          2                3           4            5-10
+                                                Number of sequential goals                                              Number of sequential goals
+
+Fig. 6.  Navigation performance based on sequential goal count. GOAT performance improves with experience in the environment:
+from a 60% success rate (0.2 SPL) at the first goal to 90% (0.8 SPL) for goals 5-10 after thorough exploration. Conversely, GOAT without
+memory shows no improvement from experience, while COW benefits but plateaus at much lower performance.
+
+
+we collected an additional 5 trajectories (5-10 navigation goals                              specific end-to-end learned approach would be limited by the
+each) during which people continuously moved throughout                                       available data for this specific task. GOAT is able to tie all of
+the scene. Either one or two people (chosen randomly) were                                    these components together using our Object Instance memory
+instructed to walk to a randomly selected sequence of objects                                 to achieve state-of-the-art performance for lifelong real-world
+(waiting briefly at each object) in the scene while the robot                                 navigation.
+was navigating. They were instructed to treat the robot as                                       Furthermore, the modular design of GOAT allows it to be
+they would another human (i.e. not walking directly into the                                  easily adapted to different robot embodiments and a variety of
+robot). In this setting, GOAT preserves an 81% success rate.                                  downstream applications. GOAT can be deployed on any robot
+We further evaluate the ability of GOAT to search for and                                     with an RGB-D camera, a pose sensor (onboard SLAM), and
+follow people by introducing people as image goals in 5                                       the ability to execute low-level locomotion commands (move
+additional trajectories following the same protocol. GOAT can                                 forward, turn left, turn right). GOAT’s modularity eliminates
+localize and follow people with 83% success, close to the 86%                                 the need for new data collection or training when deployed
+success rate for static image instance goals. Demo video and                                  on a new robot platform. This stands in contrast to end-to-
+visualizations can be found in supplementary.                                                 end methods, which would require new data collection and
+                                                                                              retraining for every different embodiment.
+                                      VII. D ISCUSSION                                           Consequently, new modalities of goals can easily be added
+      a) Modularity allows GOAT to Achieve Robust General-                                    to the system as long as a mechanism for matching exists and
+Purpose Navigation in the Real World: The GOAT system as a                                    the robot is equipped with the correct sensors. For example,
+whole is a robust navigation platform, achieving a success rate                               if goals are specified by 3D models, all that is required is a
+of 83% across image, language, and category goals in the wild                                 module for estimating the 3D shape of detected objects and
+and up to 90% once the environment is fully explored (Table                                   for matching against the specified goals.
+I, Figure 6). This is possible in-part due to the modular nature                                    b) Matching Performance During Exploration Lags Be-
+of the system. A modular system allows learning to be applied                                 hind Performance After Exploration: Using a predefined
+in the components in which it is required (i.e. object detec-                                 threshold for goal-to-object matching scores during explo-
+tion, image/language matching), while still leveraging strong                                 ration can be error-prone (visualization in supplementary). On
+classical methods (i.e. mapping and planning). Furthermore,                                   the other hand, once the scene has been explored, the agent
+for learning-based components, we can use models trained on                                   has the privilege of selecting the best matching instance across
+large datasets (i.e. CLIP, MaskRCNN), or specialized tasks                                    all observed objects. This is reflected in the improved perfor-
+(monocular depth estimation) to full effect, where a task-                                    mance of the agent post-exploration (Figure 6). When the
+Fig. 7. Online evaluation qualitative trajectories. We compare methods on the same sequence of 5 goals (top) in the same environment.
+GOAT localizes all goals and navigates efficiently (with an SPL of 0.78). CLIP on Wheels localizes only 1 out of 5 goals, illustrating the
+superiority of GOAT’s Object Instance Memory for matching. GOAT without memory is able to localize 4 our of 5 goals, but with an SPL
+of only 0.40 as it has to re-explore the environment with every goal. See Section V for details.
+environment is fully explored, failures are almost exclusively      total for all images by the end of an episode on average.
+due to failures in matching the correct goal. The most common       Similarly, only storing CLIP features for language matching
+failure is a language goal being matched against the an object      requires minimal memory (only 257 KB on average for an
+of the correct class, but the wrong instance (i.e. The language     entire trajectory), and allows for fast vectorized comparison
+specifies a bed, but the system matches against a different bed).   for language matching (7ms on average and 29ms at max on
+Examples of these failures can be seen in supplementary figure      a single GPU). The computational costs for image-to-image
+S2, and additional details of matching matching performance         comparisons remain under control too as we continue to only
+can be found in supplementary.                                      match to the instances belonging to the category of interest.
+      c) Image Goal Matching is More Reliable than Lan-             Matching a single image pair takes 45ms on a single GPU,
+guage Goal Matching: We observe that image-to-image goal            and the matching takes 0.9s on average (and 2.6s at max) after
+matching is more successful at identifying goal instances as        the environment is fully explored — these matching times
+compared to matching instance views with semantic features          were more than fast enough for our experiments. However,
+of language descriptions of the goal. This is expected because      for extremely long trajectories a mechanism to increase paral-
+SuperGLUE-based image keypoint matching can leverage                lelism or cull duplicate images would be necessary to increase
+correspondences in geometric properties between predicted           matching speeds.
+instances and goal objects. However, the semantic feature                g) Additional Limitations: To achieve robust image-
+encodings from CLIP can be incapable of capturing fine-             matching results GOAT’s memory system stores all images in
+grained instance properties – that can often be crucial for         which objects have been detected. For very small or compute-
+goal matching. As a result, navigation with image goals is          constrained robots this may be too memory inefficient and
+significantly more successful (Table I, SR 86.4 vs. 68.2).          images should be sub-sampled. Like all systems that rely on
+      d) Real-World Open-Vocabulary Detection: Limitations          2D mapping, GOAT is designed to handle only a single story
+and Opportunities: An interesting and noteworthy observation        in a building. While this is remedied by detecting when a floor
+is that despite the rapid advances in open (or large) vocabulary    change has happened and maintaining a separate map per floor,
+vision-and-language models (VLMs) [37, 43], we find their           we leave this to future work.
+performance to be significantly worse than a Mask RCNN
+                                                                                       ACKNOWLEDGMENTS
+model from 2017. We attribute this observation to two possible
+hypotheses: (i) open-vocabulary models trade-off robustness           Saurabh Gupta’s effort was supported by the NSF CAREER
+for being more versatile, and supporting more queries, and          Award (IIS2143873).
+(ii) the internet-scale weakly labeled data sources used to
+train modern VLMs under-represent the kind of embodied
+interaction data that would benefit robots occupying real-
+world environments with humans. The latter represents a
+challenging opportunity to develop such large-scale models
+that are simultaneously versatile and robust for embodied
+applications in real-world environments.
+      e) Generalization to New Environments: While end-to-
+end learning-based solutions may suffer from overfitting on a
+few training scenes, the modular design of GOAT is able to
+avoid this issue. The generalization of GOAT is only limited
+by the robustness of its components, many of which have been
+trained on large internet-scale data. In real-world experiments,
+in 9 visually diverse homes we found no generalization issues
+in any of the components of GOAT. That being said, GOAT
+was designed for indoor navigation and consequently was
+not tested in outdoor settings where low-level locomotion
+is far more challenging. While utilizing large-scale models
+such as CLIP improves generalization, GOAT also inherits
+the limitations and biases of these models. For example, if
+the majority of the objects used for training the object detector
+originated from North America, the system’s performance may
+be diminished when operating in other regions.
+      f) Computational Constraints: While the memory uti-
+lization of GOAT is consistently increasing throughout an
+episode, when the proper steps have been taken to optimize
+performance, this was not a hindrance in our experiments.
+Storing compressed images as 480 × 640 requires only 6 MB
+                        R EFERENCES                                   tion (ICRA), pages 11509–11522. IEEE, 2023.
+                                                                 [12] Howie Choset and Keiji Nagatani. Topological simul-
+ [1] Ziad Al-Halah, Santhosh Kumar Ramakrishnan, and                  taneous localization and mapping (slam): toward exact
+     Kristen Grauman. Zero experience required: Plug &                localization without explicit localization. IEEE Transac-
+     play modular transfer learning for semantic visual navi-         tions on robotics and automation, 17(2):125–137, 2001.
+     gation. In Proceedings of the IEEE/CVF Conference on        [13] Danny Driess, Fei Xia, Mehdi SM Sajjadi, Corey Lynch,
+     Computer Vision and Pattern Recognition, pages 17031–            Aakanksha Chowdhery, Brian Ichter, Ayzaan Wahid,
+     17041, 2022.                                                     Jonathan Tompson, Quan Vuong, Tianhe Yu, et al. Palm-
+ [2] Peter Anderson, Angel Chang, Devendra Singh Chaplot,             e: An embodied multimodal language model. arXiv
+     Alexey Dosovitskiy, Saurabh Gupta, Vladlen Koltun,               preprint arXiv:2303.03378, 2023.
+     Jana Kosecka, Jitendra Malik, Roozbeh Mottaghi, Mano-       [14] Alberto Elfes. Using occupancy grids for mobile robot
+     lis Savva, et al. On evaluation of embodied navigation           perception and navigation. Computer, 22(6):46–57, 1989.
+     agents. arXiv preprint arXiv:1807.06757, 2018.              [15] Hao Fang*, Saurabh Gupta*, Forrest Iandola*, Rupesh K
+ [3] Peter Anderson, Qi Wu, Damien Teney, Jake Bruce, Mark            Srivastava*, Li Deng, Piotr Dollár, Jianfeng Gao, Xi-
+     Johnson, Niko Sünderhauf, Ian Reid, Stephen Gould, and          aodong He, Margaret Mitchell, John C Platt, C Lawrence
+     Anton Van Den Hengel. Vision-and-language navigation:            Zitnick, and Geoffrey Zweig. From captions to visual
+     Interpreting visually-grounded navigation instructions in        concepts and back. In Proceedings of the IEEE confer-
+     real environments. In Proceedings of the IEEE confer-            ence on computer vision and pattern recognition, pages
+     ence on computer vision and pattern recognition, pages           1473–1482, 2015.
+     3674–3683, 2018.                                            [16] Ali Farhadi, Mohsen Hejrati, Mohammad Amin Sadeghi,
+ [4] Dhruv Batra, Angel X Chang, Sonia Chernova, Andrew J             Peter Young, Cyrus Rashtchian, Julia Hockenmaier, and
+     Davison, Jia Deng, Vladlen Koltun, Sergey Levine, Ji-            David Forsyth. Every picture tells a story: Generating
+     tendra Malik, Igor Mordatch, Roozbeh Mottaghi, et al.            sentences from images. In Computer Vision–ECCV 2010:
+     Rearrangement: A challenge for embodied ai. arXiv                11th European Conference on Computer Vision, Herak-
+     preprint arXiv:2011.01975, 2020.                                 lion, Crete, Greece, September 5-11, 2010, Proceedings,
+ [5] Benjamin Bolte, Austin Wang, Jimmy Yang, Mustafa                 Part IV 11, pages 15–29. Springer, 2010.
+     Mukadam, Mrinal Kalakrishnan, and Chris Paxton. Usa-        [17] Andrea Frome, Greg S Corrado, Jon Shlens, Samy
+     net: Unified semantic and affordance representations for         Bengio, Jeff Dean, Marc’Aurelio Ranzato, and Tomas
+     robot memory. arXiv preprint arXiv:2304.12164, 2023.             Mikolov. Devise: A deep visual-semantic embedding
+ [6] Matthew Chang, Arjun Gupta, and Saurabh Gupta. Se-               model. Advances in neural information processing sys-
+     mantic visual navigation by watching youtube videos.             tems, 26, 2013.
+     In Advances in Neural Information Processing Systems,       [18] Samir Yitzhak Gadre, Mitchell Wortsman, Gabriel Il-
+     2020.                                                            harco, Ludwig Schmidt, and Shuran Song. Cows on pas-
+ [7] Devendra Singh Chaplot, Dhiraj Gandhi, Abhinav Gupta,            ture: Baselines and benchmarks for language-driven zero-
+     and Ruslan Salakhutdinov. Object goal navigation using           shot object navigation. In Proceedings of the IEEE/CVF
+     goal-oriented semantic exploration. In In Neural Infor-          Conference on Computer Vision and Pattern Recognition,
+     mation Processing Systems (NeurIPS), 2020.                       pages 23171–23181, 2023.
+ [8] Devendra Singh Chaplot, Dhiraj Gandhi, Saurabh Gupta,       [19] Theophile Gervet, Soumith Chintala, Dhruv Batra, Ji-
+     Abhinav Gupta, and Ruslan Salakhutdinov. Learning                tendra Malik, and Devendra Singh Chaplot. Navigating
+     to explore using active neural slam. In International            to objects in the real world. Science Robotics, 8(79):
+     Conference on Learning Representations, 2020. URL                eadf6991, 2023.
+     https://openreview.net/pdf?id=HklXn1BKDH.                   [20] Jiayuan Gu, Devendra Singh Chaplot, Hao Su, and Ji-
+ [9] Devendra Singh Chaplot, Ruslan Salakhutdinov, Abhinav            tendra Malik. Multi-skill mobile manipulation for object
+     Gupta, and Saurabh Gupta. Neural topological slam                rearrangement. arXiv preprint arXiv:2209.02778, 2022.
+     for visual navigation. In Computer Vision and Pattern       [21] Saurabh Gupta, James Davidson, Sergey Levine, Rahul
+     Recognition (CVPR), 2020.                                        Sukthankar, and Jitendra Malik. Cognitive mapping
+[10] Devendra Singh Chaplot, Murtaza Dalal, Saurabh Gupta,            and planning for visual navigation. In Proceedings of
+     Jitendra Malik, and Russ R Salakhutdinov. Seal: Self-            the IEEE Conference on Computer Vision and Pattern
+     supervised embodied active learning using exploration            Recognition, 2017.
+     and 3d consistency. Advances in neural information          [22] Meera Hahn, Devendra Singh Chaplot, Shubham Tul-
+     processing systems, 34:13086–13098, 2021.                        siani, Mustafa Mukadam, James M Rehg, and Abhinav
+[11] Boyuan Chen, Fei Xia, Brian Ichter, Kanishka Rao,                Gupta. No rl, no simulation: Learning to navigate without
+     Keerthana Gopalakrishnan, Michael S Ryoo, Austin                 navigating. Advances in Neural Information Processing
+     Stone, and Daniel Kappler. Open-vocabulary queryable             Systems, 34:26661–26673, 2021.
+     scene representations for real world planning. In 2023      [23] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian
+     IEEE International Conference on Robotics and Automa-            Sun. Deep residual learning for image recognition. In
+     Proceedings of the IEEE conference on computer vision             ence, Glasgow, UK, August 23–28, 2020, Proceedings,
+     and pattern recognition, pages 770–778, 2016.                     Part XXVIII 16, pages 104–120. Springer, 2020.
+[24] Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross        [33] Jacob Krantz, Stefan Lee, Jitendra Malik, Dhruv Batra,
+     Girshick. Mask r-cnn. In Proceedings of the IEEE in-              and Devendra Singh Chaplot. Instance-specific image
+     ternational conference on computer vision, pages 2961–            goal navigation: Training embodied agents to find object
+     2969, 2017.                                                       instances. arXiv preprint arXiv:2211.15876, 2022.
+[25] Evan Hernandez, Sarah Schwettmann, David Bau, Teona          [34] Jacob Krantz, Theophile Gervet, Karmesh Yadav, Austin
+     Bagashvili, Antonio Torralba, and Jacob Andreas. Nat-             Wang, Chris Paxton, Roozbeh Mottaghi, Dhruv Batra,
+     ural language descriptions of deep visual features. In            Jitendra Malik, Stefan Lee, and Devendra Singh Chaplot.
+     International Conference on Learning Representations,             Navigating to objects specified by images. In ICCV,
+     2021.                                                             2023.
+[26] Chenguang Huang, Oier Mees, Andy Zeng, and Wolfram           [35] Ranjay Krishna, Yuke Zhu, Oliver Groth, Justin Johnson,
+     Burgard. Visual language maps for robot navigation. In            Kenji Hata, Joshua Kravitz, Stephanie Chen, Yannis
+     2023 IEEE International Conference on Robotics and                Kalantidis, Li-Jia Li, David A Shamma, et al. Visual
+     Automation (ICRA), pages 10608–10615. IEEE, 2023.                 genome: Connecting language and vision using crowd-
+[27] Daniel P Huttenlocher and Shimon Ullman. Recognizing              sourced dense image annotations. International journal
+     solid objects by alignment with an image. International           of computer vision, 123:32–73, 2017.
+     journal of computer vision, 5(2):195–212, 1990.              [36] Benjamin Kuipers and Yung-Tai Byun. A robot explo-
+[28] brian ichter, Anthony Brohan, Yevgen Chebotar, Chelsea            ration and mapping strategy based on a semantic hierar-
+     Finn, Karol Hausman, Alexander Herzog, Daniel Ho,                 chy of spatial representations. Robotics and autonomous
+     Julian Ibarz, Alex Irpan, Eric Jang, Ryan Julian, Dmitry          systems, 8(1-2):47–63, 1991.
+     Kalashnikov, Sergey Levine, Yao Lu, Carolina Parada,         [37] Boyi Li, Kilian Q Weinberger, Serge Belongie, Vladlen
+     Kanishka Rao, Pierre Sermanet, Alexander T Toshev,                Koltun, and Rene Ranftl. Language-driven semantic
+     Vincent Vanhoucke, Fei Xia, Ted Xiao, Peng Xu,                    segmentation. In International Conference on Learn-
+     Mengyuan Yan, Noah Brown, Michael Ahn, Omar                       ing Representations, 2022. URL https://openreview.net/
+     Cortes, Nicolas Sievers, Clayton Tan, Sichun Xu, Diego            forum?id=RriDjddCLN.
+     Reyes, Jarek Rettinghouse, Jornell Quiambao, Peter Pas-      [38] David G Lowe. Distinctive image features from scale-
+     tor, Linda Luu, Kuang-Huei Lee, Yuheng Kuang, Sally               invariant keypoints. International journal of computer
+     Jesmonth, Nikhil J. Joshi, Kyle Jeffrey, Rosario Jauregui         vision, 60:91–110, 2004.
+     Ruano, Jasmine Hsu, Keerthana Gopalakrishnan, Byron          [39] Matthias Luber, Luciano Spinello, Jens Silva, and Kai O
+     David, Andy Zeng, and Chuyuan Kelly Fu. Do as i can,              Arras. Socially-aware robot navigation: A learning ap-
+     not as i say: Grounding language in robotic affordances.          proach. In 2012 IEEE/RSJ International Conference on
+     In Karen Liu, Dana Kulic, and Jeff Ichnowski, editors,            Intelligent Robots and Systems, pages 902–907. IEEE,
+     Proceedings of The 6th Conference on Robot Learning,              2012.
+     volume 205 of Proceedings of Machine Learning Re-            [40] Arjun Majumdar, Gunjan Aggarwal, Bhavika Devnani,
+     search, pages 287–318. PMLR, 14–18 Dec 2023. URL                  Judy Hoffman, and Dhruv Batra. Zson: Zero-shot object-
+     https://proceedings.mlr.press/v205/ichter23a.html.                goal navigation using multimodal goal embeddings. Ad-
+[29] Krishna Murthy Jatavallabhula, Alihusein Kuwajerwala,             vances in Neural Information Processing Systems, 35:
+     Qiao Gu, Mohd Omama, Tao Chen, Shuang Li, Ganesh                  32340–32352, 2022.
+     Iyer, Soroush Saryazdi, Nikhil Keetha, Ayush Tewari,         [41] Pierre Marza, Laetitia Matignon, Olivier Simonin, Dhruv
+     et al. Conceptfusion: Open-set multimodal 3d mapping.             Batra, Christian Wolf, and Devendra Singh Chaplot.
+     arXiv preprint arXiv:2302.07241, 2023.                            Autonerf: Training implicit scene representations with
+[30] Albert Q Jiang, Alexandre Sablayrolles, Arthur Mensch,            autonomous agents. arXiv preprint arXiv:2304.11241,
+     Chris Bamford, Devendra Singh Chaplot, Diego de las               2023.
+     Casas, Florian Bressand, Gianna Lengyel, Guillaume           [42] So Yeon Min, Devendra Singh Chaplot, Pradeep Raviku-
+     Lample, Lucile Saulnier, et al. Mistral 7b. arXiv preprint        mar, Yonatan Bisk, and Ruslan Salakhutdinov. Film: Fol-
+     arXiv:2310.06825, 2023.                                           lowing instructions in language with modular methods.
+[31] Justin Johnson, Andrej Karpathy, and Li Fei-Fei. Dense-           arXiv preprint arXiv:2110.07342, 2021.
+     cap: Fully convolutional localization networks for dense     [43] Matthias Minderer, Alexey Gritsenko, Austin Stone,
+     captioning. In Proceedings of the IEEE conference on              Maxim Neumann, Dirk Weissenborn, Alexey Dosovit-
+     computer vision and pattern recognition, pages 4565–              skiy, Aravindh Mahendran, Anurag Arnab, Mostafa De-
+     4574, 2016.                                                       hghani, Zhuoran Shen, et al. Simple open-vocabulary
+[32] Jacob Krantz, Erik Wijmans, Arjun Majumdar, Dhruv                 object detection. In European Conference on Computer
+     Batra, and Stefan Lee. Beyond the nav-graph: Vision-              Vision, pages 728–755. Springer, 2022.
+     and-language navigation in continuous environments. In       [44] Bryan A Plummer, Liwei Wang, Chris M Cervantes,
+     Computer Vision–ECCV 2020: 16th European Confer-                  Juan C Caicedo, Julia Hockenmaier, and Svetlana Lazeb-
+     nik. Flickr30k entities: Collecting region-to-phrase cor-    [55] Anthony Simeonov, Yilun Du, Andrea Tagliasac-
+     respondences for richer image-to-sentence models. In              chi, Joshua B Tenenbaum, Alberto Rodriguez, Pulkit
+     Proceedings of the IEEE international conference on               Agrawal, and Vincent Sitzmann. Neural descriptor fields:
+     computer vision, pages 2641–2649, 2015.                           Se (3)-equivariant object representations for manipula-
+[45] Xavier Puig, Eric Undersander, Andrew Szot,                       tion. In 2022 International Conference on Robotics and
+     Mikael Dallaire Cote, Tsung-Yen Yang, Ruslan Partsey,             Automation (ICRA), pages 6394–6400. IEEE, 2022.
+     Ruta Desai, Alexander William Clegg, Michal Hlavac,          [56] Chan Hee Song, Jiaman Wu, Clayton Washington,
+     So Yeon Min, et al. Habitat 3.0: A co-habitat for humans,         Brian M Sadler, Wei-Lun Chao, and Yu Su. Llm-planner:
+     avatars and robots. arXiv preprint arXiv:2310.13724,              Few-shot grounded planning for embodied agents with
+     2023.                                                             large language models. In Proceedings of the IEEE/CVF
+[46] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya                International Conference on Computer Vision, pages
+     Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry,             2998–3009, 2023.
+     Amanda Askell, Pamela Mishkin, Jack Clark, et al.            [57] Sebastian Thrun, Maren Bennewitz, Wolfram Burgard,
+     Learning transferable visual models from natural lan-             Armin B Cremers, Frank Dellaert, Dieter Fox, Dirk
+     guage supervision. In International conference on ma-             Hahnel, Charles Rosenberg, Nicholas Roy, Jamieson
+     chine learning, pages 8748–8763. PMLR, 2021.                      Schulte, et al. Minerva: A second-generation museum
+[47] Santhosh Kumar Ramakrishnan, Devendra Singh Chap-                 tour-guide robot. In Proceedings 1999 IEEE Interna-
+     lot, Ziad Al-Halah, Jitendra Malik, and Kristen Grau-             tional Conference on Robotics and Automation (Cat. No.
+     man. Poni: Potential functions for objectgoal navigation          99CH36288C), volume 3. IEEE, 1999.
+     with interaction-free learning. In Proceedings of the        [58] Sebastian Thrun, Wolfram Burgard, and Dieter Fox.
+     IEEE/CVF Conference on Computer Vision and Pattern                Probabilistic Robotics (Intelligent Robotics and Au-
+     Recognition, pages 18890–18900, 2022.                             tonomous Agents). The MIT Press, 2005. ISBN
+[48] René Ranftl, Katrin Lasinger, David Hafner, Konrad               0262201623.
+     Schindler, and Vladlen Koltun. Towards robust monocu-        [59] Saim Wani, Shivansh Patel, Unnat Jain, Angel Chang,
+     lar depth estimation: Mixing datasets for zero-shot cross-        and Manolis Savva. Multion: Benchmarking semantic
+     dataset transfer. IEEE Transactions on Pattern Analysis           map memory using multi-object navigation. Advances in
+     and Machine Intelligence, 44(3), 2022.                            Neural Information Processing Systems, 33:9700–9712,
+[49] Renato F Salas-Moreno, Richard A Newcombe, Hauke                  2020.
+     Strasdat, Paul HJ Kelly, and Andrew J Davison. Slam++:       [60] Brian Yamauchi. Frontier-based exploration using mul-
+     Simultaneous localisation and mapping at the level of             tiple robots. In Proceedings of the second international
+     objects. In Proceedings of the IEEE conference on                 conference on Autonomous agents, pages 47–53, 1998.
+     computer vision and pattern recognition, pages 1352–         [61] Sriram Yenamandra, Arun Ramachandran, Karmesh Ya-
+     1359, 2013.                                                       dav, Austin Wang, Mukul Khanna, Theophile Gervet,
+[50] Paul-Edouard Sarlin, Daniel DeTone, Tomasz Mal-                   Tsung-Yen Yang, Vidhi Jain, Alexander William Clegg,
+     isiewicz, and Andrew Rabinovich. Superglue: Learning              John Turner, Zsolt Kira, Manolis Savva, Angel Chang,
+     feature matching with graph neural networks. In Pro-              Devendra Singh Chaplot, Dhruv Batra, Roozbeh Mot-
+     ceedings of the IEEE/CVF conference on computer vision            taghi, Yonatan Bisk, and Chris Paxton. Homerobot:
+     and pattern recognition, pages 4938–4947, 2020.                   Open vocabulary mobile manipulation. 2023. URL
+[51] Nikolay Savinov, Alexey Dosovitskiy, and Vladlen                  https://github.com/facebookresearch/home-robot.
+     Koltun. Semi-parametric topological memory for nav-          [62] Xingyi Zhou, Rohit Girdhar, Armand Joulin, Philipp
+     igation. arXiv preprint arXiv:1803.00653, 2018.                   Krähenbühl, and Ishan Misra. Detecting twenty-thousand
+[52] Nur Muhammad Mahi Shafiullah, Chris Paxton, Lerrel                classes using image-level supervision. In ECCV, 2022.
+     Pinto, Soumith Chintala, and Arthur Szlam. Clip-fields:      [63] Yuke Zhu, Roozbeh Mottaghi, Eric Kolve, Joseph J Lim,
+     Weakly supervised semantic fields for robotic memory.             Abhinav Gupta, Li Fei-Fei, and Ali Farhadi. Target-
+     arXiv preprint arXiv:2210.05663, 2022.                            driven visual navigation in indoor scenes using deep
+[53] Mohit Shridhar, Jesse Thomason, Daniel Gordon,                    reinforcement learning. In 2017 IEEE international
+     Yonatan Bisk, Winson Han, Roozbeh Mottaghi, Luke                  conference on robotics and automation (ICRA), pages
+     Zettlemoyer, and Dieter Fox. Alfred: A benchmark for              3357–3364. IEEE, 2017.
+     interpreting grounded instructions for everyday tasks. In
+     Proceedings of the IEEE/CVF conference on computer
+     vision and pattern recognition, pages 10740–10749,
+     2020.
+[54] Mohit Shridhar, Lucas Manuelli, and Dieter Fox. Cliport:
+     What and where pathways for robotic manipulation. In
+     Conference on Robot Learning, pages 894–906. PMLR,
+     2022.
+

@@ -1,0 +1,655 @@
+ RMA: Rapid Motor Adaptation for Legged Robots
+    Ashish Kumar                 Zipeng Fu                           Deepak Pathak                        Jitendra Malik
+    UC Berkeley          Carnegie Mellon University            Carnegie Mellon University             UC Berkeley, Facebook
+
+
+
+
+Fig. 1: We demonstrate the performance of RMA on several challenging environments. The robot is successfully able to walk on
+sand, mud, hiking trails, tall grass and dirt pile without a single failure in all our trials. The robot was successful in 70% of the
+trials when walking down stairs along a hiking trail, and succeeded in 80% of the trials when walking across a cement pile and
+a pile of pebbles. The robot achieves this high success rate despite never having seen unstable or sinking ground, obstructive
+vegetation or stairs during training. All deployment results are with the same policy without any simulation calibration, or
+real-world fine-tuning. Videos at https://ashish-kmr.github.io/rma-legged-robots/
+
+
+
+   Abstract—Successful real-world deployment of legged robots        tools of control theory [35, 42, 45, 16, 54, 61, 48, 25, 27, 2, 23].
+would require them to adapt in real-time to unseen scenarios         These methods require considerable expertise on the part of
+like changing terrains, changing payloads, wear and tear. This       the human designer, and in recent years there has been much
+paper presents Rapid Motor Adaptation (RMA) algorithm to
+solve this problem of real-time online adaptation in quadruped       interest in replicating this success using reinforcement learning
+robots. RMA consists of two components: a base policy and an         and imitation learning techniques [22, 18, 40, 53, 31] which
+adaptation module. The combination of these components enables       could lower this burden, and perhaps also improve performance.
+the robot to adapt to novel situations in fractions of a second.     The standard paradigm is to train an RL-based controller in a
+RMA is trained completely in simulation without using any            physics simulation environment and then transfer to the real
+domain knowledge like reference trajectories or predefined foot
+trajectory generators and is deployed on the A1 robot without        world using various sim-to-real techniques [50, 39, 22]. This
+any fine-tuning. We train RMA on a varied terrain generator          transfer has proven quite challenging, because the sim-to-real
+using bioenergetics-inspired rewards and deploy it on a variety of   gap itself is the result of multiple factors: (a) the physical robot
+difficult terrains including rocky, slippery, deformable surfaces    and its model in the simulator differ significantly; (b) real-
+in environments with grass, long vegetation, concrete, pebbles,      world terrains vary considerably (Figure 1) from our models
+stairs, sand, etc. RMA shows state-of-the-art performance across
+diverse real-world as well as simulation experiments. Video          of these in the simulator; (c) the physics simulator fails to
+results at https://ashish-kmr.github.io/rma-legged-robots/.          accurately capture the physics of the real world – we are
+                                                                     dealing here with contact forces, deformable surfaces and the
+                      I. I NTRODUCTION                               like – a considerably harder problem than modeling rigid bodies
+   Great progress has been made in legged robotics over the last     moving in free space.
+forty years through the modeling of physical dynamics and the           In this paper, we report on our progress on solving this
+       A) Training in Simulation
+
+       Phase 1                                   xt, at−1
+         Mass, COM, Friction                                              Base Policy (π)
+         Terrain Height     (et)      Env Factor Encoder (μ)       zt
+         Motor Strength
+
+       *Trainable Modules in Red                               Regress                      at
+       Phase 2                                     xt, at−1
+                xt−51, at−51                                              Base Policy (π)
+                                       Adaptation Module (ϕ)       zt̂
+                   xt−1, at−1
+                                                                                                    Physics Simulation
+
+
+
+      B) Deployment
+
+
+                                                   xt, at−1
+                xt−50, at−51                                              Base Policy (π)    at
+                                      Adaptation Module (ϕ)
+                                                                   zt̂       100 Hz
+                   xt, at−1                   10 Hz
+
+
+
+Fig. 2: RMA consists of two subsystems - the base policy π and the adaptation module φ. Top: RMA is trained in two phases.
+In the first phase, the base policy π takes as input the current state xt , previous action at−1 and the privileged environmental
+factors et which is encoded into the latent extrinsics vector zt using the environmental factor encoder µ. The base policy is
+trained in simulation using model-free RL. In the second phase, the adaptation module φ is trained to predict the extrinsics zˆt
+from the history of state and actions via supervised learning with on-policy data. Bottom: At deployment, the adaptation module
+φ generates the extrinsics ẑt at 10Hz, and the base policy generates the desired joint positions at 100Hz which are converted to
+torques using A1’s PD controller. Since the adaptation module runs at a lower frequency, the base policy consumes the most
+recent extrinsics vector ẑt predicted by the adaptation module to predict at . This asynchronous design was critical for seamless
+deployment on low-cost robots like A1 with limited on-board compute. Videos at: https://ashish-kmr.github.io/rma-legged-robots/
+
+
+challenge for quadruped locomotion, using as an experimental walking policy, but also RMA must be trained in simulation,
+platform the relatively cheap A1 robot from Unitree. Figure 1 and directly deployed in the real world. But, how?
+shows some sample examples with in-action results in the video.      Figure 2 shows that RMA consists of two subsystems: the
+Before outlining our approach (Figure 2), we begin by noting base policy π and the adaptation module φ, which work
+that human walking in the real world entails rapid adaptation as together to enable online real time adaptation on a very
+we move on different soils, uphill or downhill, carrying loads, diverse set of environment configurations. The base policy is
+with rested or tired muscles, and coping with sprained ankles trained via reinforcement learning in simulation using privileged
+and the like. Let us focus on this as a central problem for information about the environment configuration et such as
+legged robots as well, and call it Rapid Motor Adaptation friction, payload, etc. Knowledge of the vector et allows the
+(RMA). We will posit that RMA has to occur online, at a time base policy to appropriately adapt to the given environment.
+scale of fractions of a second, which implies that we have no The environment configuration vector et is first encoded into a
+time to carry out multiple experiments in the physical world, latent feature space zt using an encoder network µ. This latent
+rolling out multiple trajectories and optimizing to estimate vector zt , which we call the extrinsics, is then fed into the
+various system parameters. It may be worse than that. If we base policy along with the current state xt and the previous
+introduce the quadruped onto a rocky surface with no prior action at−1 . The base policy then predicts the desired joint
+experience, the robot policy would fail often, causing serious positions of the robot at . The policy π and the environmental
+damage to the robot. Collecting even 3-5 mins of walking factor encoder µ are jointly trained via RL in simulation.
+data in order to adapt the walking policy may be practically         Unfortunately, this policy cannot be directly deployed
+infeasible. Our strategy therefore entails that not just the basic because we don’t have access to et in the real world. What
+we need to do is to estimate the extrinsics at run time, which                       approach to work. The vector of extrinsics zt is a lower-
+is the role of the adaptation module φ. The key insight is that                      dimensional nonlinear projection of the environmental
+when we command a certain movement of the robot joints, the                          parameters. This takes care of some identifiability issues
+actual movement differs from that in a way that depends on the                       where some parameters could covary with identical effects
+extrinsics. So instead of using privileged information, we might                     on observables. Secondly, we don’t need this vector of
+hope to use the recent history of the agent’s state to estimate this                 extrinsics to be correct in some “ground truth” sense.
+extrinsics vector, analogously to the operation of a Kalman filter                  What matters is that it leads to the “right” action, and the
+for state estimation from history of observables. Specifically,                      end-to-end training optimizes for that.
+the goal of φ is to estimate the extrinsics vector zt from the                    • The range of situations seen in training should encompass
+robot’s recent state and action history, without assuming any                        what the robot will encounter in the real world. We use
+access to et . That is at runtime, but at training time, life is easier.             a fractal terrain generator which accompanied by the
+Since both the state history and the extrinsics vector zt                            randomization of parameters such as mass, friction etc.
+can be computed in simulation, we can train this module                              creates a wide variety of physical contexts in which the
+via supervised learning. At deployment, both these modules                           walking robot has to react.
+work together to perform robust and adaptive locomotion. In                       The most comparable work in terms of robust performance
+our experimental setup with its limited on-board computing, of RL policies for legged locomotion in the real-world is that
+the base policy π runs at 100 Hz, while the adaptation module of Lee et al. [31] which, unlike our work, relies on hand-coded
+φ is slower and runs at 10Hz. The two run asynchronously in domain knowledge of predefined trajectory generator [24] and
+parallel with no central clock to align them. The base policy motor models [22]. We evaluated RMA across a wide variety
+just uploads the most recent prediction of the extrinsics vector of terrains in the real world (Figure 1). The proposed adaptive
+zt from the adaptation module to predict action at .                           controller is able to walk on slippery surfaces, uneven ground,
+   Our approach is in contrast to previous learning-based work deformable surfaces (such as foam, mattress, etc) and on rough
+in locomotion that adapt learned policies via inferring the key terrain in natural environments such as grass, long vegetation,
+parameters about the environment from a small dataset collected concrete, pebbles, rocky surfaces, sand, etc.
+in every new situation to which the robot is introduced. These
+could either be physical parameters like friction, etc. [7] or                                        II. R ELATED W ORK
+their latent encoding [40]. Unfortunately, as mentioned earlier,                  Conventionally, legged locomotion has been approached
+collecting such a dataset, when the robot hasn’t yet acquired by using control-based methods [35, 42, 16, 54, 48, 25, 27,
+a good policy for walking, could result in falls and damage 2, 23, 4]. MIT Cheetah 3 [5] can achieve high speed and
+to the robot. Our approach avoids this because RMA, through jump over obstacles by using regularized model predictive
+the rapid estimation of zt permits the walking policy to adapt control (MPC) and simplified dynamics [12]. The ANYmal
+quickly 1 and avoid falls.                                                     robot [20] locomotes by optimizing a parameterized controller
+   Training of a base policy using RL with an extra argument for and planning based on an inverted pendulum model [15].
+the environmental parameters has also been pursued in [55, 40]. However, these methods require accurate modeling of the real-
+Our novel aspects are the use of a varied terrain generator world dynamics, in-depth prior knowledge of the robots, and
+and “natural” reward functions motivated by bioenergetics manual tuning of gaits and behaviors. Optimizing controllers,
+which allows us to learn walking policies without using any combined with MPC, can mitigate some of the problems
+reference demonstrations [40]. But the truly novel contribution [29, 8, 9], however they still require significant task-specific
+of this paper is the adaptation module, trained in simulation, feature engineering [11, 15, 3].
+which makes RMA possible. This, at deployment time, has the Learning for Legged Locomotion Some of the earliest
+flavor of system identification, but it is an on-line version of attempts to incorporate learning into locomotion can be dated
+system identification, based just on the single trajectory that back to DARPA Learning Locomotion Program [61, 62, 43, 60,
+the robot has seen in the past fraction of a second. One might 26]. More recently, deep reinforcement learning (RL) offered
+reasonably ask why it should work at all, but we can offer a an alternative to alleviate the reliance on human expertise and
+few speculations:                                                              has shown good results in simulation [46, 32, 36, 14]. However,
+   • System identification is traditionally thought of as an                   such policies are difficult to transfer to the real world [30, 38, 6].
+      optimization problem. But in many settings researchers One approach is to directly train in the real world [18, 53].
+      have found that given sample (input, output) pairs of However, such policies are limited to very simple setups, and
+      optimization problems with their solutions, we could use scaling to complex setups requires unsafe exploration and a
+      a neural network to approximate the function mapping the large number of samples.
+      problem to its solution [1, 17]. Effectively that is what φ
+      is learning to do.                                                       Sim-to-Real Reinforcement Learning To achieve complex
+   • We don’t need perfect system identification for the
+                                                                               walking  behaviours in the real world using RL, several methods
+                                                                               try to bridge the Sim-to-Real gap. Domain randomization is a
+    1 RMA takes less than 1s, whereas Peng et al. [40] need to collect 4−8mins class of methods in which the policy is trained with a wide
+(50 episodes of 5 − 10s) of data.                                              range of environment parameters and sensor noises to learn
+behaviours which are robust in this range [49, 50, 39, 52, where τ = {(x0 , a0 , r0 ), (x1 , a1 , r1 )...} is the trajectory of
+37]. However, domain randomization trades optimality for the agent when executing policy π, and p(τ |π) represents the
+robustness leading to an over conservative policy [33].          likelihood of the trajectory under π.
+   Alternately, the Sim-to-Real gap can also be reduced by
+making the simulation more accurate [22, 49, 19]. Tan et al. Stable Gait through Natural Constraints: Instead of adding
+[49] improve the motor models by fitting a piece-wise linear artificial simulation noise, we train our agent under the
+function to data from the actual motors [49]. Hwangbo et al. following natural constraints. First, the reward function is
+[22], instead, use a neural network to parameterize the actuator motivated from bioenergetic constraints of minimizing work
+model [22, 31]. However, these approaches require initial data and ground impact [41]. We found these reward functions to
+collection from the robot to fit the motor model, and would be critical for learning realistic gaits in simulation. Second, we
+require this to be done for every new setup.                     train our policies on uneven terrain (Figure 2) as a substitute
+                                                                 for additional rewards used by [22] for foot clearance and
+System Identification and Adaptation Instead of being robustness to external push. A walking policy trained under
+agnostic to physics parameters, the policy can condition on these natural constraints transfers to simple setups in the real
+these parameters via online system identification. During world (like concrete or wooden floor) without any modifications.
+deployment in the real world, physics parameters can either This is in contrast to other sim-to-real work which either
+be inferred through a module that is trained in simulation [55], calibrates the simulation with the real world [49, 22], or fine-
+or be directly optimized for high returns by using evolutionary tunes the policy in the real world [40]. The adaptation module
+algorithms [56]. Predicting the exact system parameters is then enables it to scale from simple setups to very challenging
+often unnecessary and difficult, leading to poor performance terrains as shown in Figure 1.
+in practice. Instead, a low dimensional latent embedding can
+be used [40, 59]. At test time, this latent can be optimized RL Rewards: The reward function encourages the agent to
+using real-world rollouts by using policy gradient methods [40], move forward with a maximum speed of 0.35 m/s, and penalizes
+Bayesian optimization [57], or random search [58]. Another it for jerky and inefficient motions. Let’s denote the linear
+approach is to use meta learning to learn an initialization of velocity as v, the orientation as θ and the angular velocity as
+policy network for fast online adaptation [13]. Although they ω, all in the robot’s base frame. We additionally define the joint
+have been demonstrated on real robots [47, 10], they still angles as q, joint velocities as q̇, joint torques as τ , ground
+require multiple real-world rollouts to adapt.                   reaction forces at the feet as f , velocity of the feet as v and
+                                                                                                                           f
+
+              III. R APID M OTOR A DAPTATION                       the binary foot contact indicator vector as g. The reward at
+                                                                   time t is defined as the sum of the following quantities:
+   We now describe each component of the RMA algorithm
+introduced in the third paragraph of Section I and summarized       1) Forward: min(vxt , 0.35)
+in Figure 2. Following sections discuss the base policy, the        2) Lateral Movement and Rotation: −kvyt k2 − kωyaw
+                                                                                                                   t
+                                                                                                                       k2
+adaptation module and the deployment on the real-robot in                         T     t
+                                                                    3) Work: −|τ · (q − q )|  t−1
+order. We will use the same notation as introduced in Section I.    4) Ground Impact: −kf t − f t−1 k2
+A. Base Policy                                                      5) Smoothness: −kτ t − τ t−1 k2
+                                                                    6) Action Magnitude: −kat k2
+   We learn a base policy π which takes as input the current        7) Joint Speed: −kq̇t k2
+state xt ∈ R30 , previous action at−1 ∈ R12 and the extrinsics                           t
+                                                                    8) Orientation: −kθroll,            2
+                                                                                                pitch k
+vector zt ∈ R8 to predict the next action at . The predicted        9) Z Acceleration: −kvzt k2
+action at is the desired joint position for the 12 robot joints    10) Foot Slip: −kdiag(gt ) · vf t k2
+which is converted to torque using a PD controller. The
+extrinsics vector zt is a low dimensional encoding of the
+                                                                   The scaling factor of each reward term is 20, 21, 0.002, 0.02,
+environment vector et ∈ R17 generated by µ.
+                                                                   0.001, 0.07, 0.002, 1.5, 2.0, 0.8 respectively.
+                     zt = µ(et )                            (1)
+                                                                  Training Curriculum: If we naively train our agent with the
+                     at = π(xt , at−1 , zt )                (2)
+                                                                  above reward function, it learns to stay in place because of
+  We implement µ and π as MLPs (details in Section IV-B). the penalty terms on the movement of the joints. To prevent
+We jointly train the base policy π and the environmental factor this collapse, we follow the strategy described in [22]. We
+encoder µ end to end using model-free reinforcement learning. start the training with very small penalty coefficients, and then
+At time step t, π takes the current state xt , previous action gradually increase the strength of these coefficients using a
+at−1 and the extrinsics zt = µ(et ), to predict an action at . RL fixed curriculum. We also linearly increase the difficulty of
+maximizes the following expected return of the policy π:          other perturbations such as mass, friction and motor strength
+                                   " T −1     #                   as the training progresses. We don’t have any curriculum on
+                                                                  the terrains and start the training with randomly sampling the
+                                     X
+                                           t
+                J(π) = Eτ ∼p(τ |π)        γ rt ,
+                                      t=0                         terrain profiles from the same fixed difficulty.
+B. Adaptation Module                                                  Parameters                Training Range       Testing Range
+   The knowledge of privileged environment configuration et           Friction                       [0.05, 4.5]        [0.04, 6.0]
+and its encoded extrinsics vector zt are not accessible during        Kp                               [50, 60]           [45, 65]
+deployment in the real-world. Hence, we propose to estimate           Kd                              [0.4, 0.8]         [0.3, 0.9]
+the extrinsics online using the adaptation module φ. Instead          Payload (Kg)                      [0, 6]             [0, 7]
+of et , the adaptation module uses the recent history of robot’s      Center of Mass (cm)          [-0.15, 0.15]      [-0.18, 0.18]
+states xt−k:t−1 and actions at−k:t−1 to generate zˆt which is         Motor Strength                [0.90, 1.10]       [0.88, 1.22]
+an estimate of the true extrinsics vector zt . In our experiments,    Re-sample Probability             0.004               0.01
+we use k = 50 which corresponds to 0.5s.
+                                                                        TABLE I: Ranges of the environmental parameters.
+                   zˆt = φ xt−k:t−1 , at−k:t−1
+                                                                     deployment of RMA on the real robot without the need for
+Note that instead of predicting et , which is the case in typical    any synchronization or calibration of the two subsystems.
+system identification, we directly estimate the extrinsics zt that   This asynchronous design is fundamentally enabled by the
+only encodes how the behavior should change to correct for           decoupling of the relatively infrequently changing extrinsics
+the given environment vector et .                                    vector with the quickly changing robot state.
+   To train the adaptation module, we just need the state-action
+history and the target value of zt (given by the environmental                        IV. E XPERIMENTAL S ETUP
+factor encoder µ). Both of these are available in simulation, and    A. Environment Details
+hence, φ can be trained via supervised learning to minimize:
+MSE(zˆt , zt ) = kzˆt − zt k2 , where zt = µ(et ). We model φ as     Hardware Details: We use A1 robot from Unitree for all our
+a 1-D CNN to capture temporal correlations (Section IV-B).           real-world experiments. A1 is a relatively low cost medium
+   One way to collect the state-action history is to unroll the      sized robotic quadruped dog. It has 18 degrees of freedom out
+trained base policy π with the ground truth zt . However, such       of which 12 are actuated (3 motors on each leg) and weighs
+a dataset will contain examples of only good trajectories where      about 12 kg. To measure the current state of the robot, we
+the robot walks seamlessly. Adaptation module φ trained on           use the joint position and velocity from the motor encoders,
+this data would not be robust to deviations from the expert          roll and pitch from the IMU sensor and the binarized foot
+trajectory, which will happen often during deployment.               contact indicators from the foot sensors. The deployed policy
+   We resolve this problem by training φ with on-policy data         uses position control for the joints of the robots. The predicted
+(similar to Ross et al. [44]). We unroll the base policy π with      desired joint positions are converted to torque using a PD
+the zˆt predicted by the randomly initialized policy φ. We then      controller with fixed gains (Kp = 55 and Kd = 0.8).
+use this state action history, paired with the ground truth zt       Simulation Setup: We use the RaiSim simulator [21] for
+to train φ. We iteratively repeat this until convergence. This       rigid-body and contact dynamics simulation. We import the
+training procedure ensures that RMA sees enough exploration          A1 URDF file from Unitree [51] and use the inbuilt fractal
+trajectories during training due to a) randomly initialized φ,       terrain generator to generate uneven terrain (fractal octaves
+and b) imperfect prediction of zˆt . This adds robustness to the     = 2, fractal lacunarity = 2.0, fractal gain = 0.25, z-scale =
+performance of RMA during deployment.                                0.27). Each RL episode lasts for a maximum of 1000 steps,
+C. Asynchronous Deployment                                           with early termination if the height of the robots drops below
+                                                                     0.28m, magnitude of the body roll exceeds 0.4 radians or the
+    We train RMA completely in simulation and then deploy it in
+                                                                     pitch exceeds 0.2 radians. The control frequency of the policy
+the real world without any modification or fine-tuning. The two
+                                                                     is 100 Hz, and the simulation time step is 0.025s.
+subsystems of RMA run asynchronously and at substantially
+different frequencies, and hence, can easily run using little State-Action Space: The state is 30 dimensional containing
+on-board compute. The adaptation policy is slow because it the joint positions (12 values), joint velocities (12 values), roll
+operates on the state-action history of 50 time steps, roughly and pitch of the torso and binary foot contact indicators (4
+updating the extrinsic vector zˆt once every 0.1s (10 Hz). values). For actions, we use position control for the 12 robot
+The base policy runs at 100 Hz and uses the most recent joints. RMA predicts the desired joint angles a = q̂ ∈ R12 ,
+zˆt generated by the adaptation module, along with the current which is converted   to torques
+                                                                                                τ using a PD controller: τ =
+state and the previous action, to predict at . This asynchronous Kp (q̂ − q) + Kd q̇ˆ − q̇ . Kp and Kd are manually-specified
+execution doesn’t hurt performance in practice because zˆt                                              ˆ are set to 0.
+                                                                 gains, and the target joint velocities q̇
+changes relatively infrequently in the real world.
+    Alternately, we could have trained a base policy which Environmental Variations: All environmental variations with
+directly takes the state and action history as input without their ranges are listed in Table I. Of these, et includes mass and
+decoupling them into the two modules. We found that this (a) its position on the robot (3 dims), motor strength (12 dims),
+leads to unnatural gaits and poor performance in simulation, friction (scalar) and local terrain height (scalar), making it a
+(b) can only run at 10Hz on the on-board compute, and (c) 17-dim vector. Note that although the difficulty of the terrain
+lacks the asynchronous design which is critical for a seamless profile is fixed, the local terrain height changes as the agent
+                                                                    Success         TTF      Distance                                                            Success
+
+                             Uneven Foam                  RMA         80            0.9           0.9                    Step Down-15                   RMA          100
+
+                                                RMA w/o                                                                                                RMA w/o
+                                                                      0             0.1           0.1                                                                 0
+                                                 Adapt                                                                                                  Adapt
+
+                                                          A1          20            0.36         0.36                                                    A1          60
+
+                          Upward Incline                  RMA        100                1          1                            Step Up-6               RMA          100
+
+                                                RMA w/o                                                                                                RMA w/o
+                                                                      20                1         0.6                                                                40
+                                                 Adapt                                                                                                  Adapt
+
+                                                          A1         100                1          1                                                     A1          80
+
+                                 Mattress                 RMA        100                1          1                            Step Up-8               RMA          60
+
+                                                RMA w/o                                                                                                RMA w/o
+                                                                      0                 1        0.25                                                                 0
+                                                 Adapt                                                                                                  Adapt
+
+                                                          A1         100                1          1                                                     A1          20
+
+                               Payload                    100                                           1                                     1
+                                            Success (%)
+
+
+
+
+                               Analysis
+
+
+
+
+                                                                                                                                  Distance
+                                                                                                 TTF
+                                                           50                                          0.5                                   0.5
+
+                                                            0                                           0                                     0
+                                                                0         5         8       12               0     5     8      12                 0      5      8         12
+                                                                     Payload (Kg)                                Payload (Kg)                           Payload (Kg)
+                                                                              RMA                       RMA w/o Adapt                              A1
+
+Fig. 3: We evaluate RMA in several out-of-distribution setups in the real world. We compare RMA to A1’s controller and
+RMA without the adaptation module. We find that RMA steps down a height of 15cm with 80% success rate and walks over
+unseen deformable surfaces, such as a memory foam mattress and a slightly uneven foam with 100% success rate. It is also
+able to successfully climb inclines and steps. A1’s controller fails to walk over uneven foam. At the bottom, we also analyze
+the payload carrying limits of the three methods. We see that the A1 controller’s performance starts degrading at 8Kg payload
+capacity. RMA w/o adaptation fails to move for payloads more than 8Kg, but rarely falls. For reference, A1 robot weights 12Kg.
+Overall, the proposed method consistently dominates the baseline methods. The numbers reported are averaged over 5 trials.
+
+moves. We discretize the terrain height under each foot to the                          number, output channel number, kernel size, and stride of each
+first decimal place and then take the maximum among the four                            layer are [32, 32, 8, 4], [32, 32, 5, 1], [32, 32, 5, 1]. The flattened
+feet to get a scalar. This ensures that the controller does not                         CNN output is linearly projected to estimate zˆt .
+critically depend on a fast and accurate sensing of the local
+terrain, and allows the base policy to use it asynchronously at                         Learning Base Policy and Environmental Factor Encoder
+a much lower update frequency during deployment.                                        Network: We jointly train the base policy and the environment
+                                                                                        encoder network using PPO [46] for 15, 000 iterations each
+B. Training Details                                                                     of which uses batch size of 80, 000 split into 4 mini-batches.
+Base Policy and Environment Factor Encoder Architecture:                                The learning rate is set to 5e−4. The coefficient of the reward
+The base policy is a 3-layer multi-layer perceptron (MLP)                               terms are provided in Section III. Training takes roughly 24
+which takes in the current state xt ∈ R30 , previous action                             hours on an ordinary desktop machine, with 1 GPU for policy
+at−1 ∈ R12 and the extrinsics vector zt ∈ R8 , and outputs                              training. In this duration, it simulates 1.2 billion steps.
+12-dim target joint angles. The dimension of hidden layers is
+                                                              Learning Adaptation Module: We train the adaptation mod-
+128. The environment factor encoder is a 3-layer MLP (256,
+                                                              ule using supervised learning with on-policy data. We use
+128 hidden layer sizes) and encodes et ∈ R17 into zt ∈ R8 .
+                                                              Adam optimizer [28] to minimize MSE loss. We run the
+Adaptation Module Architecture: The adaptation module optimization process for 1000 iterations with a learning rate of
+first embeds the recent states and actions into 32-dim repre- 5e−4 each of which uses a batch size of 80, 000 split up into
+sentations using a 2-layer MLP. Then, a 3-layer 1-D CNN 4 mini-batches. It takes 3 hours to train this on an ordinary
+convolves the representations across the time dimension to desktop machine, with 1 GPU for training the policy. In this
+capture temporal correlations in the input. The input channel duration, it simulates 80 million steps.
+                           RL
+                         RR
+
+                          FL
+                        FR                      |           |           |                |               |
+                                                1           2           3                4               5
+             Knee Torque (Nm)
+
+
+
+
+                                20—
+
+
+                                10—
+
+
+                                0—
+
+                                                |           |           |                |               |
+                                                1           2           3                4               5
+            z1, z5 value
+
+
+
+
+                                0.5—
+
+
+
+                                0—
+                                                |           |           |                |               |
+                                                1           2           3                4               5
+
+                                       Default Gait              Adaptation                  Recovered Gait
+                                                      Time (s)
+Fig. 4: We analyze RMA as the robot walks over an oily plastic sheet with additional plastic covering on its feet. We plot
+the torque of the knee and the gait pattern which indicates the contact of the four feet (F/R denotes Front/Rear and R/L
+denotes Right/Left). The bottom plot shows median filtered 1st and 5th components of the extrinsics vector ẑ predicted by the
+adaptation module. When the robot enters the slippery patch we see a change in the two components of the extrinsics vector ẑ,
+indicating that the slip event has been detected by the adaptation module. Note that post adaptation, the recovered gait time
+period is similar to the original, the torque magnitudes have increased and ẑ continues to capture the fact that the surface is
+still slippery. RMA was successful in 90% of the runs over oily patch.
+
+
+                                V. R ESULTS AND A NALYSIS                 5) System Identification [55]: Instead of predicting zˆt , we
+   We compare the performance of RMA with several base-                      directly predict the system parameters eˆt .
+lines in simulation (Table II). We additionally compare to                6) Advantage Weighted Regression for Domain Adaptation
+the manufacturer’s controller, which ships with A1, in the                   (AWR) [40]: Optimize zˆt offline using AWR by using
+real world indoor setups (Figure 3) and run RMA in the                       real-world rollouts of the policy in the testing environment.
+wild in a very diverse set of terrains (Figure 1). Videos               Learning baselines were trained with the same architecture,
+at https://ashish-kmr.github.io/rma-legged-robots/                      reward function and other hyper-parameters.
+Baselines: We compare to the following baselines:                       Metrics: We compare the performance of RMA against
+ 1) A1 Controller: The default robot manufacturer’s controller          baselines using the following metrics: (1) time-to-fall divided
+    which uses a force-based control scheme with MPC.                   by maximum episode length to get a normalized value between
+ 2) Robustness through Domain Randomization (Robust): The               0 − 1 (TTF); (2) average forward reward, (3) success rate, (4)
+    base policy is trained without zt to be robust to the               distance covered, (5) exploration samples needed for adaptation,
+    variations in the training range [50, 39].                          (6) torque applied, (7) smoothness which is derivative of torque
+ 3) Expert Adaptation Policy (Expert): In simulation, we can            and (7) ground impact (details in the supplementary).
+    use the true value of the extrinsics vector zt . This is an
+    upper bound to the performance of RMA.                              A. Indoor Experiments
+ 4) RMA w/o Adaptation: We can also evaluate the perfor-                   In the real world, we compare RMA with A1’s controller
+    mance of the base policy without the adaptation module              and with RMA without the adaptation module (Figure 3). We
+    to ablate the importance of the adaptation module.                  limit comparison to these two baselines to avoid damage to the
+                        Success (%)    TTF     Reward     Distance (m)    Samples     Torque     Smoothness      Ground Impact
+   Robust [50, 39]          62.4       0.80      4.62         1.13            0       527.59        122.50            4.20
+   SysID [55]               56.5       0.74      4.82         1.17            0       565.85        149.75            4.03
+   AWR [40]                 41.7       0.65      4.17         0.95           40k      599.71        162.60            4.02
+   RMA w/o Adapt            52.1       0.75      4.72         1.15            0       524.18        106.25            4.55
+   RMA                      73.5       0.85      5.22         1.34            0       500.00         92.85            4.27
+   Expert                   76.2       0.86      5.23         1.35            0       485.07        85.56             3.90
+
+TABLE II: Simulation Testing Results: We compare the performance of our method to baseline methods in simulation. Our
+train and test settings are listed in Table I. We resample the environment parameters within an episode with a re-sampling
+probability of 0.01 per step during testing. Baselines and metrics are defined in Section V. The numbers reported are averaged
+over 3 randomly initialized policies and 1000 episodes per random initialization. RMA beats the performance of all the baselines,
+with only a slight degradation in performance compared to the Expert.
+
+
+robot hardware. We run 5 trials for each method and report the robot is successfully able to walk on sand, mud and dirt without
+success rate, time to fall (TTF), and distance covered. Note that a single failure in all our trials. These terrains make locomotion
+if a method drastically failed at a task, we only run two trials difficult due to sinking and sticking feet, which requires the
+and then report a failure. This is done to minimize damage to robot to change the footholds dynamically to ensure stability.
+the robot hardware. We have the following indoor setups:          RMA had a 100% success rate for walking on tall vegetation
+   • n-kg Payload: Walk 300cm with n-kg payload on top.           or crossing a bush. Such terrains obstruct the feet of the robot,
+   • StepUp-n: Step up on an n-cm high step.                      making it periodically unstable as it walks. To successfully
+   • Uneven Foam: Walk 180cm on a center elevated foam.           walk   in these setups, the robot has to stabilize against foot
+   • Mattress: Walk 60cm on a memory foam mattress.               entanglements,    and power through some of these obstructions
+   • StepDown-n: Step down an n-cm high step.                     aggressively.   We   also evaluate our robot on walking down
+   • Incline: Walk up on a 6-degrees incline.                     some   stairs found  on a hiking trail. The robot was successful
+   • Oily Surface: Cross through an an oily patch.                in 70%    of the trials, which is still remarkable given that the
+                                                                  robot never sees a staircase during training. And lastly, we
+   Each trial of StepUp-n and StepDown-n is terminated after
+                                                                  test the robot over construction debris, where it was successful
+a success or a failure. Thus, we only report the success rate
+                                                                  100% of the times when walking downhill over a mud pile
+for these tasks because other metrics are meaningless.
+                                                                  and 80% of the times when walking across a cement pile and
+   We observe that RMA achieves a high success rate in
+                                                                  a pile of pebbles. The cement pile and pebbles were itself on
+all these setups, beating the performance of A1’s controller
+                                                                  a ground which was steeply sloping sideways, making it very
+by a large margin in some cases. We find that turning off
+                                                                  challenging for the robot to go across the pile.
+the adaptation module substantially degrades performance,
+implying that the adaptation module is critical to solve these C. Simulation Results
+tasks. A1’s controller struggled with uneven foam and with a         We compare the performance of our method to baseline
+large step down and step up. The controller was destabilized methods in simulation (Table II). We sample our training and
+by unstable footholds in most of its failures. In the payload testing parameters according to Table I, and resample them
+analysis, the A1’s controller was able to handle higher than the within an episode with a resampling probability of 0.004 and
+advertised payload (5Kg), but starts sagging, and eventually 0.01 per step respectively for training and testing. The numbers
+falls as the payload increases. In contrast, RMA maintains reported are averaged over 3 randomly initialized policies
+the height and is able to carry up to 12Kg (100% of body and 1000 episodes per random initialization. RMA performs
+weight) with a high success rate. RMA w/o adaptation mostly the best with only a slight degradation compared to Expert’s
+doesn’t fall, but also doesn’t move forward. We also evaluated performance. The constantly changing environment leads to
+RMA in a more challenging task of crossing an oily path with poor performance of AWR which is very slow to adapt. Since
+plastic wrapped feet. The robot successfully walks across the the Robust baseline is agnostic to extrinsics, it learns a very
+oily patch. Interestingly, RMA w/o adaptation was able to conservative policy which loses on performance. Note that the
+walk successfully on wooden floor without any fine-tuning or low performance of SysID implies that explicitly estimating e
+                                                                                                                                   t
+simulation calibration. This is in contrast to existing methods is difficult and unnecessary to achieve superior performance.
+which calibrate the simulation [49, 22] or fine-tune their policy We also compare to RMA w/o adaptation, which shows a
+at test time [40] even for flat and static environments.          significant performance drop without the adaption module.
+B. Outdoor Experiments                                             D. Adaptation Analysis
+  We demonstrate the performance of RMA on several                   We analyze the gait patterns, torque profiles and the estimated
+challenging outdoor environments as shown in Figure 1. The         extrinsics vector zˆt for adaptation over slippery surface (Figure
+4). We pour oil on the plastic surface on the ground and                  for the bipedal robot cassie. In Robotics: Science and
+additionally cover the feet of the robot in plastic. The robot            Systems, 2018. 3
+then tries to cross the slippery patch and is able to successfully    [4] Monica Barragan, Nikolai Flowers, and Aaron M. Johnson.
+adapt to it. We found that RMA was successful in 90% of the               MiniRHex: A small, open-source, fully programmable
+runs over oily patch. For one such trial, we plot the torque              walking hexapod. In Robotics: Science and Systems
+profile of the knee, the gait pattern, and median filtered 1st            Workshop on “Design and Control of Small Legged
+and 5th components of the extrinsics vector zˆt in Figure                 Robots”, 2018. 3
+4. When the robot first starts slipping somewhere around              [5] Gerardo Bledt, Matthew J Powell, Benjamin Katz, Jared
+2s, the slip disturbs the regular motion of the robot, after              Di Carlo, Patrick M Wensing, and Sangbae Kim. Mit chee-
+which it enters the adaptation phase. This is noticeable in the           tah 3: Design and control of a robust, dynamic quadruped
+plotted components of the extrinsics vector which change in               robot. In 2018 IEEE/RSJ International Conference on
+response to the slip. This detected slip enables the robot to             Intelligent Robots and Systems (IROS). IEEE, 2018. 3
+recover and continue walking over the slippery patch. Note            [6] Adrian Boeing and Thomas Bräunl. Leveraging multiple
+that although post adaptation, the torque stabilizes to a slightly        simulators for crossing the reality gap. In 2012 12th
+higher magnitude and the gait time period is roughly recovered,           International Conference on Control Automation Robotics
+the extrinsics vector does not recover and continues to capture           & Vision (ICARCV). IEEE, 2012. 3
+the fact that the surface is slippery. See supplementary more         [7] Josh C Bongard and Hod Lipson. Nonlinear system
+such analysis.                                                            identification using coevolution of models and tests. IEEE
+                                                                          Transactions on Evolutionary Computation, 2005. 3
+                      VI. C ONCLUSION                                 [8] Roberto Calandra, André Seyfarth, Jan Peters, and
+   We presented the RMA algorithm for real-time adaptation                Marc Peter Deisenroth. Bayesian optimization for learning
+of a legged robot walking in a variety of terrains. No                    gaits under uncertainty. Annals of Mathematics and
+demonstrations or predefined motion templates were needed.                Artificial Intelligence, 2016. 3
+Despite only having access to proprioceptive data, the robot          [9] Krzysztof Choromanski, Atil Iscen, Vikas Sindhwani,
+can also go downstairs and walk across rocks. However, a blind            Jie Tan, and Erwin Coumans. Optimizing simulations
+robot has limitations. Larger perturbations such as sudden falls          with noise-tolerant structured exploration. In 2018 IEEE
+while going downstairs, or due to multiple leg obstructions               International Conference on Robotics and Automation
+from rocks, sometimes lead to failures. To develop a truly                (ICRA). IEEE, 2018. 3
+reliable walking robot, we need to use not just proprioception       [10] Ignasi Clavera, Anusha Nagabandi, Simin Liu, Ronald S.
+but also exteroception with an onboard vision sensor. The                 Fearing, Pieter Abbeel, Sergey Levine, and Chelsea Finn.
+importance of vision in guiding long range, rapid locomotion              Learning to adapt in dynamic, real-world environments
+has been well studied, e.g. by [34], and this is an important             through meta-reinforcement learning. In International
+direction for future work.                                                Conference on Learning Representations, 2019. 4
+                                                                     [11] Martin De Lasa, Igor Mordatch, and Aaron Hertzmann.
+                    ACKNOWLEDGMENTS                                       Feature-based locomotion controllers. ACM Transactions
+                                                                          on Graphics (TOG), 2010. 3
+   We would like to thank Jemin Hwangbo for helping with the         [12] Jared Di Carlo, Patrick M Wensing, Benjamin Katz,
+simulation platform, and Koushil Sreenath and Stuart Anderson             Gerardo Bledt, and Sangbae Kim. Dynamic locomotion
+for helpful feedback during the course of this project. We would          in the mit cheetah 3 through convex model-predictive
+also like to thank Claire Tomlin, Shankar Sastry, Chris Atkeson,          control. In 2018 IEEE/RSJ International Conference on
+Aravind Sivakumar, Ilija Radosavovic and Russell Mendonca                 Intelligent Robots and Systems (IROS). IEEE, 2018. 3
+for their high quality feedback on the paper. This research was      [13] Chelsea Finn, Pieter Abbeel, and Sergey Levine. Model-
+part of a BAIR-FAIR collaborative project, and recently also              agnostic meta-learning for fast adaptation of deep net-
+supported by the DARPA Machine Common Sense program.                      works. In International Conference on Machine Learning.
+                                                                          PMLR, 2017. 4
+                         R EFERENCES
+                                                                     [14] Scott Fujimoto, Herke Hoof, and David Meger. Address-
+ [1] MYM Ahmed and N Qin. Surrogate-based aerodynamic                     ing function approximation error in actor-critic methods.
+     design optimization: Use of surrogates in aerodynamic                In International Conference on Machine Learning. PMLR,
+     design optimization. In International Conference on                  2018. 3
+     Aerospace Sciences and Aviation Technology, 2009. 3             [15] Christian Gehring, Stelian Coros, Marco Hutter,
+ [2] Aaron D Ames, Kevin Galloway, Koushil Sreenath, and                  Carmine Dario Bellicoso, Huub Heijnen, Remo Diethelm,
+     Jessy W Grizzle. Rapidly exponentially stabilizing control           Michael Bloesch, Péter Fankhauser, Jemin Hwangbo,
+     lyapunov functions and hybrid zero dynamics. IEEE                    Mark Hoepflinger, et al. Practice makes perfect: An
+     Transactions on Automatic Control, 2014. 1, 3                        optimization-based approach to controlling agile motions
+ [3] Taylor Apgar, Patrick Clary, Kevin Green, Alan Fern, and             for a quadruped robot. IEEE Robotics & Automation
+     Jonathan W Hurst. Fast online trajectory optimization                Magazine, 2016. 3
+[16] Hartmut Geyer, Andre Seyfarth, and Reinhard Blickhan.            stochastic optimization. In 3rd International Conference
+     Positive force feedback in bouncing gaits? Proceedings           on Learning Representations, 2015. 6
+     of the Royal Society of London. Series B: Biological        [29] Jens Kober, J Andrew Bagnell, and Jan Peters. Reinforce-
+     Sciences, 2003. 1, 3                                             ment learning in robotics: A survey. The International
+[17] Xiaoxiao Guo, Wei Li, and Francesco Iorio. Convolutional         Journal of Robotics Research, 2013. 3
+     neural networks for steady flow approximation. In           [30] Sylvain Koos, Jean-Baptiste Mouret, and Stéphane Don-
+     Proceedings of the 22nd ACM SIGKDD international                 cieux. Crossing the reality gap in evolutionary robotics
+     conference on knowledge discovery and data mining, 2016.         by promoting transferable controllers. In Proceedings of
+     3                                                                the 12th annual conference on Genetic and evolutionary
+[18] Tuomas Haarnoja, Sehoon Ha, Aurick Zhou, Jie Tan,                computation, 2010. 3
+     George Tucker, and Sergey Levine. Learning to walk via      [31] Joonho Lee, Jemin Hwangbo, Lorenz Wellhausen, Vladlen
+     deep reinforcement learning. In Robotics: Science and            Koltun, and Marco Hutter. Learning quadrupedal loco-
+     Systems, 2019. 1, 3                                              motion over challenging terrain. Science robotics, 2020.
+[19] Josiah Hanna and Peter Stone. Grounded action transfor-          1, 3, 4
+     mation for robot learning in simulation. In Proceedings     [32] Timothy P. Lillicrap, Jonathan J. Hunt, Alexander Pritzel,
+     of the AAAI Conference on Artificial Intelligence, 2017.         Nicolas Heess, Tom Erez, Yuval Tassa, David Silver,
+     4                                                                and Daan Wierstra. Continuous control with deep
+[20] Marco Hutter, Christian Gehring, Dominic Jud, Andreas            reinforcement learning. In ICLR, 2016. 3
+     Lauber, C Dario Bellicoso, Vassilios Tsounis, Jemin         [33] Jingru Luo and Kris Hauser. Robust trajectory opti-
+     Hwangbo, Karen Bodie, Peter Fankhauser, Michael                  mization under frictional contact with iterative learning.
+     Bloesch, et al. Anymal-a highly mobile and dynamic               Autonomous Robots, 2017. 4
+     quadrupedal robot. In 2016 IEEE/RSJ International           [34] Jonathan Samir Matthis, Jacob L Yates, and Mary M
+     Conference on Intelligent Robots and Systems (IROS).             Hayhoe. Gaze and the control of foot placement when
+     IEEE, 2016. 3                                                    walking in natural terrain. Current Biology, 2018. 9
+[21] Jemin Hwangbo, Joonho Lee, and Marco Hutter. Per-           [35] Hirofumi Miura and Isao Shimoyama. Dynamic walk of
+     contact iteration method for solving contact dynamics.           a biped. The International Journal of Robotics Research,
+     IEEE Robotics and Automation Letters, 2018. URL www.             1984. 1, 3
+     raisim.com. 5                                               [36] Volodymyr Mnih, Adria Puigdomenech Badia, Mehdi
+[22] Jemin Hwangbo, Joonho Lee, Alexey Dosovitskiy, Dario             Mirza, Alex Graves, Timothy Lillicrap, Tim Harley,
+     Bellicoso, Vassilios Tsounis, Vladlen Koltun, and Marco          David Silver, and Koray Kavukcuoglu. Asynchronous
+     Hutter. Learning agile and dynamic motor skills for              methods for deep reinforcement learning. In International
+     legged robots. Science Robotics, 2019. 1, 3, 4, 8                conference on machine learning. PMLR, 2016. 3
+[23] Dong Jin Hyun, Jongwoo Lee, SangIn Park, and Sangbae        [37] Ofir Nachum, Michael Ahn, Hugo Ponte, Shixiang Shane
+     Kim. Implementation of trot-to-gallop transition and             Gu, and Vikash Kumar. Multi-agent manipulation via
+     subsequent gallop on the mit cheetah i. The International        locomotion using hierarchical sim2real. In Conference
+     Journal of Robotics Research, 2016. 1, 3                         on Robot Learning. PMLR, 2020. 4
+[24] Atil Iscen, Ken Caluwaerts, Jie Tan, Tingnan Zhang, Er-     [38] Michael Neunert, Thiago Boaventura, and Jonas Buchli.
+     win Coumans, Vikas Sindhwani, and Vincent Vanhoucke.             Why off-the-shelf physics simulators fail in evaluat-
+     Policies modulating trajectory generators. In Conference         ing feedback controller performance-a case study for
+     on Robot Learning. PMLR, 2018. 3                                 quadrupedal robots. In Advances in Cooperative Robotics.
+[25] Aaron M Johnson, Thomas Libby, Evan Chang-Siu,                   World Scientific, 2017. 3
+     Masayoshi Tomizuka, Robert J Full, and Daniel E             [39] Xue Bin Peng, Marcin Andrychowicz, Wojciech Zaremba,
+     Koditschek. Tail assisted dynamic self righting. In              and Pieter Abbeel. Sim-to-real transfer of robotic control
+     Adaptive Mobile Robotics. World Scientific, 2012. 1,             with dynamics randomization. In 2018 IEEE international
+     3                                                                conference on robotics and automation (ICRA). IEEE,
+[26] Mrinal Kalakrishnan, Jonas Buchli, Peter Pastor, Michael         2018. 1, 4, 7, 8
+     Mistry, and Stefan Schaal. Fast, robust quadruped           [40] Xue Bin Peng, Erwin Coumans, Tingnan Zhang, Tsang-
+     locomotion over challenging terrain. In 2010 IEEE                Wei Edward Lee, Jie Tan, and Sergey Levine. Learning
+     International Conference on Robotics and Automation.             agile robotic locomotion skills by imitating animals. In
+     IEEE, 2010. 3                                                    Robotics: Science and Systems, 2020. 1, 3, 4, 7, 8
+[27] Mahdi Khoramshahi, Hamed Jalaly Bidgoly, Soroosh            [41] Delyle T Polet and John EA Bertram. An inelastic
+     Shafiee, Ali Asaei, Auke Jan Ijspeert, and Majid Nili            quadrupedal model discovers four-beat walking, two-beat
+     Ahmadabadi. Piecewise linear spine for speed–energy              running, and pseudo-elastic actuation as energetically
+     efficiency trade-off in quadruped robots. Robotics and           optimal. PLoS computational biology, 2019. 4
+     Autonomous Systems, 2013. 1, 3                              [42] Marc H Raibert. Hopping in legged systems—modeling
+[28] Diederik P. Kingma and Jimmy Ba. Adam: A method for              and simulation for the two-dimensional one-legged case.
+     IEEE Transactions on Systems, Man, and Cybernetics,            [56] Wenhao Yu, C Karen Liu, and Greg Turk. Policy transfer
+     1984. 1, 3                                                          with strategy optimization. In International Conference
+[43] Nathan Ratliff, Matt Zucker, J Andrew Bagnell, and                  on Learning Representations, 2018. 4
+     Siddhartha Srinivasa. Chomp: Gradient optimization             [57] Wenhao Yu, Visak C. V. Kumar, Greg Turk, and C. Karen
+     techniques for efficient motion planning. In 2009 IEEE              Liu. Sim-to-real transfer for biped locomotion. In 2019
+     International Conference on Robotics and Automation.                IEEE/RSJ International Conference on Intelligent Robots
+     IEEE, 2009. 3                                                       and Systems. IEEE, 2019. 4
+[44] Stéphane Ross, Geoffrey Gordon, and Drew Bagnell. A           [58] Wenhao Yu, Jie Tan, Yunfei Bai, Erwin Coumans, and
+     reduction of imitation learning and structured prediction to        Sehoon Ha. Learning fast adaptation with meta strategy
+     no-regret online learning. In Proceedings of the fourteenth         optimization. IEEE Robotics and Automation Letters,
+     international conference on artificial intelligence and             2020. 4
+     statistics, 2011. 5                                            [59] Wenxuan Zhou, Lerrel Pinto, and Abhinav Gupta. Envi-
+[45] Uluc Saranli, Martin Buehler, and Daniel E Koditschek.              ronment probing interaction policies. In 7th International
+     Rhex: A simple and highly mobile hexapod robot. The                 Conference on Learning Representations, ICLR 2019,
+     International Journal of Robotics Research, 2001. 1                 2019. 4
+[46] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec           [60] J Zico Kolter and Andrew Y Ng. The stanford littledog:
+     Radford, and Oleg Klimov. Proximal policy optimization              A learning and rapid replanning approach to quadruped
+     algorithms. arXiv preprint arXiv:1707.06347, 2017. 3, 6             locomotion. The International Journal of Robotics
+[47] Xingyou Song, Yuxiang Yang, Krzysztof Choromanski,                  Research, 2011. 3
+     Ken Caluwaerts, Wenbo Gao, Chelsea Finn, and Jie               [61] Matt Zucker, J Andrew Bagnell, Christopher G Atke-
+     Tan. Rapidly adaptable legged robots via evolutionary               son, and James Kuffner. An optimization approach to
+     meta-learning. In International Conference on Intelligent           rough terrain locomotion. In 2010 IEEE International
+     Robots and Systems (IROS), 2020. 4                                  Conference on Robotics and Automation. IEEE, 2010. 1,
+[48] Koushil Sreenath, Hae-Won Park, Ioannis Poulakakis,                 3
+     and Jessy W Grizzle. A compliant hybrid zero dynamics          [62] Matt Zucker, Nathan Ratliff, Martin Stolle, Joel Chestnutt,
+     controller for stable, efficient and fast bipedal walking on        J Andrew Bagnell, Christopher G Atkeson, and James
+     mabel. The International Journal of Robotics Research,              Kuffner. Optimization and learning for rough terrain
+     2011. 1, 3                                                          legged locomotion. The International Journal of Robotics
+[49] Jie Tan, Tingnan Zhang, Erwin Coumans, Atil Iscen,                  Research, 2011. 3
+     Yunfei Bai, Danijar Hafner, Steven Bohez, and Vincent
+     Vanhoucke. Sim-to-real: Learning agile locomotion for
+     quadruped robots. In Robotics: Science and Systems,
+     2018. 4, 8
+[50] Josh Tobin, Rachel Fong, Alex Ray, Jonas Schneider, Woj-
+     ciech Zaremba, and Pieter Abbeel. Domain randomization
+     for transferring deep neural networks from simulation to
+     the real world. In 2017 IEEE/RSJ international conference
+     on intelligent robots and systems (IROS). IEEE, 2017. 1,
+     4, 7, 8
+[51] Xingxing Wang. Unitree Robotics. https://www.unitree.
+     com/. 5
+[52] Zhaoming Xie, Xingye Da, Michiel van de Panne, Buck
+     Babich, and Animesh Garg. Dynamics randomization
+     revisited: A case study for quadrupedal locomotion. arXiv
+     preprint arXiv:2011.02404, 2020. 4
+[53] Yuxiang Yang, Ken Caluwaerts, Atil Iscen, Tingnan
+     Zhang, Jie Tan, and Vikas Sindhwani. Data efficient
+     reinforcement learning for legged robots. In Conference
+     on Robot Learning. PMLR, 2020. 1, 3
+[54] KangKang Yin, Kevin Loken, and Michiel Van de Panne.
+     Simbicon: Simple biped locomotion control. ACM
+     Transactions on Graphics (TOG), 2007. 1, 3
+[55] Wenhao Yu, Jie Tan, C. Karen Liu, and Greg Turk.
+     Preparing for the unknown: Learning a universal policy
+     with online system identification. In Robotics: Science
+     and Systems, 2017. 3, 4, 7, 8
+

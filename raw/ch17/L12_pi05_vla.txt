@@ -1,0 +1,1205 @@
+               π0.5: a Vision-Language-Action Model with
+                        Open-World Generalization
+                                                                  Physical Intelligence
+                          Kevin Black, Noah Brown, James Darpinian, Karan Dhabalia, Danny Driess, Adnan Esmail, Michael Equi,
+                         Chelsea Finn, Niccolo Fusai, Manuel Y. Galliker, Dibya Ghosh, Lachy Groom, Karol Hausman, Brian Ichter,
+                       Szymon Jakubczak, Tim Jones, Liyiming Ke, Devin LeBlanc, Sergey Levine, Adrian Li-Bell, Mohith Mothukuri,
+                     Suraj Nair, Karl Pertsch, Allen Z. Ren, Lucy Xiaoyang Shi, Laura Smith, Jost Tobias Springenberg, Kyle Stachowicz
+                              James Tanner, Quan Vuong, Homer Walke, Anna Walling, Haohuan Wang, Lili Yu, Ury Zhilinsky
+                                                                  https://pi.website/blog/pi05
+
+
+                                                                                                                      0./  
+                                                     ZYQXTRLK J J L/ %  2
+         C. "                                                                                 0./          uL L  . 0.
+
+                                                         lJLK                  KLK            /  
+
+
+
+         % "                                 K J Jp                                                  C. "             " . 
+                                                                      u 
+
+         .                                                                                                          uL L C  0.
+                                                     2c_`^cb^`]\^ac[  
+                         ««
+          
+
+                                                                                                                                  :            u   
+
+
+
+           .                                                                                                           uLK .C  0.
+
+                       ´¹l 2 "Ä
+                         p
+                        J ¶
+                       /¹À¯
+
+                                                                                                                                 :    2        C    .
+                       ´¹    . Õ
+                        . Ø
+                          Ò
+                       /¹Î  ÌÀÀ¯Ê                                                                                                           0. 
+                       Î  Ì¯áÈÉÑÑÑ
+
+
+                       ´¹ "«p
+                       Ä
+                         ¶
+                       /¹  
+
+
+
+
+Fig. 1: The π0.5 model transfers knowledge from a heterogeneous range of data sources, including other robots, high-level subtask prediction, verbal instructions,
+and data from the web, in order to enable broad generalization across environments and objects. π0.5 can control a mobile manipulator to clean kitchens and
+bedrooms in new homes that were not present in the training data, performing complex multi-stage behaviors with durations of 10 to 15 minutes.
+
+
+
+   Abstract—In order for robots to be useful, they must perform                     horizon and dexterous manipulation skills, such as cleaning a
+practically relevant tasks in the real world, outside of the lab.                   kitchen or bedroom, in entirely new homes.
+While vision-language-action (VLA) models have demonstrated
+impressive results for end-to-end robot control, it remains an                                                I. I NTRODUCTION
+open question how far such models can generalize in the wild.
+We describe π0.5 , a new model based on π0 that uses co-training                                 Stuff your eyes with wonder... See the world. It’s more
+on heterogeneous tasks to enable broad generalization. π0.5 uses                                 fantastic than any dream made or paid for in factories.
+data from multiple robots, high-level semantic prediction, web
+                                                                                                                              Ray Bradbury, Fahrenheit 451
+data, and other sources to enable broadly generalizable real-
+world robotic manipulation. Our system uses a combination of
+co-training and hybrid multi-modal examples that combine image                         Open-world generalization represents one of the biggest
+observations, language commands, object detections, semantic                        open problems in physical intelligence: embodied systems
+subtask prediction, and low-level actions. Our experiments show                     such as robotic arms, humanoids, and autonomous vehicles
+that this kind of knowledge transfer is essential for effective                     only truly become useful when they can leave the lab and
+generalization, and we demonstrate for the first time that an                       handle the diverse situations and unexpected events that occur
+end-to-end learning-enabled robotic system can perform long-
+                                                                                    in the real world. Learning-based systems offer a path to en-
+                                      “close the cabinets”      “put the items in the drawer”       “wipe the spill”       “place the dishes in the sink”
+
+
+
+
+Fig. 2: π0.5 cleaning a new kitchen. The robot is tasked with cleaning a kitchen in a home that was not in the training data. The model is given general tasks
+(close the cabinets, put the items in the drawer, wipe the spill, and put the dishes in the sink), which it performs by both predicting subtasks to accomplish
+(e.g., pick up the plate) and emitting low-level actions.
+
+
+abling broad generalization, particularly with recent advances                  Building on the π0 VLA, we propose to include a range of
+that have enabled scalable learning systems in domains ranging                  different data sources to create the π0.5 model (“pi oh five”),
+from natural language processing [79, 21, 10, 78] to computer                   which can control mobile manipulators to perform a variety
+vision [34, 66, 35, 43]. However, the diversity of situations that              of household tasks even in homes that were never seen during
+a robot might encounter in the real world requires more than                    training. π0.5 draws on experience from many sources: in addi-
+just scale: we need to design training recipes that can provide                 tion to a medium-sized dataset collected directly with mobile
+the breadth of knowledge that will allow robots to generalize                   manipulators in a variety of real homes (about 400 hours),
+at many levels of abstraction. For example, if a mobile robot                   π0.5 uses data from other non-mobile robots, data of related
+is asked to clean up a kitchen that it has never seen before,                   tasks collected under laboratory conditions, training examples
+some behaviors generalize readily if they are well represented                  that require predicting “high-level” semantic tasks based on
+in the data with a sufficient range of scenes and objects (e.g.,                robot observation, verbal language instructions provided to
+picking up a knife or plate), others might require adapting or                  the robot by human supervisors, and a variety of multi-modal
+modifying existing skills to use them in a new way or in a                      examples created from web data, such as image captioning,
+new sequence, and yet others might require understanding the                    question answering, and object localization (see Figure 1).
+semantics of the scene based on prior knowledge (e.g., which                    The overwhelming majority of training examples provided to
+drawer to open, or which object on the counter is most likely                   π0.5 (97.6% during the first training phase) do not come from
+to be a drying rack). How can we structure a training recipe for                mobile manipulators performing household tasks, but from
+a robotic learning system that can enable this kind of flexible                 these other sources, such as other robots or data from the web.
+generalization?                                                                 Nonetheless, π0.5 is able to control mobile manipulators in
+   A person can draw on a lifetime of experience to synthesize                  entirely new homes not seen during training, perform intricate
+appropriate solutions to each of these challenges. Not all of                   tasks such as hanging up towels or making beds, and can
+this experience is firsthand, and not all of it comes from rote                 carry out long-horizon manipulation skills 10 to 15 minutes
+practice – for example, we might use facts that we were told                    in length, cleaning an entire kitchen or bedroom based on only
+by others or read in a book, together with bits of insight from                 a high-level prompt.
+other tasks we have performed in different contexts, combined                      The design of π0.5 follows a simple hierarchical archi-
+with direct experience in the target domain. Analogously, we                    tecture: we first pre-train the model on the heterogeneous
+might hypothesize that generalizable robotic learning systems                   mixture of training tasks, and then fine-tune it specifically for
+must be able to transfer experience and knowledge from a                        mobile manipulation with both low-level action examples and
+variety of information sources. Some of these sources are                       high-level “semantic” actions, which correspond to predicting
+firsthand experience with direct relevance to the task at hand,                 subtask labels such as “pick up the cutting board” or “rear-
+some require transfer from other robot embodiments, envi-                       range the pillow.” At runtime, during each step of inference,
+ronments, or domains, and some represent entirely different                     the model first predicts the semantic subtask, inferring the
+data types, such as verbal instructions, perceptual tasks based                 behavior that is appropriate to perform next based on the task
+on web data, or prediction of high-level semantic commands.                     structure and the semantics of the scene, and then predicts
+The heterogeneity of these different sources of data present                    the low-level robot action chunk based on this subtask. This
+a major obstacle, but fortunately recent advances in vision-                    simple architecture provides both the ability to reason about
+language-action (VLA) models provide us with a toolkit that                     long-horizon multi-stage tasks and the ability to leverage
+can make this possible: by casting different modalities into the                different sources of knowledge for the two levels: the low-level
+same sequence modeling framework, VLAs can be adapted to                        action inference procedure readily benefits from action data
+train on robot data, language data, computer vision tasks, and                  collected by other robots, including simpler static robots in
+combinations of the above.                                                      other environments, while the high-level inference procedure
+   In this paper, we leverage this observation to design a co-                  benefits from semantic examples from the web, high-level
+training framework for VLAs that can utilize heterogeneous                      annotation prediction, and even verbal commands that can be
+and diverse knowledge sources to enable broad generalization.                   provided to the robot by human “supervisors” that walk the
+robot through complex tasks step by step, instructing it (much     sources include data from other (non-mobile) robots, high-
+like how they might instruct a person) on the appropriate          level semantic subtask prediction, and data from the web.
+subtasks to perform to complete a complex task such as             Non-robot data co-training. A number of prior works have
+cleaning a room. We illustrate this design in Figure 1.            sought to use diverse non-robot data to improve the generaliza-
+   Our central contribution is a system for training a highly      tion of robot policies. Prior methods have explored initializing
+generalizable VLA, π0.5 , together with a proof of concept         vision encoders from computer vision datasets [85, 58, 57, 18],
+that generalization can emerge from this model when it is          or leveraging off-the-shelf task planners [38, 48, 73, 81]. VLA
+trained on appropriately diverse data. We provide a detailed       policies are typically initialized from a pre-trained vision-
+empirical evaluation of both π0.5 ’s generalization capabilities   language model, which has been exposed to large amounts
+and the relevance of different co-training ingredients. To our     of internet vision and language data [23, 92, 42]. Notably, the
+knowledge, our work is the first to demonstrate an end-to-end      VLA architecture is flexible and allows to map between input
+learning-enabled robotic system that can perform long-horizon      and output sequences of multi-modal vision, language, and
+and dexterous manipulation skills, such as cleaning a kitchen      action tokens. As such, VLAs broaden the design space of pos-
+or bedroom, in entirely new homes. Our experiments and             sible transfer approaches beyond simple weight initialization,
+comparisons further show that this is enabled by transferring      by supporting the co-training of a single, unified architecture
+knowledge from other robots, high-level semantic prediction,       on not just robot action imitation data, but any dataset that
+verbal language instruction from human supervisors, web data,      interleaves one or multiple of the aforementioned modalities.
+and other sources.                                                 Prior works have demonstrated that co-training VLAs with
+                                                                   data mixtures used for VLM training [23, 92, 86] can improve
+                     II. R ELATED W ORK                            their generalization ability, e.g., when interacting with new
+                                                                   objects or unseen scene backgrounds. In this work, we go
+Generalist robot manipulation policies. Recent works have          beyond VLM data co-training and design a system for co-
+demonstrated that broadening the training data distribution for    training VLAs with a broader set of robotics-relevant super-
+robot manipulation policies from narrow, single-task datasets      vision sources, including data from other robots, high-level
+to diverse datasets that span many scenes and tasks [17,           semantic subtask predictions, and verbal language instructions.
+25, 80, 63, 41, 6, 30, 67, 1] allows the resulting poli-           While multitask training and co-training are not new ideas,
+cies to not only solve a wider range of tasks out of the           we show that the specific combination of data sources in our
+box, but also improves their ability to generalize to new          system enables mobile robots to perform complex and long-
+scenes and tasks [9, 63, 62, 22]. Training such generalist         horizon behaviors in entirely new environments. We believe
+policies requires new modeling approaches that can handle          that this level of generalization, particularly when accounting
+the scale and diversity of datasets that often span hundreds       for the complexity of the tasks, goes significantly beyond the
+of different tasks and scenes. Vision-language-action models       results demonstrated in prior works.
+(VLAs) [23, 92, 42, 8, 83, 90, 55, 45, 3, 75, 64, 76, 84, 7, 37]   Robot reasoning and planning with language. A number of
+offer an appealing solution: by fine-tuning pre-trained vision-    prior works have shown that augmenting end-to-end policies
+language models for robot control, VLAs can leverage the           with high-level reasoning can significantly improve perfor-
+semantic knowledge acquired from web-scale pretraining and         mance for long-horizon tasks [2, 36, 44, 74, 71, 4, 16, 11,
+bring it to bear on the robotics problem. When combined            53, 88, 51, 59, 13, 70, 91, 65, 72, 47, 76, 89], particularly
+with highly expressive action decoding mechanisms like flow        when high-level subtask inference can benefit from large pre-
+matching [8], diffusion [55, 84, 52], or advanced action           trained LLMs and VLMs. Our method also uses a two-stage
+tokenization schemes [64], VLAs can perform a wide range           inference procedure, where we first infer a high-level semantic
+of complex manipulation tasks in the real world. However,          subtask (e.g., “pick up the plate”), and then predict the action
+despite impressive language following abilities, VLAs are still    based on this subtask. Many prior methods have employed
+typically evaluated in environments that closely match their       two separate models for this purpose, with a VLM predicting
+training data. While some studies suggest that simple skills       semantic steps and a separate low-level policy executing those
+like picking up objects or opening drawers can be made to          steps [2, 71, 13, 24, 70, 72, 47]. Our method uses the same
+generalize simply by collecting robot data in a broader set        exact model for both high-level and low-level inference, in
+of environments [14, 67, 28, 49, 64], it is challenging to         a recipe that more closely resembles chain-of-thought [82]
+apply the same approach to more complex, long-horizon tasks        or test-time compute [39] methods, though unlike embodied
+like cleaning up a kitchen, where achieving broad coverage         chain-of-thought methods [88, 46, 61], the high-level inference
+of plausible scenarios via brute-force scaling of robot data       process still runs at a lower frequency than low-level action
+collection is infeasible. In our experiments, we evaluate π0.5     inference.
+in entirely new scenes, such as new kitchens and bedrooms          Robotic learning systems with open-world generalization.
+that were not seen in training, showing that our VLA can           While most robotic learning systems are evaluated in environ-
+generalize to entirely new scenes by leveraging not only           ments that closely match the training data, a number of prior
+direct first-hand experience on the target mobile manipulator      works have explored broader open-world generalization. When
+platform, but also information from other data sources. These      the robot’s tasks are restricted to a more narrow set of basic
+                                                               S           !g  S ¦ y-
+
+
+            , SE S gE) g1g        . E #         ,   # g1
+          g-_ -!g          ÐÏ        ÐÒ     ÕÔ     ÐÔÒ      ÏÒ    ÐÕÖ
+                                                                                                                                            -!E!Eg -!g
+                                                                                                  gE) g1   -!
+     !  !- )E,  - !g          .    !S - -#g              yg)                                                                    íìÏ   íìÒÖ   èìÐÔ   íìÔÒ
+
+
+               )!ES )!g                   Õ      ÕÖ     ÐÔÖ     ÒÒÕ                          . -1 E # ,,!<
+
+
+
+                           
+                                
+                                   
+                                                                                                                                              -!  ß
+                                                                                                         Ç
+                   
+                       ¯®
+                                                                                                                                                  êèééçæ
+
+
+
+                                           .-,  # 1-#                                      .-,  # )!!+   . -1 E # ,,!<
+                                           . -1 E          #     ,,!<
+                                                                                                  #S# ,,    !+  ,!< ,, -!++ 
+                                           .-        ! # + S                                                                                  !g
+                                          .,!- ,_ # S             
+
+      +E,+! , <) ¦
+                                      g1 g -y- !+ g
+         !)!  
+
+Fig. 3: Model overview. π0.5 is trained in two stages. First, a pre-training stage combines all of the different data sources to produce an initial VLA with
+discrete tokens. This stage uses data from diverse robotic platforms, high-level semantic action prediction, and data from the web. Robotic data uses the FAST
+action tokenizer to represent actions as discrete tokens [64]. Second, a post-training stage specializes the model for low-level and high-level inferences for
+mobile manipulation, leveraging the most task-relevant data, including verbal instructions from human supervisors. This stage uses flow matching to represent
+the action distribution, enabling efficient real-time inference and the ability to represent fine-grained continuous action sequences. At inference time, the model
+first infers a high-level subtask, and then predicts the actions based on this subtask.
+
+
+
+primitives, such as picking up objects, methods that allow for                          input to output tokens. The weights of these models are
+task-specific assumptions (e.g., grasp prediction, or incorpo-                          initialized from pre-trained vision-language models. By encod-
+rating model-based planning and control) have been shown to                             ing policy inputs and outputs into tokenized representations,
+generalize broadly, even to entirely new homes [40, 20, 60, 56,                         the imitation learning problem described above can be cast
+29]. However, such methods do not readily generalize to the                             as a simple next-token-prediction problem over a sequence
+full range of possible tasks that a generalist robot might need                         of observation, instruction and action tokens, and we can
+to perform. More recently, large-scale datasets collected across                        leverage the scalable tools of modern machine learning to
+many domains [41, 68, 63, 67, 14, 49] have been shown to                                optimize it. In practice, the choice of tokenizers for image and
+enable generalization of simple but end-to-end learned tasks to                         text inputs follows those of modern vision-language models.
+new environments [33, 31, 67, 69, 26, 49, 28, 64]. However,                             For actions, prior work has developed effective, compression-
+the tasks in these demonstrations are still relatively simple,                          based tokenization approaches [64], which we use in this
+typically less than a minute in length and often with relatively                        work during pretraining. A number of recent VLA models
+low success rates. We show that π0.5 can perform long, multi-                           have also proposed to represent the action distribution via
+stage tasks, such as putting all of the dishes in the sink or                           diffusion [55, 84, 52] or flow matching [8], providing a
+picking all of the clothing off the floor of a new bedroom,                             more expressive representation over continuous-valued action
+while generalizing to entirely new homes.                                               chunks. During the post-training phase of our model, we will
+                                                                                        build on the design of the π0 model [8], which represents
+                          III. P RELIMINARIES                                           the action distribution via flow matching. In this design, the
+                                                                                        tokens corresponding to actions receive the partially denoised
+   Vision-language-action models (VLAs) are typically trained
+                                                                                        actions from the previous step of flow matching as input, and
+via imitation learning on diverse robot demonstration
+                                                                                        output the flow matching vector field. These tokens also use a
+datasets D, by maximizing the log-likelihood of an action
+                                                                                        different set of model weights, which we refer to as an “action
+at (or, more generally, an action chunk at:t+H ) given an
+                                                                                        expert,” analogously to a mixture of experts architecture. This
+observation ot and a natural language task      instruction ℓ:                         action expert can specialize to flow matching-based action
+maxθ E(at:t+H ,ot ,ℓ)∼D log πθ (at:t+H |ot , ℓ) . The observation
+                                                                                        generation, and can be significantly smaller than the rest of
+typically contains one or more images I1t , ..., Int and propri-
+                                                                                        the LLM backbone.
+oceptive state qt , which captures the position of the robot’s
+joints. VLA architectures follow the design of modern lan-
+                                                                                               IV. T HE π0.5 M ODEL AND T RAINING R ECIPE
+guage and vision-language models, with modality-specific
+tokenizers that map inputs and outputs to discrete (“hard”) or                             We provide an overview of the π0.5 model and training
+continuous (“soft”) token representations, and a large, auto-                           recipe in Figure 3. The model weights are initialized from a
+regressive transformer backbone that is trained to map from                             standard VLM trained on data from the web, and training then
+proceeds in two stages: a pre-training stage intended to adapt             in LLMs, image patch, textual prompt, and continuous action
+the model to diverse robotic tasks, and a post-training stage              tokens use bidirectional attention.
+intended to specialize it to mobile manipulation and equip it                 As we want our model to output both text (to answer ques-
+with the mechanisms for efficient test-time inference. During              tions about the scene or to output next tasks to accomplish)
+pre-training, all tasks, including tasks with robot actions, are           and actions (to act in the world), the output of f is split
+represented with discrete tokens, which leads to simple, scal-             into text token
+                                                                                          logits and action output tokens, respectively
+able, and efficient training [64]. During post-training, we adapt             ℓ      a
+                                                                             y1:M , y1:H  . The first M correspond to text token logits that
+the model to also have an action expert, as with π0 , in order to          can be used to sample ℓ̂ and the later H tokens are produced
+both represent actions with finer granularity and enable more              by a separate action expert, as in π0 , and projected via a
+compute-efficient inference for real-time control. At inference-           linear mapping to continuous outputs used to obtain at:t+H
+time, the model first produces a high-level subtask for the robot          (see next section). Note that M + H ≤ N , i.e., not all outputs
+to perform and then, conditioned on this subtask, predicts the             are associated with a loss. The robot proprioceptive state is
+low-level actions via the action expert. We describe the model             discretized and input to the model as text tokens. More details
+architecture below, followed by a description of each of the               about the architecture are in Appendix E.
+phases and their corresponding training tasks.
+                                                                           B. Combining discrete & continuous action representations
+A. The π0.5 architecture
+                                                                              Similarly to π0 , we use flow-matching [50] to predict con-
+   The π0.5 architecture can flexibly represent both action
+                                                                           tinuous actions in the final model. Given aτ,ω t:t+H = τ at:t+H +
+chunk distributions and tokenized text outputs, with the latter
+                                                                           (1 − τ )ω, ω ∼ N (0, I), where τ ∈ [0, 1] is the flow matching
+used both for co-training tasks (e.g., question-answering) and
+                                                                           time index, the model is trained to predict the flow vector
+for outputting high-level subtask predictions during hierar-
+                                                                           field ω − at . However, as shown in [64], VLA training can be
+chical inference. The distribution captured by the model can
+                                                                           much faster when actions are represented by discrete tokens,
+be written as πθ (at:t+H , ℓ̂|ot , ℓ), where ot = [I1t , ..., Int , qt ]
+                                                                           particularly when using a tokenization scheme that is efficient
+consists of the images from all of the cameras and the robot’s
+                                                                           for compressing the action chunks (e.g., FAST). Unfortunately,
+configuration (joint angles, gripper pose, torso lift pose, and
+                                                                           such discrete representations are less well-suited for real-
+base velocity), ℓ is the overall task prompt (e.g., “put away the
+                                                                           time inference, because they require expensive autoregressive
+dishes”), ℓ̂ represents the model’s (tokenized) textual output,
+                                                                           decoding for inference [64]. Therefore, an ideal model design
+which could be either a predicted high-level subtask (e.g.,
+                                                                           would train on discretized actions but still allow for use of flow
+“pick up the plate”) or the answer to a vision-language prompt
+                                                                           matching to produce continuous actions at inference time.
+in web data, and at:t+H is a predicted action chunk. We
+decompose the distribution as                                                 Our model is therefore trained to predict actions both
+                                                                           through autoregressive sampling of tokens (using the FAST
+       πθ (at:t+H , ℓ̂|ot , ℓ) = πθ (at:t+H |ot , ℓ̂)πθ (ℓ̂|ot , ℓ),       tokenizer) and iterative integration of the flow field, combining
+                                                                           the best of both worlds. We use the attention matrix to ensure
+where the action distribution does not depend on ℓ, only on ℓ̂.            that the different action representations do not attend to each
+Thus, high-level inference captures πθ (ℓ̂|ot , ℓ), and low-level          other. Our model is optimized to minimize the combined loss
+inference captures πθ (at:t+H |ot , ℓ̂), with both distributions                         h
+                                                                                 ED,τ,ω H x1:M , fθℓ (ot , ℓ)
+                                                                                                              
+represented by the same model.
+   The model corresponds to a transformer that takes in N                                                                               2
+                                                                                                                                          i
+multimodal input tokens x1:N (we use the term token loosely                                + α ω − at:t+H − fθa (aτ,ωt:t+H   , o t , ℓ)     , (1)
+here, referring to both discretized and continuous inputs) and
+                                                                                               ℓ
+produces a sequence of multimodal outputs y1:N     , which we             where H(x1:M , y1:M    ) is the cross entropy loss between the
+can write as y1:N = f x1:N , A(x1:N ), ρ(x1:N ) . Each xi can              text tokens and predicted logits (including the FAST encoded
+be a text token (xw i ∈ N), an image patch (xi ∈ R
+                                                   I      p×p×3
+                                                                ),                           a
+                                                                           action tokens), y1:H  = fθa (aτ,ω
+                                                                                                         t:t+H , ot , ℓ) is the output from the
+or an intermediate denoising value of a robot action in flow               (smaller) action expert, and α ∈ R is a trade-off parameter.
+matching (xai ∈ Rd ). The observations ot and ℓ form the prefix            This scheme enables us to first pre-train our model as a
+part of x1:N . Depending on the token type, as indicated by                standard VLM transformer model by mapping actions to text
+ρ(xi ), each token can be processed not only by a different                tokens (α = 0), and then add additional action expert weights
+encoder, but also by different expert weights within the trans-            predicting continuous action tokens in a non-autoregressive
+former. For example, image patches are fed through a vision                fashion for fast inference in a post-training stage. We find that
+encoder, and text tokens are embedded with an embedding                    following this procedure, which is further explained below,
+matrix. Following π0 [8], we linearly project action tokens xai            leads to stable pre-training and excellent language following
+into the transformer embedding space and use separate expert               abilities of the VLA model. At inference time we then use
+weights in the transformer to process the action tokens. The               standard autoregressive decoding for text tokens ℓ̂ followed
+attention matrix A(x1:N ) ∈ [0, 1]N ×N indicates if a token can            by 10 denoising steps, conditioned on text tokens, to produce
+attend to another token. Compared to standard causal attention             actions at:t+H .
+                                                        o l .
+      P                                                                          2.l     %                         ø    
+ l  
+                                                                                                                                                          o     %
+
+                                                                                                                           2E E  P
+                                                                                                                            Í
+                   E 
+
+                              %                           
+                                                                                             .  
+                                                                                              
+                   o %                                                                       %    
+                                                                                                                                                o    E   
+
+
+
+                             2 .          =                    %                                     2E E  P
+                                                                                                                              % Í
+                  E 
+                   
+                                                                                             .  
+                                                                                             ¹ À¥¥  ²
+                                                                                             ¥ ¹À¹ E ¦
+                                                                                              %   º  ºE   %           
+                                                   D %     
+                  w
+                  P
+                                         l                                          D l   E   
+
+
+                                                                                                             .                   oP      Û
+                                                                                                        ¹À¥(   á           %
+                                                                                                          w  . º   
+
+                            O     E         w                 =P  
+
+
+                                                                                                            % º   C
+                                                                                                          =      l%.   
+                                                                                                           A =  . E          
+                                                                                                           E       %
+                                                                                                          E º.    E   A     oP        E ¦
+       l          Y     E P     e               =E                                                              á     %       
+
+
+
+                                                                                            ol .
+Fig. 4: Examples from pre-training and post-training tasks. π0.5 is pre-trained on data from mobile manipulators (MM), non-mobile robots in diverse
+environments (ME), and cross-embodiment data collected under laboratory conditions (CE), as well as high-level subtask prediction (HL), and multi-modal
+web data (WD). In a post-training phase, we additionally use verbal instructions (VI), and omit the laboratory cross-embodiment data (CE) to focus the model
+on mobile manipulation and diverse environments. The figure displays an exemplary subset of the tasks in each category.
+
+
+
+C. Pre-training                                                                                to our evaluation (e.g., putting dishes in a bin), while others
+   In the first training stage, π0.5 is trained with a broad range                             are not (e.g., grinding coffee beans). This data includes single-
+of robot and non-robot data, which we summarize below and                                      arm and dual-arm manipulators, and both static and mobile
+illustrate in Figure 4. It is trained as a standard auto-regressive                            bases. We also include the open-source OXE dataset [15]. This
+transformer, performing next-token prediction of text, object                                  dataset is an extended version of the dataset used by π0 [8].
+locations, and FAST encoded action tokens.                                                     High-Level subtask prediction (HL). Breaking down high-
+Diverse Mobile Manipulator data (MM). We use about 400                                         level task commands such as “clean the bedroom” into shorter
+hours of data of mobile manipulators performing household                                      subtasks like “adjust the blanket” and “pick up pillow”, similar
+tasks in about 100 different home environments, some of                                        to chain-of-thought prompting for language models, can help
+which are shown in Figure 7, using the robots in Section IV-E.                                 a trained policy reason about the current scene and better
+This slice of the training set is the most directly relevant to our                            determine the next action. For robot data in MM, ME, and
+evaluation tasks, which consist of similar cleaning and tidying                                CE where the task involves multiple subtasks, we manually
+tasks in new, unseen, home environments.                                                       annotate all data with semantic descriptions of the subtasks and
+Diverse Multi-Environment non-mobile robot data (ME).                                          train π0.5 to jointly predict the subtask labels (as text) as well
+We also collected non-mobile robot data, either with a single                                  as the actions (conditioned on the subtask label) based on the
+arm or two arms, in a variety of home environments. These                                      current observation and high-level command. This naturally
+arms were fixed to surfaces or mounting platforms, and                                         leads to a model that can act both as a high-level policy
+because they are significantly lighter and easier to transport,                                (outputting subtasks) and low-level policy that executes actions
+we were able to gather a more diverse dataset in a wider range                                 for these subtasks. We also label relevant bounding boxes
+of homes with them. However, this ME data comes from a                                         shown in the current observation and train π0.5 to predict them
+different embodiment than the mobile robots.                                                   before predicting the subtask.
+Cross-Embodiment laboratory data (CE). We collected data                                       Multi-modal Web Data (WD). Finally we include a diverse
+for a wide range of tasks (e.g., bussing a table, folding shirts)                              set of web data involving image captioning (CapsFusion [87],
+in the laboratory, with simpler tabletop environments and a                                    COCO [12]), question answering (Cambrian-7M [77], PixMo
+variety of robot types. Some of these tasks are highly relevant                                [19], VQAv2 [32]), and object localization in pre-training. For
+object localization, we further extend the standard datasets            4x images
+                                                                                                        front
+                                                                                                        front && rear
+                                                                                                                 rear camera
+                                                                                                                      camera
+with additional web data of indoor scenes and household
+objects with bounding box annotations.
+                                                                                               2x
+                                                                                               2x 66 DoF
+                                                                                                     DoF arm
+                                                                                                         arm ++ 11 DoF
+                                                                                                                   DoF gripper
+                                                                                                                       gripper
+   For all action data, we train the model to predict target
+joint and end-effector poses. To differentiate the two, we add
+‘<control mode> joint/end effector <control mode>’ to the                                                  2x
+                                                                                                           2x wrist
+                                                                                                              wrist camera
+                                                                                                                    camera
+
+text prompt. All action data is normalized to [−1, 1] using the
+1% and 99% quantile of each action dimension of the individ-
+                                                                                                      1-2
+                                                                                                      1-2 DoF
+                                                                                                          DoF lift
+                                                                                                              lift mechanism
+                                                                                                                   mechanism
+ual dataset. We set the dimensionality of the action a to a fixed
+number to accommodate the largest action space among all the
+datasets. For robots with lower-dimensional configuration and                                             33 DoF
+                                                                                                             DoF holonomic
+                                                                                                                 holonomic base
+                                                                                                                           base
+action spaces, we zero-pad the action vectors.
+
+D. Post-training                                                    Fig. 5: Robot system overview. We use two mobile manipulator platforms
+                                                                    – each has four cameras (forward, backward, and both wrists), two 6 DoF
+   After pre-training the model with discrete tokens for 280k       arms with parallel jaw grippers, a mobile base, and a torso lift mechanism.
+gradient steps, we perform a second stage of training that we       The π0.5 model controls the joints and grippers of each arm, base velocity,
+                                                                    and the lift position, resulting in 18-19 DoF state and action spaces.
+refer to as post-training. The purpose of this stage is to both
+specialize the model to our use-case (mobile manipulation
+in homes), and to add an action expert that can produce
+continuous action chunks via flow matching. This stage jointly        The control system is very simple: the π0.5 model directly
+trains with next-token prediction, to preserve text prediction      commands target poses for the arms, gripper, and torso lift,
+capabilities, and flow matching for the action expert (which        and the target base velocities at 50 Hz (with action chunking).
+is initialized with random weights at the beginning of post-        These targets are tracked with simple PD controllers, without
+training). We optimize the objective in Equation (1), with          any additional trajectory planning or collision detection. All
+α = 10.0 for 80k additional steps. The post-training action         manipulation and navigation control is fully end-to-end.
+dataset consists of the MM and ME robot data, filtered                              V. E XPERIMENTAL E VALUATION
+down to successful episodes that are below a fixed length
+threshold. We include web data (WD) to preserve the model’s            The π0.5 model is designed to generalize broadly to new
+semantic and visual capabilities, and the slice of HL data          environments. While it is common to evaluate VLAs in
+corresponding to the multi-environment datasets. Additionally,      environments that match the training data, we conduct all of
+to improve the model’s ability to predict appropriate high-level    our experiments in novel environments that were not seen in
+subtasks, we collect verbal instruction demonstrations (VI),        training. For quantitative comparisons, we use a set of mock
+which are constructed by expert users providing “language           home environments to provide a controlled and reproducible
+demonstrations,” selecting appropriate sub-task commands to         setup, while the most realistic final evaluation is conducted in
+command the robot to perform mobile manipulation tasks step         three real homes that were not part of the training set (see
+by step. These examples are collected by “teleoperating” the        Figure 6). Our experiments focus on the following questions:
+robot in real time with language to perform tasks with the             1) Can π0.5 effectively generalize to complex multi-stage
+learned low level policy, essentially providing demonstrations             tasks in entirely new homes?
+of good high-level subtask outputs for a trained policy.               2) How does the generalization of π0.5 scale with the
+                                                                           number of distinct environments in the training data?
+E. Robot system details                                                3) How do the individual co-training ingredients in the π0.5
+   The robot systems used in our mobile manipulation exper-                training mixture contribute to its final performance?
+iments are illustrated in Figure 5. We conducted all of our            4) How does π0.5 compare to the π0 VLA?
+experiments using two types of mobile manipulators. Both               5) How important is the high-level inference component of
+platforms are equipped with two 6 DoF arms with parallel                   π0.5 , and how does it compare to flat, low-level inference
+jaw grippers and wrist-mounted monocular RGB cameras, a                    as well as oracle high-level baselines?
+wheeled holonomic base, and a torso lift mechanism. The
+state and action spaces for the base correspond to linear (2D)      A. Can π0.5 generalize to real homes?
+and angular (1D) velocity, and the torso lift mechanism is             To answer Question (1), we evaluated π0.5 in three real
+either 1D (up/down) or 2D (up/down and forward/backward).           homes that were not present in the training set, using both
+In addition to the two wrist cameras, the robots have a forward     types of robots. In each of the homes, the robots were in-
+and backward facing camera mounted between the arms. We             structed to perform a bedroom and kitchen cleaning task. The
+use all four cameras for high-level inference, and the wrist        evaluation rubrics for each task are provided in Appendix B
+and forward cameras for the low-level inference process. The        and roughly correspond to the percentage of steps in each task
+total dimensionality of the state and action spaces is 18 or 19,    that were completed successfully (e.g., placing half the dishes
+depending on the platform.                                          in the sink corresponds to around 50%). The results in Figure 7
+                                        Mock Kitchens                                                                      Real Kitchens
+
+
+
+
+                                        Mock Bedrooms                                                                      Real Bedrooms
+
+Fig. 6: Evaluation environments. We evaluate π0.5 in entirely new kitchens and bedrooms that were not seen during training, with novel objects, backgrounds,
+and layouts. We use a set of mock rooms for controlled, reproducible quantitative comparisons (left) and real homes for a realistic final evaluation (right).
+
+`ab] _
+      
+      
+
+              %%        %%        >    0        0           
+                                    0                                             
+`ab] c
+    % 
+   >
+
+            >     %      %               >          >    F %
+                                      >              >
+`ab] 
+      
+%  M  w
+%  M F>
+            >        >              %                % 
+                                                         %  M       %  M        %  M F>
+                                                        F>           F>
+
+(a) Example rollouts. We visualize an exemplary π0.5 episode for one task from each home. Top to
+bottom: putting items in a drawer in Home 1, followed by putting dishes in the sink in Home 2, and (b) Quantitative evaluation. We show the task progress per task and
+putting clothes in the laundry basket in Home 3. The human instruction for each is given on the left, environment averaged over 10 trials. We find that π0.5 ’s performance in the
+and the high-level subtask prediction from π0.5 is shown beneath each frame in blue.                  mock evaluation setups is representative of its performance in real homes.
+
+Fig. 7: Evaluation in real homes. We evaluated π0.5 in three kitchens and three bedrooms in real homes that were not seen during training. We evaluate the
+tasks ‘items in drawer’, ‘laundry basket’, and ‘dishes in sink,’ and find π0.5 to be successful at these tasks in these completely new, real homes.
+
+
+
+show that π0.5 was able to consistently succeed on a variety                                       compute-intensive, for these experiments we pre-train on the
+of tasks in each home (we note that, additionally, the model                                       mixture of robot action prediction data without mobile ma-
+is capable of performing many more tasks than used in our                                          nipulation data, and then compare models post-trained on
+quantitative evaluation). Many of the tasks involve multiple                                       datasets that comprise mobile manipulation data from varying
+stages (e.g., moving multiple objects) lasting about 2 to 5                                        numbers of environments. While the datasets split by location
+minutes. For these trials, the model is provided with a simple                                     in principle differ in size, in practice the number of training
+high-level command (e.g., “place the dishes in the sink”),                                         steps (40k) is chosen such that each model sees the same
+and the high-level inference process autonomously determines                                       number of unique data samples, which allows us to control
+appropriate steps (e.g., “pick up the cup”). This level of in-                                     for dataset size when varying the number of locations used
+the-wild generalization goes significantly beyond the results                                      within a post-training experiment.
+demonstrated with prior vision-language-action models, both
+                                                                                                      Each model is evaluated in the mock environments shown
+in terms of the degree of novelty that the model must handle,
+                                                                                                   in Figure 6, which are not seen in training. We conduct two
+and the task duration and complexity.
+                                                                                                   types of evaluations. First, to evaluate overall performance on
+                                                                                                   multi-stage tasks, we use the standard rubric in Appendix B
+B. How does generalization scale with the number of scenes?
+                                                                                                   and the mock test homes to evaluate each model’s end-to-end
+  In the next set of experiments, we aim to measure how                                            performance on putting dishes in the sink, packing items into
+generalization scales with the number of environments seen                                         a drawer, putting away laundry, and making a bed. Second, we
+in the training data. We vary the number of environments                                           conduct a more fine-grained evaluation of each model’s ability
+in the mobile manipulation data and measure its impact on                                          to follow language instructions and interact with novel objects,
+generalization by training with data from 3, 12, 22, 53, 82,                                       where the robot must pick up specific objects from a kitchen
+and 104 locations. Since applying the entire pre-training and                                      counter based on language commands. These experiments
+post-training recipe to each of these datasets is prohibitively                                    use both in-distribution objects from similar categories as
+                                                                                 Fig. 9: Evaluating language following with different numbers of training
+                                                                                 locations. We evaluate language following rate and success rate for picking
+                                                                                 up user-indicated items and placing them into drawers or sinks, averaged
+                                                                                 over seen object categories (“in-distribution”) or unseen categories (“out-of-
+                                                                                 distribution”). Performance increases steadily as we increase the number of
+Fig. 8: Evaluating performance with different numbers of locations.              training locations.
+Performance over the four test tasks — “dishes in sink”, “items in drawer”,
+“laundry basket”, “make bed” — improves with more training environments.
+The dashed green line and green bar show a baseline model that includes
+the test homes in the training set. Compared to this model, our best model       of locations in the training data increases, both language
+achieves similar performance, despite not seeing any data from the test homes.   following performance and success rate improve. As expected,
+                                                                                 the performance on in-distribution objects improves more
+                                                                                 quickly than that of out-of-distribution objects. As each new
+those in the training data (but new instances), as well as                       environment introduces new household items, the model be-
+out-of-distribution objects from unseen categories. The latter                   comes generally more robust and starts to generalize to task
+necessitates broad semantic generalization.                                      categories that were not present in the training data.
+   The results of the first experiment are shown in Figure 8.
+                                                                                 C. How important is each part of our co-training recipe?
+The average performance among the tasks generally improves
+with more training locations. To quantify how much the final                        To study Question (3), we compare our full π0.5 model
+model (with 104 locations) bridges the generalization gap, we                    to other training mixtures to study the importance of each
+include a control (shown in green) that is trained directly                      mixture component, again using end-to-end task performance
+on data from the test homes. This control attains similar                        in the mock homes and the language following evaluation
+performance as the final 104-location model, suggesting that                     described in Section V-B. As a reminder, our full recipe uses
+our co-training recipe effectively enables broad generalization,                 data from mobile manipulators in many environments (MM),
+reaching similar performance to a model trained on the test                      static manipulators in many environments (ME), and diverse
+environment. To confirm that this generalization performance                     cross-embodiment data collected in laboratory settings (CE). It
+requires our full co-training recipe, we additionally include                    also includes high-level data where the prediction corresponds
+two baselines that do not use any of the other co-training                       to a high-level language command (HL), and web data corre-
+tasks in the pre-training phase, but instead train directly on                   sponding to captioning, VQA, and object localization tasks
+either data from the test environment (light green) or mobile                    (WD). Post-training also uses verbal instruction data (VI),
+manipulation data from the 104 training locations (light yel-                    which we analyze in Section V-E. In these experiments, we
+low). The performance for both those baselines is significantly                  ablate different parts of the mixture:
+worse — this indicates that the other data sources leveraged by                     1) no WD: this ablation excludes web data.
+our full training recipe are essential for good generalization,                     2) no ME: this ablation excludes multi-environment non-
+even when the policy has seen robot data from test homes.                               mobile data.
+When not using data from test homes, pre-training with our                          3) no CE: this ablation excludes the laboratory cross-
+recipe is especially important, as can be seen by the large gap                         embodiment data.
+between the green bars and light yellow bar in Figure 8.                            4) no ME or CE: this ablation excludes both data sources
+   The results of the second experiment (language following)                            from other robots, such that the model is trained on only
+are shown in Figure 9. We report the language following                                 data from the target mobile manipulator platform as well
+rate, which measures how often the robot selects the object                             as web data.
+indicated in the language command, and success rate, which                          The results on the full mock home tasks are shown in
+measures how often the robot successfully places that object                     Figure 10 (detailed breakdown of performance on each task
+in the correct location (either inside the drawer or inside                      in Appendix D). First, we see in the results that excluding
+the sink, depending on the test scenario). We separately                         either of the two cross-embodiment data sources (ME and
+measure performance on object categories seen in training                        CE) significantly degrades performance, indicating that π0.5
+(but new object instances) and unseen (“out-of-distribution”)                    benefits considerably from cross-embodiment transfer, from
+object categories. Details of this experiment are shown and                      both other environments (ME) and other tasks (CE). Excluding
+discussed in Appendix C. Figure 9 shows that, as the number                      both sources harms performance even more. Interestingly, the
+                                                                                   Fig. 12: Comparing π0.5 with other models. Our full model significantly
+Fig. 10: Training recipe ablations, mock homes. We evaluate variants of            outperforms both π0 and π0 -FAST+Flow in the mock home test environments.
+our model that exclude different parts of the training mixture on all four test
+tasks (10 trials per policy and task). Including cross-embodiment data, both in
+diverse environments (ME) and for diverse tasks in laboratory settings (CE) is
+important for good performance, with large degradation when either or both         only, without the HL or WD datasets. These models provide
+of these data sources are removed. Web data (WD) does not make a significant       a strong point of comparison, since π0 has been demon-
+difference in these experiments, but we will see in Figures 11 and 13 that it      strated to perform strongly on complex and dexterous mobile
+impacts object generalization and high-level performance.
+                                                                                   manipulation tasks, and the enhancement in π0 -FAST+Flow
+                                                                                   brings it as close to π0.5 as possible. π0.5 builds on these
+                                                                                   models with a combination of co-training tasks. For a fair
+                                                                                   comparison, all models receive the same cross-embodiment
+                                                                                   robot training set and are trained for a comparable number
+                                                                                   of steps. The differences then are: (1) π0.5 additionally uses
+                                                                                   HL and WD data; (2) π0.5 uses a hybrid training procedure,
+                                                                                   with discrete tokenized training in the pre-training phase, and
+                                                                                   training with a flow matching action expert only in the post-
+                                                                                   training phase, while π0 always uses the action expert. π0 -
+                                                                                   FAST+Flow follows the hybrid training recipe but is trained
+                                                                                   only with data containing robot actions and thus cannot
+                                                                                   perform high-level inference. The results in Figure 12 show
+                                                                                   that π0.5 significantly outperforms both π0 and our enhanced
+Fig. 11: Training recipe ablations, language following. Evaluating language        version. This result holds even when we allow for longer
+following with in-distribution and out-of-distribution objects after training on
+different numbers of locations. Including web data (WD) is important for out-      training up to 300k training steps of π0 , confirming that as in
+of-distribution (OOD) performance in particular. Cross-embodiment (CE) and         Pertsch et al. [64] training with FAST tokens is more effective
+diverse environment (ME) data both have a large impact on in-distribution          in terms of compute than pure diffusion based training.
+and out-of-distribution performance.
+                                                                                   E. How important is high-level inference?
+                                                                                      Finally, we evaluate the importance of high-level inference,
+difference in performance with the no WD ablation is not
+                                                                                   and compare the performance of several alternative high-level
+statistically significant in this experiment, though we show
+                                                                                   inference methods. The high-level inference mechanism in
+later that web data has a large impact on language following
+                                                                                   π0.5 takes in a high-level command (e.g., “clean the bed-
+(below) and high-level subtask inference (Section V-E).
+                                                                                   room”) and outputs the subtask to complete (e.g., “pick up
+   The results of the language following experiment, shown in
+                                                                                   pillow”), which is then used as context for inferring the lower-
+Figure 11, show a similar trend as Figure 10 — excluding
+                                                                                   level actions, analogously to chain of thought inference [82].
+ME or/and CE data leads to a significant degradation in
+                                                                                   While π0.5 uses a unified architecture where the same model
+performance. What differs now is that removing web data
+                                                                                   performs both high-level and low-level inference, we can
+(no WD) causes significantly worse performance on out-of-
+                                                                                   also construct baseline methods that either forego the high-
+distribution (OOD) objects — we conjecture that training with
+                                                                                   level inference process and feed the task prompt directly
+web data, which contains very broad knowledge of physical
+                                                                                   into the low-level system, as is common in standard VLA
+objects, allows the model to understand and follow language
+                                                                                   models [92, 8], or use another model for high-level inference
+commands involving unseen object categories.
+                                                                                   to ablate the importance of different dataset components in
+D. How does π0.5 compare to other VLAs?                                            terms of their impact on the high-level policy. We consider the
+  We compare π0.5 to the original π0 VLA as well as an                             following methods and ablations, all of which use the full π0.5
+improved version of π0 which we denote as π0 -FAST+Flow.                           low-level inference process with different high-level policies:
+This version is trained via the joint diffusion and FAST action                       1) π0.5 model for high-level and low-level inference.
+prediction formulation from Equation (1), but on action data                          2) no WD: an ablation of π0.5 that excludes web data.
+                                                                               high-level policy. Finally, the zero-shot GPT-4 ablation attains
+                                                                               the worst performance, indicating the importance of adapting
+                                                                               VLMs with robot data. We provide a detailed breakdown of
+                                                                               performance on each task in Appendix D, Figure 17.
+                                                                                          VI. D ISCUSSION AND F UTURE W ORK
+                                                                                  We described π0.5 , a co-trained model that builds on the
+                                                                               π0 VLA to integrate a variety of data sources and enable
+                                                                               generalization to new environments. The π0.5 VLA can control
+                                                                               mobile manipulators to perform tasks in homes that were never
+                                                                               seen in the training data, cleaning kitchens and bedrooms,
+                                                                               making beds, hanging towels, and performing other multi-
+                                                                               stage and dexterous behaviors. π0.5 is trained on about 400
+                                                                               hours of mobile manipulation data, but includes a much
+                                                                               larger amount of data from other robots, including non-mobile
+                                                                               manipulators in diverse environments and data collected under
+Fig. 13: Evaluation of the high-level inference process. While the full        laboratory conditions. It is also co-trained jointly with data
+π0.5 model with high-level and low-level inference attains the best results,   from the web, as well as high-level prediction data for out-
+using only low-level inference (“implicit HL”) with the full π0.5 model also
+benefits from the inclusion of high-level subtask examples in training. In     putting language commands based on robot observations. The
+contrast, excluding verbal instructions (no VI) or web data (no WD) leads      generalization capabilities of π0.5 demonstrate that this co-
+to a significant degradation in performance, and zero-shot prompting a large   training recipe facilitates effective transfer, enabling highly
+API-based model (GPT-4) performs worse.
+                                                                               generalizable control of a mobile manipulator with only a
+                                                                               medium-sized mobile manipulation dataset.
+                                                                                  π0.5 is not without its limitations. While our VLA ex-
+   3) no VI: an ablation of π0.5 that excludes the verbal                      hibits broad generalization, it still makes mistakes. Some
+      instruction (VI) data.                                                   environments present persistent challenges (e.g., unfamiliar
+   4) implicit HL: no high-level inference at runtime but                      handles on drawers, or cabinets that are physically hard for
+      includes high-level data in training, which may teach                    the robot to open), some behaviors present challenges with
+      the model about subtasks implicitly.                                     partial observability (e.g., the robot arm occluding a spill
+   5) no HL: no high-level inference, and no high-level data                   that should be wiped), and in some cases the high-level sub-
+      in training at all.                                                      task inference is easily distracted (e.g., closing and opening a
+   6) GPT-4: use GPT-4 as the high-level policy, evaluating                    drawer multiple times while putting away items). Addressing
+      the importance of training the high-level policy on robot                these challenges with better co-training, transfer, and larger
+      data. To align the model with our domain, we prompt                      datasets is a promising direction for future work. Other future
+      GPT-4 with a description of the task and a list of the                   work directions could address the technical constraints of
+      most used labels to choose from.                                         our method. While π0.5 can perform a variety of behaviors
+   7) human HL: use an expert human as an “oracle” high-                       in order to clean up kitchens and bedrooms, it processes
+      level policy, to provide an upper bound on performance.                  relatively simple prompts. The complexity of the prompts that
+   The results of these experiments are shown in Figure 13.                    the model can accommodate is determined by the training
+The full π0.5 model performs the best, and outperforms even                    data, and more complex user preferences and instructions
+the human HL “oracle” baseline. Perhaps surprisingly, the                      could be incorporated in future work by producing more
+second best model is the implicit HL ablation, which does                      intricate and diverse annotations, either with human labelers
+not perform any high-level inference, but includes the full                    or synthetically. The model also uses a relatively modest
+data mixture, i.e. also subtask prediction, in training. This                  context, and incorporating richer context and memory could
+strongly suggests the importance of the co-training recipe used                make the model significantly more capable in settings with
+by our model: while there is a benefit to explicitly infer high-               more partial observability, such as tasks that require navigating
+level subtasks, a significant portion of that benefit is already               between different rooms or remembering where objects are
+obtained simply by including subtask prediction data in the                    stored. More broadly, π0.5 explores a particular combination of
+training mixture. The no HL ablation, excluding HL task                        heterogeneous data sources, but the specific sources of data can
+even in training, performs significantly worse. The results                    be explored even more broadly. For instance, the ability of our
+also show that the relatively small verbal instruction dataset,                system to learn from verbal instructions provides a powerful
+which only constitutes about 11% of the high-level mobile                      new supervision modality, and future work could explore this
+manipulation examples, is critical to strong performance as the                and other ways that people can provide robots with additional
+no VI ablation is significantly weaker. The no WD ablation                     contextual knowledge. We hope that our work will serve as a
+is also significantly worse, indicating that much of the benefit               foundation for a new generation of VLAs that exhibit broad
+of web data (perhaps unsurprisingly) lies in improving the                     generalization to diverse real-world environments.
+                    ACKNOWLEDGEMENTS                             [7] Johan Bjorck, Fernando Castañeda, Nikita Cherniadev,
+   We thank our robot operators for data collection, evalua-         Xingye Da, Runyu Ding, Linxi Fan, Yu Fang, Dieter Fox,
+tions, logistics, and video recording. See Appendix A for a          Fengyuan Hu, Spencer Huang, et al. Gr00t n1: An open
+full contributions statement.                                        foundation model for generalist humanoid robots. arXiv
+                                                                     preprint arXiv:2503.14734, 2025.
+                       R EFERENCES                               [8] Kevin Black, Noah Brown, Danny Driess, Adnan Es-
+ [1] AgiBot-World-Contributors, Qingwen Bu, Jisong Cai,              mail, Michael Equi, Chelsea Finn, Niccolo Fusai,
+     Li Chen, Xiuqi Cui, Yan Ding, Siyuan Feng, Shenyuan             Lachy Groom, Karol Hausman, Brian Ichter, Szymon
+     Gao, Xindong He, Xuan Hu, Xu Huang, Shu Jiang,                  Jakubczak, Tim Jones, Liyiming Ke, Sergey Levine,
+     Yuxin Jiang, Cheng Jing, Hongyang Li, Jialu Li, Chiming         Adrian Li-Bell, Mohith Mothukuri, Suraj Nair, Karl
+     Liu, Yi Liu, Yuxiang Lu, Jianlan Luo, Ping Luo, Yao             Pertsch, Lucy Xiaoyang Shi, James Tanner, Quan Vuong,
+     Mu, Yuehan Niu, Yixuan Pan, Jiangmiao Pang, Yu Qiao,            Anna Walling, Haohuan Wang, and Ury Zhilinsky. π0 :
+     Guanghui Ren, Cheng Ruan, Jiaqi Shan, Yongjian Shen,            A vision-language-action flow model for general robot
+     Chengshi Shi, Mingkang Shi, Modi Shi, Chonghao Sima,            control. arXiv preprint arXiv:2410.24164, 2024.
+     Jianheng Song, Huijie Wang, Wenhao Wang, Dafeng             [9] Anthony Brohan, Noah Brown, Justice Carbajal, Yev-
+     Wei, Chengen Xie, Guo Xu, Junchi Yan, Cunbiao Yang,             gen Chebotar, Joseph Dabis, Chelsea Finn, Keerthana
+     Lei Yang, Shukai Yang, Maoqing Yao, Jia Zeng, Chi               Gopalakrishnan, Karol Hausman, Alex Herzog, Jasmine
+     Zhang, Qinglin Zhang, Bin Zhao, Chengyue Zhao, Jiaqi            Hsu, Julian Ibarz, Brian Ichter, Alex Irpan, Tomas
+     Zhao, and Jianchao Zhu. Agibot world colosseo: A large-         Jackson, Sally Jesmonth, Nikhil Joshi, Ryan Julian,
+     scale manipulation platform for scalable and intelligent        Dmitry Kalashnikov, Yuheng Kuang, Isabel Leal, Kuang-
+     embodied systems. arXiv preprint arXiv:2503.06669,              Huei Lee, Sergey Levine, Yao Lu, Utsav Malla, Deek-
+     2025.                                                           sha Manjunath, Igor Mordatch, Ofir Nachum, Carolina
+ [2] Michael Ahn, Anthony Brohan, Noah Brown, Yevgen                 Parada, Jodilyn Peralta, Emily Perez, Karl Pertsch, Jor-
+     Chebotar, Omar Cortes, Byron David, Chelsea Finn,               nell Quiambao, Kanishka Rao, Michael Ryoo, Grecia
+     Chuyuan Fu, Keerthana Gopalakrishnan, Karol Haus-               Salazar, Pannag Sanketi, Kevin Sayed, Jaspiar Singh,
+     man, Alex Herzog, Daniel Ho, Jasmine Hsu, Julian Ibarz,         Sumedh Sontakke, Austin Stone, Clayton Tan, Huong
+     Brian Ichter, Alex Irpan, Eric Jang, Rosario Jauregui           Tran, Vincent Vanhoucke, Steve Vega, Quan Vuong, Fei
+     Ruano, Kyle Jeffrey, Sally Jesmonth, Nikhil Joshi, Ryan         Xia, Ted Xiao, Peng Xu, Sichun Xu, Tianhe Yu, and Bri-
+     Julian, Dmitry Kalashnikov, Yuheng Kuang, Kuang-Huei            anna Zitkovich. Rt-1: Robotics transformer for real-world
+     Lee, Sergey Levine, Yao Lu, Linda Luu, Carolina Parada,         control at scale. In arXiv preprint arXiv:2212.06817,
+     Peter Pastor, Jornell Quiambao, Kanishka Rao, Jarek Ret-        2022.
+     tinghouse, Diego Reyes, Pierre Sermanet, Nicolas Siev-     [10] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie
+     ers, Clayton Tan, Alexander Toshev, Vincent Vanhoucke,          Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind
+     Fei Xia, Ted Xiao, Peng Xu, Sichun Xu, Mengyuan                 Neelakantan, Pranav Shyam, Girish Sastry, Amanda
+     Yan, and Andy Zeng. Do as i can and not as i say:               Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen
+     Grounding language in robotic affordances. In arXiv             Krueger, Tom Henighan, Rewon Child, Aditya Ramesh,
+     preprint arXiv:2204.01691, 2022.                                Daniel M. Ziegler, Jeff Wu, Clemens Winter, Christopher
+ [3] Suneel Belkhale and Dorsa Sadigh. Minivla: A better vla         Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott
+     with a smaller footprint, 2024. URL https://github.com/         Gray, Benjamin Chess, Jack Clark, Christopher Berner,
+     Stanford-ILIAD/openvla-mini.                                    Sam McCandlish, Alec Radford, Ilya Sutskever, and
+ [4] Suneel Belkhale, Tianli Ding, Ted Xiao, Pierre Sermanet,        Dario Amodei. Language models are few-shot learners.
+     Quon Vuong, Jonathan Tompson, Yevgen Chebotar, De-              In Advances in Neural Information Processing Systems,
+     bidatta Dwibedi, and Dorsa Sadigh. Rt-h: Action hier-           2020.
+     archies using language, 2024. URL https://arxiv.org/abs/   [11] Hongyi Chen, Yunchao Yao, Ruixuan Liu, Changliu Liu,
+     2403.01823.                                                     and Jeffrey Ichnowski. Automating robot failure recovery
+ [5] Lucas Beyer, Andreas Steiner, André Susano Pinto,              using vision-language models with optimized prompts.
+     Alexander Kolesnikov, Xiao Wang, Daniel Salz, Maxim             arXiv preprint arXiv:2409.03966, 2024.
+     Neumann, Ibrahim Alabdulmohsin, Michael Tschannen,         [12] Xinlei Chen, Hao Fang, Tsung-Yi Lin, Ramakrishna
+     Emanuele Bugliarello, et al. Paligemma: A versatile 3b          Vedantam, Saurabh Gupta, Piotr Dollár, and C Lawrence
+     vlm for transfer. arXiv preprint arXiv:2407.07726, 2024.        Zitnick. Microsoft coco captions: Data collection and
+ [6] Homanga Bharadhwaj, Jay Vakil, Mohit Sharma, Ab-                evaluation server. arXiv preprint arXiv:1504.00325,
+     hinav Gupta, Shubham Tulsiani, and Vikash Kumar.                2015.
+     Roboagent: Generalization and efficiency in robot manip-   [13] An-Chieh Cheng, Yandong Ji, Zhaojing Yang, Zaitian
+     ulation via semantic augmentations and action chunking.         Gongye, Xueyan Zou, Jan Kautz, Erdem Bıyık, Hongxu
+     In 2024 IEEE International Conference on Robotics and           Yin, Sifei Liu, and Xiaolong Wang. Navila: Legged
+     Automation (ICRA), pages 4788–4795. IEEE, 2024.                 robot vision-language-action model for navigation. arXiv
+     preprint arXiv:2412.04453, 2024.                                 Boosting generalization of robotic skills with cross-
+[14] Cheng Chi, Zhenjia Xu, Chuer Pan, Eric Cousineau,                domain datasets. arXiv preprint arXiv:2109.13396, 2021.
+     Benjamin Burchfiel, Siyuan Feng, Russ Tedrake, and          [26] Kiana Ehsani, Tanmay Gupta, Rose Hendrix, Jordi Sal-
+     Shuran Song. Universal manipulation interface: In-               vador, Luca Weihs, Kuo-Hao Zeng, Kunal Pratap Singh,
+     the-wild robot teaching without in-the-wild robots. In           Yejin Kim, Winson Han, Alvaro Herrasti, et al. Spoc:
+     Proceedings of Robotics: Science and Systems (RSS),              Imitating shortest paths in simulation enables effective
+     2024.                                                            navigation and manipulation in the real world. arXiv
+[15] OX-Embodiment Collaboration, A Padalkar, A Pooley,               preprint arXiv:2312.02976, 2023.
+     A Jain, A Bewley, A Herzog, A Irpan, A Khazatsky,           [27] Patrick Esser, Sumith Kulal, Andreas Blattmann, Rahim
+     A Rai, A Singh, et al. Open X-Embodiment: Robotic                Entezari, Jonas Müller, Harry Saini, Yam Levi, Dominik
+     learning datasets and RT-X models. arXiv preprint                Lorenz, Axel Sauer, Frederic Boesel, et al. Scaling
+     arXiv:2310.08864, 1(2), 2023.                                    rectified flow transformers for high-resolution image
+[16] Yinpei Dai, Jayjun Lee, Nima Fazeli, and Joyce Chai.             synthesis. In Forty-first International Conference on
+     Racer: Rich language-guided failure recovery policies for        Machine Learning, 2024.
+     imitation learning. International Conference on Robotics    [28] Haritheja Etukuru, Norihito Naka, Zijin Hu, Seung-
+     and Automation (ICRA), 2025.                                     jae Lee, Julian Mehu, Aaron Edsinger, Chris Pax-
+[17] Sudeep Dasari, Frederik Ebert, Stephen Tian, Suraj Nair,         ton, Soumith Chintala, Lerrel Pinto, and Nur Muham-
+     Bernadette Bucher, Karl Schmeckpeper, Siddharth Singh,           mad Mahi Shafiullah. Robot utility models: General
+     Sergey Levine, and Chelsea Finn. Robonet: Large-scale            policies for zero-shot deployment in new environments.
+     multi-robot learning. CoRL, 2019.                                arXiv preprint arXiv:2409.05865, 2024.
+[18] Sudeep Dasari, Mohan Kumar Srirama, Unnat Jain, and         [29] Hao-Shu Fang, Chenxi Wang, Hongjie Fang, Minghao
+     Abhinav Gupta. An unbiased look at datasets for visuo-           Gou, Jirong Liu, Hengxu Yan, Wenhai Liu, Yichen
+     motor pre-training. In Conference on Robot Learning,             Xie, and Cewu Lu. Anygrasp: Robust and efficient
+     pages 1183–1198. PMLR, 2023.                                     grasp perception in spatial and temporal domains. IEEE
+[19] Matt Deitke, Christopher Clark, Sangho Lee, Rohun                Transactions on Robotics, 39(5):3929–3945, 2023.
+     Tripathi, Yue Yang, Jae Sung Park, Mohammadreza             [30] Hao-Shu Fang, Hongjie Fang, Zhenyu Tang, Jirong Liu,
+     Salehi, Niklas Muennighoff, Kyle Lo, Luca Soldaini,              Chenxi Wang, Junbo Wang, Haoyi Zhu, and Cewu Lu.
+     et al. Molmo and pixmo: Open weights and open data               Rh20t: A comprehensive robotic dataset for learning
+     for state-of-the-art multimodal models. arXiv preprint           diverse skills in one-shot. In 2024 IEEE International
+     arXiv:2409.17146, 2024.                                          Conference on Robotics and Automation (ICRA), pages
+[20] Dempsey. Reviews-consumer technology. the teardown-              653–660. IEEE, 2024.
+     amazon astro consumer robot. Engineering & Technol-         [31] Theophile Gervet, Soumith Chintala, Dhruv Batra, Ji-
+     ogy, 18(2):70–71, 2023.                                          tendra Malik, and Devendra Singh Chaplot. Navigating
+[21] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and                    to objects in the real world. Science Robotics, 8(79):
+     Kristina Toutanova. Bert: Pre-training of deep bidirec-          eadf6991, 2023.
+     tional transformers for language understanding. In Pro-     [32] Yash Goyal, Tejas Khot, Douglas Summers-Stay, Dhruv
+     ceedings of the 2019 Conference of the North American            Batra, and Devi Parikh. Making the V in VQA matter:
+     Chapter of the Association for Computational Linguis-            Elevating the role of image understanding in visual
+     tics: Human Language Technologies, 2019.                         question answering. In Computer Vision and Pattern
+[22] Ria Doshi, Homer Walke, Oier Mees, Sudeep Dasari,                Recognition (CVPR), 2017.
+     and Sergey Levine. Scaling cross-embodied learning:         [33] Abhinav        Gupta,        Adithyavairavan       Murali,
+     One policy for manipulation, navigation, locomotion and          Dhiraj Prakashchand Gandhi, and Lerrel Pinto.
+     aviation. In Conference on Robot Learning, 2024.                 Robot learning in homes: Improving generalization and
+[23] Danny Driess, Fei Xia, Mehdi SM Sajjadi, Corey Lynch,            reducing dataset bias. Advances in neural information
+     Aakanksha Chowdhery, Brian Ichter, Ayzaan Wahid,                 processing systems, 31, 2018.
+     Jonathan Tompson, Quan Vuong, Tianhe Yu, et al. Palm-       [34] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian
+     e: An embodied multimodal language model. arXiv                  Sun. Deep residual learning for image recognition. In
+     preprint arXiv:2303.03378, 2023.                                 Proceedings of the IEEE conference on computer vision
+[24] Jiafei Duan, Wentao Yuan, Wilbert Pumacay, Yi Ru                 and pattern recognition, pages 770–778, 2016.
+     Wang, Kiana Ehsani, Dieter Fox, and Ranjay Kr-              [35] Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr
+     ishna.     Manipulate-anything: Automating real-world            Dollár, and Ross Girshick. Masked autoencoders are
+     robots using vision-language models. arXiv preprint              scalable vision learners. In Proceedings of the IEEE/CVF
+     arXiv:2406.18915, 2024.                                          Conference on Computer Vision and Pattern Recognition,
+[25] Frederik Ebert, Yanlai Yang, Karl Schmeckpeper,                  pages 15979–15988, 2022.
+     Bernadette Bucher, Georgios Georgakis, Kostas Dani-         [36] Yingdong Hu, Fanqi Lin, Tong Zhang, Li Yi, and Yang
+     ilidis, Chelsea Finn, and Sergey Levine. Bridge data:            Gao. Look before you leap: Unveiling the power of gpt-
+     4v in robotic vision-language planning. arXiv preprint      [43] Alexander Kirillov, Eric Mintun, Nikhila Ravi, Hanzi
+     arXiv:2311.17842, 2023.                                          Mao, Chloe Rolland, Laura Gustafson, Tete Xiao,
+[37] Huang Huang, Fangchen Liu, Letian Fu, Tingfan Wu,                Spencer Whitehead, Alexander C. Berg, Wan-Yen Lo,
+     Mustafa Mukadam, Jitendra Malik, Ken Goldberg, and               Piotr Dollár, and Ross Girshick. Segment anything. arXiv
+     Pieter Abbeel. Otter: A vision-language-action model             preprint arXiv:2304.02643, 2023.
+     with text-aware visual feature extraction. arXiv preprint   [44] Boyi Li, Philipp Wu, Pieter Abbeel, and Jitendra Malik.
+     arXiv:2503.03734, 2025.                                          Interactive task planning with language models, 2023.
+[38] Wenlong Huang, Pieter Abbeel, Deepak Pathak, and            [45] Qixiu Li, Yaobo Liang, Zeyu Wang, Lin Luo, Xi Chen,
+     Igor Mordatch. Language models as zero-shot planners:            Mozheng Liao, Fangyun Wei, Yu Deng, Sicheng Xu,
+     Extracting actionable knowledge for embodied agents.             Yizhong Zhang, et al.           Cogact: A foundational
+     In International conference on machine learning, pages           vision-language-action model for synergizing cognition
+     9118–9147. PMLR, 2022.                                           and action in robotic manipulation. arXiv preprint
+[39] Aaron Jaech, Adam Kalai, Adam Lerer, Adam Richard-               arXiv:2411.19650, 2024.
+     son, Ahmed El-Kishky, Aiden Low, Alec Helyar, Alek-         [46] Xiang Li, Cristina Mata, Jongwoo Park, Kumara Ka-
+     sander Madry, Alex Beutel, Alex Carney, et al. Openai            hatapitiya, Yoo Sung Jang, Jinghuan Shang, Kanchana
+     o1 system card. arXiv preprint arXiv:2412.16720, 2024.           Ranasinghe, Ryan Burgert, Mu Cai, Yong Jae Lee, et al.
+[40] Joseph L Jones. Robots at the tipping point: the road to         Llara: Supercharging robot learning data for vision-
+     irobot roomba. IEEE Robotics & Automation Magazine,              language policy. arXiv preprint arXiv:2406.20095, 2024.
+     13(1):76–78, 2006.                                          [47] Yi Li, Yuquan Deng, Jesse Zhang, Joel Jang, Marius
+[41] Alexander Khazatsky, Karl Pertsch, Suraj Nair, Ash-              Memmel, Raymond Yu, Caelan Reed Garrett, Fabio
+     win Balakrishna, Sudeep Dasari, Siddharth Karam-                 Ramos, Dieter Fox, Anqi Li, et al. Hamster: Hierarchical
+     cheti, Soroush Nasiriany, Mohan Kumar Srirama,                   action models for open-world robot manipulation. arXiv
+     Lawrence Yunliang Chen, Kirsty Ellis, Peter David                preprint arXiv:2502.05485, 2025.
+     Fagan, Joey Hejna, Masha Itkina, Marion Lepert,             [48] Jacky Liang, Wenlong Huang, Fei Xia, Peng Xu, Karol
+     Yecheng Jason Ma, Patrick Tree Miller, Jimmy Wu,                 Hausman, Brian Ichter, Pete Florence, and Andy Zeng.
+     Suneel Belkhale, Shivin Dass, Huy Ha, Arhan Jain, Abra-          Code as policies: Language model programs for em-
+     ham Lee, Youngwoon Lee, Marius Memmel, Sungjae                   bodied control. In 2023 IEEE International Conference
+     Park, Ilija Radosavovic, Kaiyuan Wang, Albert Zhan,              on Robotics and Automation (ICRA), pages 9493–9500.
+     Kevin Black, Cheng Chi, Kyle Beltran Hatch, Shan                 IEEE, 2023.
+     Lin, Jingpei Lu, Jean Mercat, Abdul Rehman, Pan-            [49] Fanqi Lin, Yingdong Hu, Pingyue Sheng, Chuan Wen,
+     nag R Sanketi, Archit Sharma, Cody Simpson, Quan                 Jiacheng You, and Yang Gao. Data scaling laws in im-
+     Vuong, Homer Rich Walke, Blake Wulfe, Ted Xiao,                  itation learning for robotic manipulation. arXiv preprint
+     Jonathan Heewon Yang, Arefeh Yavary, Tony Z. Zhao,               arXiv:2410.18647, 2024.
+     Christopher Agia, Rohan Baijal, Mateo Guaman Cas-           [50] Yaron Lipman, Ricky TQ Chen, Heli Ben-Hamu, Maxim-
+     tro, Daphne Chen, Qiuyu Chen, Trinity Chung, Jaimyn              ilian Nickel, and Matt Le. Flow matching for generative
+     Drake, Ethan Paul Foster, Jensen Gao, David Antonio              modeling. arXiv preprint arXiv:2210.02747, 2022.
+     Herrera, Minho Heo, Kyle Hsu, Jiaheng Hu, Donovon           [51] Fangchen Liu, Kuan Fang, Pieter Abbeel, and Sergey
+     Jackson, Charlotte Le, Yunshuang Li, Kevin Lin, Roy              Levine. Moka: Open-vocabulary robotic manipulation
+     Lin, Zehan Ma, Abhiram Maddukuri, Suvir Mirchandani,             through mark-based visual prompting. In First Workshop
+     Daniel Morton, Tony Nguyen, Abigail O’Neill, Rosario             on Vision-Language Models for Navigation and Manip-
+     Scalise, Derick Seale, Victor Son, Stephen Tian, Emi             ulation at ICRA 2024, 2024.
+     Tran, Andrew E. Wang, Yilin Wu, Annie Xie, Jingyun          [52] Jiaming Liu, Hao Chen, Pengju An, Zhuoyang Liu, Ren-
+     Yang, Patrick Yin, Yunchu Zhang, Osbert Bastani, Glen            rui Zhang, Chenyang Gu, Xiaoqi Li, Ziyu Guo, Sixiang
+     Berseth, Jeannette Bohg, Ken Goldberg, Abhinav Gupta,            Chen, Mengzhen Liu, et al. Hybridvla: Collaborative
+     Abhishek Gupta, Dinesh Jayaraman, Joseph J Lim, Ji-              diffusion and autoregression in a unified vision-language-
+     tendra Malik, Roberto Martı́n-Martı́n, Subramanian Ra-           action model. arXiv preprint arXiv:2503.10631, 2025.
+     mamoorthy, Dorsa Sadigh, Shuran Song, Jiajun Wu,            [53] Peiqi Liu, Yaswanth Orru, Jay Vakil, Chris Paxton, Nur
+     Michael C. Yip, Yuke Zhu, Thomas Kollar, Sergey                  Muhammad Mahi Shafiullah, and Lerrel Pinto. Ok-
+     Levine, and Chelsea Finn. Droid: A large-scale in-               robot: What really matters in integrating open-knowledge
+     the-wild robot manipulation dataset. In Proceedings of           models for robotics. arXiv preprint arXiv:2401.12202,
+     Robotics: Science and Systems, 2024.                             2024.
+[42] Moo Jin Kim, Karl Pertsch, Siddharth Karamcheti, Ted        [54] Qiang Liu.        Rectified flow: A marginal preserv-
+     Xiao, Ashwin Balakrishna, Suraj Nair, Rafael Rafailov,           ing approach to optimal transport.         arXiv preprint
+     Ethan Foster, Grace Lam, Pannag Sanketi, et al. Openvla:         arXiv:2209.14577, 2022.
+     An open-source vision-language-action model. arXiv          [55] Songming Liu, Lingxuan Wu, Bangguo Li, Hengkai Tan,
+     preprint arXiv:2406.09246, 2024.                                 Huayu Chen, Zhengyi Wang, Ke Xu, Hang Su, and Jun
+     Zhu. Rdt-1b: a diffusion foundation model for bimanual            hyek Han, Kanishka Rao, Karl Pertsch, Karol Hausman,
+     manipulation. arXiv preprint arXiv:2410.07864, 2024.              Keegan Go, Keerthana Gopalakrishnan, Ken Goldberg,
+[56] Jeffrey Mahler, Jacky Liang, Sherdil Niyaz, Michael               Kendra Byrne, Kenneth Oslund, Kento Kawaharazuka,
+     Laskey, Richard Doan, Xinyu Liu, Juan Aparicio Ojea,              Kevin Zhang, Keyvan Majd, Krishan Rana, Krishnan
+     and Ken Goldberg. Dex-net 2.0: Deep learning to plan              Srinivasan, Lawrence Yunliang Chen, Lerrel Pinto, Liam
+     robust grasps with synthetic point clouds and analytic            Tan, Lionel Ott, Lisa Lee, Masayoshi Tomizuka, Max-
+     grasp metrics. arXiv preprint arXiv:1703.09312, 2017.             imilian Du, Michael Ahn, Mingtong Zhang, Mingyu
+[57] Arjun Majumdar, Karmesh Yadav, Sergio Arnaud, Jason               Ding, Mohan Kumar Srirama, Mohit Sharma, Moo Jin
+     Ma, Claire Chen, Sneha Silwal, Aryan Jain, Vincent-               Kim, Naoaki Kanazawa, Nicklas Hansen, Nicolas Heess,
+     Pierre Berges, Tingfan Wu, Jay Vakil, et al. Where are we         Nikhil J Joshi, Niko Suenderhauf, Norman Di Palo,
+     in the search for an artificial visual cortex for embodied        Nur Muhammad Mahi Shafiullah, Oier Mees, Oliver
+     intelligence? Advances in Neural Information Processing           Kroemer, Pannag R Sanketi, Paul Wohlhart, Peng Xu,
+     Systems, 36:655–677, 2023.                                        Pierre Sermanet, Priya Sundaresan, Quan Vuong, Rafael
+[58] Suraj Nair, Aravind Rajeswaran, Vikash Kumar, Chelsea             Rafailov, Ran Tian, Ria Doshi, Roberto Martı́n-Martı́n,
+     Finn, and Abhinav Gupta. R3m: A universal visual                  Russell Mendonca, Rutav Shah, Ryan Hoque, Ryan Ju-
+     representation for robot manipulation. In CoRL, 2022.             lian, Samuel Bustamante, Sean Kirmani, Sergey Levine,
+[59] Soroush Nasiriany, Fei Xia, Wenhao Yu, Ted Xiao, Jacky            Sherry Moore, Shikhar Bahl, Shivin Dass, Shuran Song,
+     Liang, Ishita Dasgupta, Annie Xie, Danny Driess, Ayzaan           Sichun Xu, Siddhant Haldar, Simeon Adebola, Simon
+     Wahid, Zhuo Xu, et al. Pivot: Iterative visual prompting          Guist, Soroush Nasiriany, Stefan Schaal, Stefan Welker,
+     elicits actionable knowledge for vlms. arXiv preprint             Stephen Tian, Sudeep Dasari, Suneel Belkhale, Takayuki
+     arXiv:2402.07872, 2024.                                           Osa, Tatsuya Harada, Tatsuya Matsushima, Ted Xiao,
+[60] Hai Nguyen and Charles C Kemp. Autonomously learn-                Tianhe Yu, Tianli Ding, Todor Davchev, Tony Z. Zhao,
+     ing to visually detect where manipulation will succeed.           Travis Armstrong, Trevor Darrell, Vidhi Jain, Vincent
+     Autonomous Robots, 36:137–152, 2014.                              Vanhoucke, Wei Zhan, Wenxuan Zhou, Wolfram Bur-
+[61] Dantong Niu, Yuvan Sharma, Giscard Biamby, Jerome                 gard, Xi Chen, Xiaolong Wang, Xinghao Zhu, Xuanlin
+     Quenum, Yutong Bai, Baifeng Shi, Trevor Darrell, and              Li, Yao Lu, Yevgen Chebotar, Yifan Zhou, Yifeng Zhu,
+     Roei Herzig. Llarva: Vision-action instruction tuning en-         Ying Xu, Yixuan Wang, Yonatan Bisk, Yoonyoung Cho,
+     hances robot learning. arXiv preprint arXiv:2406.11815,           Youngwoon Lee, Yuchen Cui, Yueh hua Wu, Yujin Tang,
+     2024.                                                             Yuke Zhu, Yunzhu Li, Yusuke Iwasawa, Yutaka Matsuo,
+[62] Octo Model Team, Dibya Ghosh, Homer Walke, Karl                   Zhuo Xu, and Zichen Jeff Cui. Open X-Embodiment:
+     Pertsch, Kevin Black, Oier Mees, Sudeep Dasari, Joey              Robotic learning datasets and RT-X models. https:
+     Hejna, Charles Xu, Jianlan Luo, Tobias Kreiman, You               //arxiv.org/abs/2310.08864, 2023.
+     Liang Tan, Pannag Sanketi, Quan Vuong, Ted Xiao,             [64] Karl Pertsch, Kyle Stachowicz, Brian Ichter, Danny
+     Dorsa Sadigh, Chelsea Finn, and Sergey Levine. Octo:              Driess, Suraj Nair, Quan Vuong, Oier Mees, Chelsea
+     An open-source generalist robot policy. In Proceedings of         Finn, and Sergey Levine. FAST: Efficient action tok-
+     Robotics: Science and Systems, Delft, Netherlands, 2024.          enization for vision-language-action models. Robotics:
+[63] Open X-Embodiment Collaboration, Abhishek Padalkar,               Science and Systems, 2025.
+     Acorn Pooley, Ajinkya Jain, Alex Bewley, Alex Her-           [65] Dicong Qiu, Wenzong Ma, Zhenfu Pan, Hui Xiong, and
+     zog, Alex Irpan, Alexander Khazatsky, Anant Rai,                  Junwei Liang. Open-vocabulary mobile manipulation in
+     Anikait Singh, Anthony Brohan, Antonin Raffin, Ayzaan             unseen dynamic environments with 3d semantic maps.
+     Wahid, Ben Burgess-Limerick, Beomjoon Kim, Bern-                  arXiv preprint arXiv:2406.18115, 2024.
+     hard Schölkopf, Brian Ichter, Cewu Lu, Charles Xu,          [66] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya
+     Chelsea Finn, Chenfeng Xu, Cheng Chi, Chenguang                   Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry,
+     Huang, Christine Chan, Chuer Pan, Chuyuan Fu, Coline              Amanda Askell, Pamela Mishkin, Jack Clark, et al.
+     Devin, Danny Driess, Deepak Pathak, Dhruv Shah, Di-               Learning transferable visual models from natural lan-
+     eter Büchler, Dmitry Kalashnikov, Dorsa Sadigh, Edward           guage supervision. In International conference on ma-
+     Johns, Federico Ceola, Fei Xia, Freek Stulp, Gaoyue               chine learning, pages 8748–8763. PMLR, 2021.
+     Zhou, Gaurav S. Sukhatme, Gautam Salhotra, Ge Yan,           [67] Nur Muhammad Mahi Shafiullah, Anant Rai, Haritheja
+     Giulio Schiavi, Hao Su, Hao-Shu Fang, Haochen Shi,                Etukuru, Yiqian Liu, Ishan Misra, Soumith Chintala, and
+     Heni Ben Amor, Henrik I Christensen, Hiroki Furuta,               Lerrel Pinto. On bringing robots home. arXiv preprint
+     Homer Walke, Hongjie Fang, Igor Mordatch, Ilija Ra-               arXiv:2311.16098, 2023.
+     dosavovic, Isabel Leal, Jacky Liang, Jaehyung Kim,           [68] Dhruv Shah, Ajay Sridhar, Arjun Bhorkar, Noriaki Hi-
+     Jan Schneider, Jasmine Hsu, Jeannette Bohg, Jeffrey               rose, and Sergey Levine. Gnm: A general navigation
+     Bingham, Jiajun Wu, Jialin Wu, Jianlan Luo, Jiayuan               model to drive any robot. In 2023 IEEE International
+     Gu, Jie Tan, Jihoon Oh, Jitendra Malik, Jonathan Tomp-            Conference on Robotics and Automation (ICRA), pages
+     son, Jonathan Yang, Joseph J. Lim, João Silvério, Jun-          7226–7233. IEEE, 2023.
+[69] Dhruv Shah, Ajay Sridhar, Nitish Dashora, Kyle Sta-             and Illia Polosukhin. Attention is all you need. In
+     chowicz, Kevin Black, Noriaki Hirose, and Sergey                Advances in Neural Information Processing Systems,
+     Levine. ViNT: A foundation model for visual navigation.         volume 30, 2017.
+     In 7th Annual Conference on Robot Learning, 2023. URL      [80] Homer Rich Walke, Kevin Black, Tony Z Zhao, Quan
+     https://arxiv.org/abs/2306.14846.                               Vuong, Chongyi Zheng, Philippe Hansen-Estruch, An-
+[70] Rutav Shah, Albert Yu, Yifeng Zhu, Yuke Zhu, and                dre Wang He, Vivek Myers, Moo Jin Kim, Max Du,
+     Roberto Martı́n-Martı́n. Bumble: Unifying reasoning and         et al. BridgeData v2: A dataset for robot learning at
+     acting with vision-language models for building-wide            scale. In Conference on Robot Learning, pages 1723–
+     mobile manipulation. arXiv preprint arXiv:2410.06237,           1736. PMLR, 2023.
+     2024.                                                      [81] Shu Wang, Muzhi Han, Ziyuan Jiao, Zeyu Zhang,
+[71] Lucy Xiaoyang Shi, Zheyuan Hu, Tony Z Zhao, Ar-                 Ying Nian Wu, Song-Chun Zhu, and Hangxin Liu. Llmˆ
+     chit Sharma, Karl Pertsch, Jianlan Luo, Sergey Levine,          3: Large language model-based task and motion planning
+     and Chelsea Finn.        Yell at your robot: Improving          with motion failure reasoning. In 2024 IEEE/RSJ Inter-
+     on-the-fly from language corrections. arXiv preprint            national Conference on Intelligent Robots and Systems
+     arXiv:2403.12910, 2024.                                         (IROS), pages 12086–12092. IEEE, 2024.
+[72] Lucy Xiaoyang Shi, Brian Ichter, Michael Equi, Liy-        [82] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten
+     iming Ke, Karl Pertsch, Quan Vuong, James Tanner,               Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou,
+     Anna Walling, Haohuan Wang, Niccolo Fusai, et al.               et al. Chain-of-thought prompting elicits reasoning in
+     Hi robot: Open-ended instruction following with hier-           large language models. Advances in neural information
+     archical vision-language-action models. arXiv preprint          processing systems, 35:24824–24837, 2022.
+     arXiv:2502.19417, 2025.                                    [83] Junjie Wen, Yichen Zhu, Jinming Li, Minjie Zhu, Kun
+[73] Ishika Singh, Valts Blukis, Arsalan Mousavian, Ankit            Wu, Zhiyuan Xu, Ning Liu, Ran Cheng, Chaomin
+     Goyal, Danfei Xu, Jonathan Tremblay, Dieter Fox, Jesse          Shen, Yaxin Peng, Feifei Feng, and Jian Tang.
+     Thomason, and Animesh Garg. Progprompt: Generating              Tinyvla: Towards fast, data-efficient vision-language-
+     situated robot task plans using large language models.          action models for robotic manipulation. arXiv preprint
+     In 2023 IEEE International Conference on Robotics and           arXiv:2409.12514, 2024.
+     Automation (ICRA), pages 11523–11530. IEEE, 2023.          [84] Junjie Wen, Yichen Zhu, Jinming Li, Zhibin Tang,
+[74] Austin Stone, Ted Xiao, Yao Lu, Keerthana Gopalakrish-          Chaomin Shen, and Feifei Feng.          Dexvla: Vision-
+     nan, Kuang-Huei Lee, Quan Vuong, Paul Wohlhart, Bri-            language model with plug-in diffusion expert for general
+     anna Zitkovich, Fei Xia, Chelsea Finn, et al. Open-world        robot control. arXiv preprint arXiv:2502.05855, 2025.
+     object manipulation using pre-trained vision-language      [85] Tete Xiao, Ilija Radosavovic, Trevor Darrell, and Jitendra
+     models. arXiv preprint arXiv:2303.00905, 2023.                  Malik. Masked visual pre-training for motor control.
+[75] Andrew Szot, Bogdan Mazoure, Omar Attia, Aleksei                arXiv preprint arXiv:2203.06173, 2022.
+     Timofeev, Harsh Agrawal, Devon Hjelm, Zhe Gan, Zsolt       [86] Jianwei Yang, Reuben Tan, Qianhui Wu, Ruijie Zheng,
+     Kira, and Alexander Toshev. From multimodal llms to             Baolin Peng, Yongyuan Liang, Yu Gu, Mu Cai,
+     generalist embodied agents: Methods and lessons. arXiv          Seonghyeon Ye, Joel Jang, et al. Magma: A founda-
+     preprint arXiv:2412.08442, 2024.                                tion model for multimodal ai agents. arXiv preprint
+[76] Gemini Robotics Team, Saminda Abeyruwan, Joshua                 arXiv:2502.13130, 2025.
+     Ainslie, Jean-Baptiste Alayrac, Montserrat Gonzalez        [87] Qiying Yu, Quan Sun, Xiaosong Zhang, Yufeng Cui,
+     Arenas, Travis Armstrong, Ashwin Balakrishna, Robert            Fan Zhang, Yue Cao, Xinlong Wang, and Jingjing Liu.
+     Baruch, Maria Bauza, Michiel Blokzijl, et al. Gemini            Capsfusion: Rethinking image-text data at scale. In
+     robotics: Bringing ai into the physical world. arXiv            Proceedings of the IEEE/CVF Conference on Computer
+     preprint arXiv:2503.20020, 2025.                                Vision and Pattern Recognition, pages 14022–14032,
+[77] Peter Tong, Ellis Brown, Penghao Wu, Sanghyun Woo,              2024.
+     Adithya Jairam Vedagiri IYER, Sai Charitha Akula,          [88] Michał Zawalski, William Chen, Karl Pertsch, Oier
+     Shusheng Yang, Jihan Yang, Manoj Middepogu, Ziteng              Mees, Chelsea Finn, and Sergey Levine. Robotic control
+     Wang, et al. Cambrian-1: A fully open, vision-centric           via embodied chain-of-thought reasoning. In Conference
+     exploration of multimodal llms. Advances in Neural              on Robot Learning, 2024.
+     Information Processing Systems, 37:87310–87356, 2024.      [89] Qingqing Zhao, Yao Lu, Moo Jin Kim, Zipeng Fu,
+[78] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier           Zhuoyang Zhang, Yecheng Wu, Zhaoshuo Li, Qianli Ma,
+     Martinet, Marie-Anne Lachaux, Timothée Lacroix, Bap-           Song Han, Chelsea Finn, et al. Cot-vla: Visual chain-
+     tiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar,         of-thought reasoning for vision-language-action models.
+     et al. Llama: Open and efficient foundation language            Computer Vision and Pattern Recognition (CVPR), 2025.
+     models. arXiv preprint arXiv:2302.13971, 2023.             [90] Haoyu Zhen, Xiaowen Qiu, Peihao Chen, Jincheng Yang,
+[79] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob                Xin Yan, Yilun Du, Yining Hong, and Chuang Gan. 3d-
+     Uszkoreit, Llion Jones, Aidan N Gomez, Ł ukasz Kaiser,          vla: 3d vision-language-action generative world model.
+     arXiv preprint arXiv:2403.09631, 2024.                       all tasks in four different locations, that are consistent for all
+[91] Peiyuan Zhi, Zhiyuan Zhang, Yu Zhao, Muzhi Han, Zeyu         policies in a comparison, leading to a total of 40 evaluations
+     Zhang, Zhitian Li, Ziyuan Jiao, Baoxiong Jia, and Siyuan     per policy for our standard evaluations. Evaluations were
+     Huang. Closed-loop open-vocabulary mobile manipula-          carried out by interleaving execution of policies to control for
+     tion with gpt-4v. arXiv preprint arXiv:2404.10220, 2024.     environmental changes. Some evaluations include cancelled
+[92] Brianna Zitkovich, Tianhe Yu, Sichun Xu, Peng Xu,            episodes due to robot failures, time limitations or other causes,
+     Ted Xiao, Fei Xia, Jialin Wu, Paul Wohlhart, Stefan          which are removed. In all cases we control the sample size to
+     Welker, Ayzaan Wahid, et al. Rt-2: Vision-language-          be close and report statistical significance according to a two-
+     action models transfer web knowledge to robotic control.     sided t-test assuming variable number of trials within the plots.
+     In Conference on Robot Learning, pages 2165–2183.            The language following evaluations follow a different protocol
+     PMLR, 2023.                                                  as described in the main text.
+                                                                     The evaluation metrics for the kitchen cleanup tasks, which
+                         A PPENDIX                                include placing dishes into a sink and storing items in a drawer,
+A. Contributions                                                  are detailed below.
+Data collection and operations. Noah Brown, Michael Equi,            • Dishes in Sink: The task begins with 4 dishes (e.g., plates,
+Chelsea Finn, Lachy Groom, Suraj Nair, Lucy Xiaoyang Shi,               bowls, cutting boards, utensils) placed near a sink. The
+Anna Walling.                                                           robot’s goal is to place all of them in the sink.
+Annotation and supplemental data. Danny Driess, Chelsea                  +1 For each item picked up.
+Finn, Niccolo Fusai, Lachy Groom, Brian Ichter, Karl Pertsch,            +1 For each item placed in the sink.
+Allen Z. Ren, Laura Smith, Kyle Stachowicz, Quan Vuong,                 Maximum score: 8 points.
+Anna Walling, Lili Yu.                                               • Items in Drawer: The task begins with an item on a
+Policy training and research. Kevin Black, Danny Driess,                countertop. The robot must place the item into a drawer
+Michael Equi, Chelsea Finn, Niccolo Fusai, Dibya Ghosh,                 beneath the counter.
+Brian Ichter, Liyiming Ke, Sergey Levine, Suraj Nair, Karl               +1 Picking up the object.
+Pertsch, Allen Z. Ren, Lucy Xiaoyang Shi, Laura Smith, Jost              +1 Opening the drawer.
+Tobias Springenberg, Kyle Stachowicz, Quan Vuong, Homer                  +1 Putting the object into the drawer.
+Walke, Lili Yu.                                                          +1 Closing the drawer (if the object is inside).
+Policy infrastructure. Kevin Black, Karan Dhabalia, Danny               Maximum score: 4 points.
+Driess, Manuel Y. Galliker, Dibya Ghosh, Adrian Li-Bell,
+                                                                     Next, we outline the evaluation metrics for the bedroom
+Quan Vuong, Haohuan Wang, Ury Zhilinsky.
+                                                                  cleanup tasks: putting laundry away and making a bed.
+Robot hardware. Noah Brown, Adnan Esmail, Tim Jones,
+                                                                     • Laundry in Basket: The task begins with an article of
+Devin LeBlanc, Mohith Mothukuri.
+Robot infrastructure. James Darpinian, Adnan Esmail,                    clothing lying on the ground. The robot’s goal is to pick
+Manuel Y. Galliker, Karol Hausman, Szymon Jakubczak,                    up the laundry and place it in the laundry basket.
+James Tanner.                                                            +1 Navigating to and picking up the clothing.
+Writing and illustration. Kevin Black, Danny Driess, Chelsea             +1 Placing the clothing into or on the laundry basket.
+Finn, Karol Hausman, Brian Ichter, Sergey Levine, Karl                   +1 Clothing is fully inside the basket.
+Pertsch, Allen Z. Ren, Lucy Xiaoyang Shi, Jost Tobias Sprin-            Maximum score: 3 points.
+genberg.                                                             • Make the Bed: The bed starts unmade. The robot must
+                                                                        tidy the blanket and place two pillows at the head of the
+B. Task evaluation rubric                                               bed.
+   For a quantitative evaluation of our method we performed              +1 Straightening the blanket so it covers the sheets.
+rigorous evaluation of a subset of four tasks that are included          +1 Placing one pillow at the head of the bed.
+in the training dataset (but evaluated in entirely new scenes            +1 Placing the second pillow at the head of the bed.
+and configurations). Among these are two kitchen cleanup                 +1 Blanket is straightened very neatly.
+tasks and two bedroom cleanup tasks. Each task is evaluated              +1 Both pillows are placed very neatly.
+with a consistent set of items for each of the policies within          Maximum score: 5 points.
+a comparison (but items varied between locations) in three
+different homes and three different mock kitchens and mock        C. Language following experiment setup
+bedrooms respectively (a total of 12 different locations). For      The language following experiments use two unseen kitchen
+each evaluation and each policy, unless otherwise stated, we      scenes to test how well the model follows more specific
+perform 10 evaluations per task; note that each of these          user commands, such as “put the scissors in the drawer” or
+evaluation episodes can span multiple minutes and they are        “put the cutting board into the sink”. Each trial requires the
+thus time intensive. We present results as percent of total       robot to interpret the instruction, identify the correct object
+points achieved in each evaluation rubric (as outlined below)     amidst distractors, and perform the task. We evaluate on two
+and present either per task metrics or metrics averaged across    scenarios:
+   1) Items in the drawer: common kitchen items (tongs,
+      wooden serving spoon, can opener, scissors, and small
+      yellow mustard).
+   2) Items in the sink: common dining items (cup, bowl,
+      plate, plastic spoon, and cutting board).
+In each trial, the robot is presented with five objects and
+is instructed to move one of them. To discourage shortcut
+behaviors, the target object is placed further away than the
+distractors, such that a policy that is unable to interpret
+the command should achieve only ∼20% language following
+accuracy. We report two metrics, averaged over both scenarios:                              Fig. 16: Per-task performance breakdown for training recipe ablations.
+language following rate, which measures whether the correct                                 We evaluate each training mixture variant on four representative household
+                                                                                            tasks: Items in Drawer, Dishes in Sink, Laundry Basket, and Make Bed.
+object was selected, and task success rate, which evaluates                                 Removing cross-embodiment data (ME or CE) leads to significant degradation
+whether the object was successfully placed in the specified                                 in specific tasks, particularly Items in Drawer and Dishes in Sink. Web data
+location. We further investigate how the number of distinct                                 (WD) shows greater effect on the task (Items in Drawer) where the broad
+                                                                                            knowledge of the scene is desired.
+training environments influences the model’s ability to gener-
+alize to previously unseen objects. We design a similar Items
+in the drawer task with novel household items (a funnel, a pill                             D. Per-task performance breakdown
+bottle, a grill lighter, a lighter, and a pair of safety goggles).
+                                                                                                 a) Co-training recipe ablations: To better understand
+None of these object categories were present in the training
+                                                                                            the influence of different training data sources on specific
+set, ensuring that this task tests the robot’s performance on
+                                                                                            task categories, we provide a per-task performance breakdown
+out-of-distribution objects. We show the example initial scene
+                                                                                            (Figure 16). Here we consider four representative household
+of each task in Figure 14.
+                                                                                            tasks: Items in Drawer, Dishes in Sink, Laundry Basket,
+   Along with data ablation experiments in Figure 11 and
+                                                                                            and Make Bed. In summary, the results indicate that cross-
+location scaling experiments in Figure 9, Figure 15 presents
+                                                                                            embodiment transfer and diverse data co-training are critical
+language following results across model classes. We find
+                                                                                            for generalization across a range of tasks, with varying degrees
+that π0.5 follows language at a slightly higher rate than π0 -
+                                                                                            of reliance depending on task requirements.
+FAST+Flow, and a much higher rate than π0 , indicating the
+                                                                                               For Items in Drawer, performance drops substantially when
+importance of discrete token training on language following
+                                                                                            cross-embodiment data (ME or CE) or web data (WD) is
+abilities.
+                                                                                            removed, with the largest degradation observed when all are
+                                                                                            excluded. This task requires recognizing and understanding
+                                                                                            a very broad class of common objects, and such knowledge
+                                                                                            may be learned from diverse data sources. In contrast, Dishes
+                                                                                            in Sink remains relatively robust to the removal of web data
+                                                                                            (WD) but degrades when cross-embodiment data (ME or CE)
+                                                                                            is excluded, anchoring the intuition that this task primarily
+(a) In-distribution objects,   (b) In-distribution objects,   (c) Out-of-distribution ob-   requires general manipulation strategies learned from robotic
+items in drawer                dishes in sink                 jects, items in drawer
+                                                                                            data. Laundry Basket and Make Bed also exhibit performance
+Fig. 14: Example initial states of different language following experiments.
+                                                                                            degradation when cross-embodiment data is removed, but are
+                                                                                            generally less sensitive to other changes in the data mixture.
+                                                                                                 b) High-level model analysis: For a more granular view
+                                                                                            of how different high-level inference methods affect specific
+                                                                                            task categories, we again provide a per-task breakdown (Fig-
+                                                                                            ure 17). We evaluate the full π0.5 model and all high-level
+                                                                                            inference baselines across four representative tasks: Items in
+                                                                                            Drawer, Dishes in Sink, Laundry Basket, and Make Bed.
+                                                                                            The results show that explicit high-level inference improves
+                                                                                            performance across tasks, with the full π0.5 model achieving
+                                                                                            the best overall results.
+                                                                                               For Items in Drawer and Dishes in Sink, high-level infer-
+                                                                                            ence is critical: performance drops substantially with the no
+Fig. 15: Comparing π0.5 with other models on language following. We                         HL variant, indicating the importance of structured subtask
+evaluate language following capabilities of π0.5 , π0 , and π0 -FAST+Flow,                  prediction and long-horizon planning. In these two tasks, the
+finding π0.5 outperforms each, and π0 by a wide margin.
+                                                                                            π0.5 model also outperforms GPT-4 HL, showing the benefit
+                                                                                            of in-domain fine-tuning and demonstrating that the high-level
+Fig. 17: Per-task performance breakdown for high-level inference meth-
+ods. We evaluate the full π0.5 model and various high-level inference
+baselines across four representative household tasks.
+
+
+
+model learns strategies that help the low-level policy succeed.
+In Items in Drawer, performance also declines sharply when
+web data is removed — this echos the result from the co-
+training recipe ablation and highlights the importance of
+semantic knowledge for generalizing to less seen objects. For                    Fig. 18: Example of the π0.5 attention masking pattern.
+Laundry Basket and Dishes in Sink, the model is less sensitive
+to the choice of the high-level policy. These tasks are either
+relatively shorter in horizon or require less detailed semantic             Embeddings from the VLM and action expert interact
+reasoning.                                                               only through self-attention. A full prefix mask is used on
+                                                                         images, prompt tokens, and proprioceptive state; FAST action
+E. Model technical details                                               tokens attend to this prefix and auto-regressively on previous
+    The π0.5 model builds upon π0 and adopts the PaliGemma               action tokens. Embeddings from the action expert embeddings
+VLM [5] as the backbone for visual-language understanding                attend to the prefix and to one another, but do not attend to
+as well as an “action expert” for fast action generation. The            FAST action tokens to avoid information leakage between the
+VLM backbone takes in a sequence of images [I1t , . . . , Int ]          two representations of actions. In effect, information flows
+and a language prompt ℓ as in π0 , but also the robot’s                  unidirectionally from the VLM to the action expert; no VLM
+proprioceptive state qt in tokenized form and tokenized actions          embedding attends to the action expert. An example of the
+[64], which will be auto-regressively predicted. The action              attention mask at each layer is visualized in Figure 18.
+expert is a smaller transformer that takes in a sequence of                 We follow π0 for sampling the flow-matching timestep
+noisy action tokens aτ,ωt:t+H for an action horizon of 50, i.e.          τ . In summary we deviate from standard uniform sampling
+H = 49, and is trained with the flow matching objective.                 τ ∼ U (0, 1) [50, 54] or methods emphasizing midrange
+The noisy action chunk (with action dimension d) is first                timesteps [27], and instead use a time-step sampling distri-
+projected to the transformer embedding dimension using a                 bution that emphasizes low time-steps [8], given by p(τ ) =
+single linear layer. Unlike π0 that fuses the flow-matching              Beta( s−τ
+                                                                                 s ; α = 1.5, β = 1). Timesteps above the threshold
+timestep τ with the noisy action before being fed into the               s are excluded from sampling, as they are not needed if the
+transformer, π0.5 uses a separate MLP for projecting τ only              integration step δ satisfies δ > 1 − s. We use s = 0.999 in
+and then applies adaptive RMSNorm to inject the timestep                 our experiments, which accommodates up to 1,000 integration
+information to each layer of the action expert. The timestep             steps (δ > 0.001).
+MLP takes in the form of swish(W2 ·swish(W1 ·ϕ(τ ))), where                 We apply image augmentation (random crop, resizing, rota-
+ϕ : R → Rw is a sinusoidal positional encoding function [79]             tion, and color jittering) to all input images using the following
+and W1 , W2 ∈ Rw×w . The action expert outputs action tokens             hyper-parameters and in this order
+  a
+y1:H  , which are then decoded into the target vector field using1 transforms = [
+a final linear projection.                                       2 augmax.RandomCrop(int(width * 0.95), int(
+    The dimensions of the two transformers are the same as π0 :        height * 0.95)),
+{width=2048, depth=18, mlp dim=16,384, num heads=18,3                  augmax.Resize(width, height),
+num kv heads=1, head dim=256} for the 2B VLM initial-4                 augmax.Rotate((-5, 5)),
+                                                                 5     augmax.ColorJitter(brightness=0.3,
+ized from PaliGemma weights, and the same except for                       contrast=0.4, saturation=0.5),
+{width=1024, mlp dim=4096} for the action expert with 300M6 ]
+parameters.
+

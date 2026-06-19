@@ -1,0 +1,728 @@
+      Sim-to-Real Reinforcement Learning for
+Vision-Based Dexterous Manipulation on Humanoids
+                      Toru Lin1,2 , Kartik Sachdev2 , Linxi “Jim” Fan2 , Jitendra Malik1 , Yuke Zhu2,3
+                                                 UC Berkeley1 NVIDIA2 UT Austin3
+                                               https://toruowo.github.io/recipe
+
+                      Egocentric RGBD Camera
+
+
+
+
+                                 Third-View
+                                RGBD Camera
+                                                                                                         A                    B
+
+
+
+
+                                                                                                         C                    D
+      7 DoF arms, 6 DoF hands
+                                                           Bimanual Grasp             Bimanual Lift             Bimanual Handover
+                Real-World Setup
+
+     Fourier GR-1                                                        Household                             Fourier Hand
+    Humanoid Robot                                                        Objects
+                                                                                                             1 underactuated
+                                                                                                              DoF in thumb
+
+
+                                   Fourier Hands/                                                              Inspire Hand
+                                   Inspire Hands                                            3D Printed
+                                                                                             Objects
+                                                       Boxes                                                 2 underactuated
+                                                                                                              DoFs in thumb
+
+
+                 Simulator Setup                           Generalization to Multiple Objects            Generalization to Multiple Hands
+
+
+Fig. 1: Overview. We train a humanoid robot with two multi-fingered hands to perform a range of contact-rich dexterous
+manipulation tasks on various objects. Observations are obtained from a third-view camera, an egocentric camera, and robot
+proprioception. The deployed reinforcement learning policies can adapt to a variety of unseen real-world objects that have
+varying physical properties (e.g., shape, size, color, material, mass) and remain robust against force disturbances.
+
+   Abstract—Reinforcement learning has delivered promising re-                                  I. I NTRODUCTION
+sults in achieving human- or even superhuman-level capabilities
+across diverse problem domains, but success in dexterous robot           Deep reinforcement learning (RL) has delivered a number of
+manipulation remains limited. This work investigates the key
+                                                                      impressive results during recent years, covering a diverse range
+challenges in applying reinforcement learning to solve a collection
+of contact-rich manipulation tasks on a humanoid embodiment.          of application domains: classical board games [48], competi-
+We introduce novel techniques to overcome the identified chal-        tive multiplayer online games [6, 56], large language models
+lenges with empirical validation. Our main contributions include      [1, 14], real-world robotic locomotion [21, 26], autonomous
+an automated real-to-sim tuning module that brings the simulated      drone racing [24] — to name a few. These accomplishments
+environment closer to the real world, a generalized reward
+                                                                      have not only showcased RL’s potential to achieve or sur-
+design scheme that simplifies reward engineering for long-horizon
+contact-rich manipulation tasks, a divide-and-conquer distillation    pass human-level performance across various tasks but also
+process that improves the sample efficiency of hard-exploration       highlighted its distinctive ability to scale and generalize via
+problems while maintaining sim-to-real performance, and a             autonomous exploration. Such inherent characteristics position
+mixture of sparse and dense object representations to bridge the      RL as a performant and long-term approach to tackling tasks
+sim-to-real perception gap. We show promising results on three
+                                                                      that are difficult to solve with human priors or demonstrations.
+humanoid dexterous manipulation tasks, with ablation studies
+on each technique. Our work presents a successful approach               Motivated by its potential, we explore RL to address
+to learning humanoid dexterous manipulation using sim-to-real         challenging dexterous manipulation tasks from vision. The
+reinforcement learning, achieving robust generalization and high      successes that deep RL has produced in this problem domain
+performance without the need for human demonstration.                 remain limited so far. Previous works have demonstrated
+highly dexterous manipulation capabilities that could not be       further exacerbate the problem. Although unsupervised meth-
+simply programmed or teleoperated by humans [2, 17, 31].           ods [7, 30, 39] have been proposed to encourage exploration
+However, these approaches are often tailored to a single           by favoring novel state visitations, they do not fundamentally
+manipulation skill, limiting their broad applicability.            reduce the difficulty of hard-exploration problems. We tackle
+   What prevents RL from being more generally applicable to        this challenge by introducing two practical techniques: (1)
+vision-based dexterous manipulation? We first investigate this     initializing tasks with task-aware hand poses; (2) breaking
+by identifying the inherent properties of dexterous manipu-        down hard exploration problems into sub-tasks with much-
+lation that differentiate this application domain from others.     reduced dimensionality, training expert policies on the sub-
+Then, we examine how these properties contribute to chal-          tasks, then distilling them into a generalist policy for the full
+lenges in applying RL algorithms and develop a collection of       task. We experimentally verify that these techniques improve
+novel techniques to address the challenges. Putting together       sample efficiency of learning and study how different divide-
+our experiences and techniques, we outline a recipe for ap-        and-conquer schemes vary in effectiveness.
+plying sim-to-real RL to vision-based humanoid manipulation        Challenge in object perception. Compared to other robotic
+tasks and show promising results. Below, we articulate the key     tasks, object perception is particularly important for manipu-
+challenges and our strategies to tackle them.                      lation because the task is inevitably coupled with interaction
+Challenge in environment modeling. The first challenge in          with objects. Object perception is a long-standing challenge
+applying RL to dexterous manipulation lies in the difficulty       because the variety of objects is uncountable in shapes, sizes,
+(or impossibility) of matching a simulated environment with        masses, colors, textures, and many other properties. Research
+the real environment. While real-world RL circumvents this         in applying sim-to-real RL to dexterous manipulation is bot-
+problem, training with physical hardware is highly demanding       tlenecked by this dilemma — while object representations that
+regarding hardware quality, maintenance support, controller        are more expressive and information-dense can improve dex-
+robustness, and safety. With a system as high-dimensional as       terity and capability of the learned policy, they also present a
+a humanoid with multi-fingered hands, real-world exploration       larger sim-to-real gap. To overcome this challenge, we propose
+becomes even less tractable. In contrast, simulations offer        to use a mixture of low-dimensional and high-dimensional
+unlimited chances of trial and error in a virtual sandbox,         object representations, with modality-specific data augmenta-
+motivating the development of sim-to-real RL approaches.           tion on the high-dimensional features to reduce the sim-to-real
+While previous successes in RL-based locomotion [16, 21,           perceptual gap. We systematically study how this combination
+26, 43] are encouraging, we observe that previous successes        could help achieve a good balance between learning dexterous
+in dexterous manipulation involve much more laborious real-        manipulation policy and reliably transferring the policy onto
+to-sim engineering efforts that are task-specific or hardware-     real robot hardware.
+specific [2, 17, 31]. To better align simulation with the real        The strategies we outline above form a complete recipe of
+world, we propose an automated real-to-sim tuning module           sim-to-real RL for vision-based dexterous manipulation. We
+that substantially reduces the engineering effort required for     show successful results of learning a collection of three dexter-
+the environment modeling gap.                                      ous manipulation tasks on humanoids and conduct systematic
+                                                                   ablation studies.
+Challenge in reward design. While the reward function
+is commonly used as a general interface for specifying a                                 II. BACKGROUND
+task to train RL policies, it is notoriously hard to design
+generalizable rewards for manipulation tasks, especially for       A. Deep Reinforcement Learning Applications to Robotics
+those that are contact-rich or long-horizon. Prior work often         The successes of deep RL across a wide range of appli-
+resorts to hand engineering based on the knowledge of human        cations [1, 6, 14, 21, 24, 26, 48, 56] have sparked lots of
+experts [40, 61], which has limited scalability in the long run.   excitement in recent years. However, works over the years
+This challenge differentiates manipulation from locomotion,        have identified brittleness with this paradigm, most notably the
+where many tasks of interest can be specified with variations      sensitivity to hyperparameters [19] and questionable reproduc-
+of the reward for a single “walking” task. We propose a            bility [23] due to the high variance intrinsic to RL algorithms.
+general principle to design rewards for dexterous manipulation        Among the open problems in RL, the most important and
+tasks: disentangle a full task into intermediate “contact goals”   long-standing is exploration. In supervised learning, it is often
+and “object goals”. We use a novel keypoint-based state            assumed that data is given. In RL, however, agents need
+representation to specify contact goals. Following our reward      to collect their own data and update their policy based on
+design techniques, a task as long-horizon and contact-rich as      the collected data. The problem of how data is collected is
+bimanual handover can be learned with RL tabula rasa.              known as the exploration problem. Real-world robotics, with
+Challenge in policy learning. A well-defined reward function       high-dimensional observations and dynamics and often sparse
+does not guarantee the successful learning of RL policies due      rewards, present a particularly challenging set of hard explo-
+to the sample complexity and reward sparsity of exploring in a     ration problems for RL. While there have been works that al-
+high-dimensional space. The variety and complexity of contact      gorithmically scale exploration to high-dimensional inputs by
+patterns in dexterous manipulation with multi-fingered hands       encouraging visitation to novel states [4, 7, 30, 38, 39, 50, 53],
+                                                        Autotuned Robot Modeling                 Object Manipulation Reward = Contact Goals + Object Goals
+                        Lowest
+                         MSE                          Approximate Object Modeling
+
+                        200 steps
+                                                                                                                                                          Contact
+          Sim Env                      Real Env                                               Contact                                                     Markers
+
+   Physics parameters      URDF parameters                                                    Markers               Contact
+      Joint stiffness        Link origin                                                                            Markers
+      Joint damping          Link mass
+      Joint armature         Joint origin
+        Joint effort         Joint limits
+            …                    …
+                                                    A. Real-to-Sim Modeling                B. Generalizable Reward Design
+
+                                        C. Sample Efficient                   D. Vision-Based Sim-to-Real Transfer
+                                         Policy Learning                                           Segment Anything 2
+                                    Sub-Task Specialists
+
+
+
+
+  Task-Aware Hand Pose
+                                                trajectory
+                                                   filter
+                                                             }   Generalist
+
+
+
+
+                                                  Divide-and-Conquer
+                                                                                 RGB   Depth
+
+
+                                                                              Masked RGB
+                                                                                                                                      (x, y, z) = (0.58, -0.02, 1.15)
+
+
+                                                                                                                                3D Object Center-of-Mass Position
+
+                                                                               Segmented Depth                          Sparse and Dense Object Representations
+       Initialization                                  Distillation
+
+
+
+Fig. 2: A sim-to-real RL recipe for vision-based dexterous manipulation. We close the environment modeling gap
+between simulation and the real world through an automated real-to-sim tuning module, design generalizable task rewards by
+disentangling each manipulation task into contact states and object states, improve sample efficiency of dexterous manipulation
+policy training by using task-aware hand poses and divide-and-conquer distillation, and transfer vision-based policies to the
+real world with a mixture of sparse and dense object representations.
+
+they do not fundamentally resolve the exploration challenge.                               ulation problems with multi-fingered hands, but either assume
+Additionally, applying RL to solve real-world robotics also                                a single-hand setup [2, 8, 17, 35, 42, 49, 57] or do not use pixel
+reveals important challenges that standard benchmarks in                                   inputs as object representation [9, 20, 31]. Moreover, most of
+RL [5, 54] fail to capture: (1) the lack of fully or accurately                            the existing works focus on a single manipulation skill, includ-
+modeled environments; (2) the lack of well-defined reward                                  ing in-hand reorientation [2, 17, 42, 57], grasping [35, 49],
+functions for tasks of interest.                                                           twisting [31], and dynamic handover [20]. The closest to our
+   Past works in the intersection of robotics and RL have                                  work is Chen et al. [9], but their method relies on human
+proposed various practical techniques to alleviate these prob-                             hand motion capture data to learn a wrist controller rather
+lems, such as learning from human motion data or teleoperated                              than learning the full hand-arm joint control from scratch.
+demonstrations [9, 45, 60, 65], real-to-sim techniques to model                            In addition, existing works often focus on hardware whose
+object and visual environments [2, 16, 17, 31, 55] and more                                models in physics simulation have been more extensively
+principled ways to design rewards [37, 62]. While some                                     tested. Our work is the first to show successful sim-to-real
+of them overfit to specific tasks and settings, they point to                              RL transfer of vision-based dexterous manipulation policies
+promising directions upon which this work builds.                                          to a novel humanoid hardware with multi-fingered hands.
+
+B. Vision-Based Dexterous Manipulation on Humanoids                                                    III. C HALLENGES AND A PPROACHES
+                                                                                             In Section I, we identify four areas of challenges in applying
+Imitation learning and classical approaches. Innovations in
+                                                                                           sim-to-real RL to dexterous manipulation and briefly describe
+teleoperation [10, 32, 58, 63] and learning from demonstra-
+                                                                                           our strategies to tackle the challenge in each area. Below, we
+tions [11, 28] have brought about many recent advances in
+                                                                                           describe our specific approaches in detail. Figure 2 shows an
+vision-based dexterous manipulation [10, 28, 32, 64]. How-
+                                                                                           overview of the challenges and approaches.
+ever, in practice, onboarding teleoperators to collect high-
+quality dexterous manipulation data remains costly, and the                                A. Real-to-Sim Modeling
+performance scaling with data purely collected from real-                                     Simulators offer unlimited trial-and-error chances to per-
+world teleoperation [27, 29, 64] suggests that the cost to reach                           form the exploration necessary for RL. However, whether
+human-level performance could be prohibitively large.                                      policies learned in simulation can be reliably transferred to
+Reinforcement learning approaches. A number of existing                                    the real world heavily depends on the faithfulness of modeling
+works have successfully applied RL to solve dexterous manip-                               — both the robot itself and the environment. When applying
+sim-to-real RL to solve dexterous manipulation, this real-to-       Algorithm 1 Real-to-Sim Autotune Module
+sim modeling problem is further exacerbated by the necessity        Require:
+to model objects, which have great variability and whose full        1: E : Set of environment parameters to tune
+physical properties cannot be easily quantified. Even when one       2: N : Number of calibration action sequences
+assumes that the ground-truth physical parameters are known,         3: R : Real robot hardware environment
+quantitatively matching the simulation with the real world is        4: M : Initial robot model file
+hard: due to the limitations of physics engines, the same values     5: procedure AUTOTUNE (E, N, R, M )
+for physical constants in simulation and the real world do           6:    P ← InitializeParameterSpace(E, M )       ▷ Initialize
+not necessarily correspond to identical kinematic and dynamic           from model
+relationships.                                                       7:    S ← {}               ▷ Set of simulated environments
+                                                                     8:    for i ← 1 to K do              ▷ K is population size
+Autotuned robot modeling. While robot manufacturers are              9:        pi ← RandomSample(P )
+often able to provide proprietary model files for their robot       10:        Si ← CreateSimEnvironment(pi )
+hardwares, the models mostly serve a starting reference for         11:        S ← S ∪ {Si }
+robot real-to-sim effort rather than ground truth models that       12:    end for
+can be used without modifications. Empirical solutions to           13:    J ← GenerateJointTargets(N )            ▷ Joint target
+increase modeling accuracy range from hand-tuning the robot             sequences
+model constants and simulatable physical parameters [2] to re-      14:    Rtrack ← GetTrackingErrors(R, J) ▷ Real tracking
+formulating specific kinematic structures (e.g., four-bar link-     15:    best_params ← null
+age) in the simulator of choice [44]. This is a laborious process   16:    min_error ← ∞
+as there is no “ground truth” pairing between the real world        17:    for Si ∈ S do
+and the simulated world. We propose a practical technique to        18:        Strack ← GetTrackingErrors(Si , J)
+speed up this real-to-sim modeling process via an “autotune”        19:        error ← ComputeMSE(Strack , Rtrack )
+module. The autotune module enables rapid calibration of            20:        if error < min_error then
+simulator parameters to match real robot behavior by automat-       21:            min_error ← error
+ically searching the parameter space to identify optimal values     22:            best_params ← GetParameters(Si )
+for both simulator physics and robot model constants in under       23:        end if
+four minutes (or 2000 simulated steps in 10 Hz). We illustrate      24:    end for
+the module in Figure 2A and Algorithm 1. The module                         return best_params
+                                                                    25: end procedure
+operates on two parameter types: simulator physics parameters
+affecting kinematics and dynamics, as well as robot model
+constants from the URDF file (including link inertia values,
+joint limits, and joint/link poses). The calibration process        B. Generalizable Reward Design
+begins by initializing multiple simulated environments using           In the standard formulation of RL [51], the reward function
+randomly sampled parameter combinations from the parameter          is a crucial element within the paradigm because it is solely
+space, bootstrapped from the manufacturer’s robot model file.       responsible for defining the agent’s behavior. Nevertheless, the
+It then executes N calibration sequences consisting of joint        mainstream of RL research has been preoccupied with the de-
+position targets on both the real robot hardware (single run)       velopment and analysis of learning algorithms, treating reward
+and all simulated environments in parallel. By comparing the        signals as given and not subject to change [13]. As tasks of
+tracking error between each simulated environment and the           interest become more general, designing reward mechanisms
+real robot when following the same joint targets, the module        to elicit desired behaviors becomes more important and more
+selects the parameter set that minimizes the mean squared error     difficult [12] — as is the case of applications to robotics. When
+in tracking performance. This approach eliminates iterative         it comes to dexterous manipulation with multi-fingered hands,
+manual tuning by requiring only one set of calibration runs         reward design becomes even more difficult due to the variety
+on the real robot, automatically optimizing traditionally hard-     of contact patterns and object geometries.
+to-tune URDF parameters, and supporting parallel evaluation
+                                                                    Manipulation as contact and object goals. From a wide
+of multiple parameter combinations. The method’s generality
+                                                                    variety of human manipulation activities [15], we observe
+allows it to tune any exposed simulator or robot model
+                                                                    a general pattern in dexterous manipulation: each motion
+parameter that affects kinematic behavior.
+                                                                    sequence to execute a task can be defined as a combination
+                                                                    of hand-object contact and object states. Building on this
+Approximate object modeling. As demonstrated in previous            intuition, we propose a general reward design scheme for even
+works [31, 41], modeling objects as primitive shapes like           long-horizon contact-rich manipulation tasks. For each task of
+cylinders with randomized parameters is sufficient for sim-         interest, we first break it down into an interleaving sequence
+to-real transferrable dexterous manipulation policies to be         of contact states and object states. For example, the handover
+learned. Our recipe adopts this approach and finds it effective.    task can be broken down into the following steps: (1) one
+hand contacting the object; (2) the object being lifted to a          Divide-and-conquer distillation. Previous methods to im-
+position near the other hand; (3) the other hand contacting the       prove sample efficiency of policy learning mostly focus on
+object; (4) object being transferred to the final goal position.      exploring the state space more efficiently [7, 30, 39, 52].
+The reward can then be defined based on solely the “contact           However, these methods do not reduce the difficulty of the ex-
+goals” and “object goals”: each contact goal can be specified         ploration problem fundamentally: the probability of receiving
+by penalizing the distance from fingers to desirable contact          learning signals from exploring the “right” states remains the
+points or simply the object’s center-of-mass position; each           same. Following this observation, we reason that an easier way
+object goal can be specified by penalizing the distance from          to overcome the exploration problem in sparse reward settings
+its current state (e.g., current xyz position) to its target state    is to break down the explorable state space itself. For example,
+(e.g., target xyz position). To reduce the difficulty of specifying   a multi-object manipulation task can be divided into multiple
+contact goals, we propose a novel keypoint-based technique as         single-object manipulation tasks. After dividing a complex
+follows: for each simulated asset, we procedurally generate           task into easier sub-tasks, we can train specialized policies
+a set of “contact stickers” attaching to the surface of the           for each sub-task and distill them into a generalist policy.
+object, where each sticker represents a potentially desirable         Another benefit of this approach is that we can flexibly filter
+contact point. The contact goal, in terms of reward, can then         out trajectory data from the sub-task policies based on their op-
+be specified as                                                       timality and only retain high-quality samples for training. This
+                                                                      effectively brings RL closer to learning from demonstrations,
+              X           1                     1
+                                                                     where the sub-task policies act as teleoperators for task data
+  rcontact =                           +                     ,        collection in the simulation environment, and the generalist
+                   1 + αd(XL , FL  i )   1 + βd(XR , FRi )
+               i                                                      policy acts as a centralized model trained from curated data.
+                                                              (1)
+where XL ∈ Rn×3 and XR ∈ Rm×3 are the positions of
+contact markers specified for left and right hands, FL ∈ R4×3         D. Vision-Based Sim-to-Real Transfer
+and FR ∈ R4×3 are the position of left and right fingertips, α
+and β are scaling hyperparameters, and d is a distance function          Transferring a policy learned in simulation to the real world
+defined as                                                            is challenging because of the sim-to-real gap. In the case
+                  d(A, x) = min ∥Ai − x∥2 .                   (2)     of vision-based dexterous manipulation, the sim-to-real gap
+                                i                                     stems from both dynamics and visual perception — both are
+We show a visualization of contact markers in Figure 2B, and          challenging open research problems to solve. We outline two
+experimental results on their effectiveness in Section IV.            key techniques we employ to reduce the gap.
+                                                                      Mixing object representations. Object perception is crucial
+C. Sample Efficient Policy Learning                                   for dexterous manipulation because the task is inevitably cou-
+   Due to the sample complexity and reward sparsity in ex-            pled with object interaction. Prior works that show successful
+ploring a high-dimensional space — especially on a humanoid           sim-to-real transfer of manipulation policies have explored a
+embodiment with multi-fingered hands — policy learning can            wide range of object representations, including (in order of
+take a prohibitively long time, even with a well-defined reward       increasing dimensionality and complexity) 3D object position
+function. We propose two techniques that more effectively             [31], 6D object pose [2], depth [35, 42], point cloud [33],
+improve the sample efficiency of policy learning: (1) ini-            and RGB images [17]. There is a delicate trade-off between
+tializing tasks with task-aware hand poses; (2) dividing a            using these different object representations: while higher-
+challenging task into easier sub-tasks, then distilling the sub-      dimensional representations encode richer information about
+task specialists into a generalist policy.                            the object, the larger sim-to-real gap in those data modalities
+Task-aware hand poses for initialization. We reduce the               makes the learned policy harder to be transferred; on the
+exploration challenge by collecting task-aware hand pose data         other hand, it is harder to learn optimal policies with lower-
+from humans. This can be done by connecting any teleopera-            dimensional object representations because of the limited
+tion system for bimanual multi-fingered hands to the simulator        amount of information. We, therefore, propose a combina-
+of choice. The collected states, including object poses and           tion of both types of object representations to balance the
+robot joint positions, are then randomly sampled as task              trade-offs: a low-dimensional 3D object position and a high-
+initialization states in simulation. Distinct from prior works        dimensional depth image. Importantly, the 3D object position
+that require full demonstration trajectories [3], we find that        is obtained from a third-view camera to ensure the object is
+teleoperators need not accomplish the task and only need to           also in camera view and its noisy position can be consistently
+“play around” with the task goal in mind while environmental          tracked. The depth image complements with information on
+states are collected. The approach massively reduces the time         object geometry. We provide more empirical validation on the
+needed for teleoperation since human operators do not need            effectiveness of this approach in Section IV.
+to spend time “ramping up” to collect high-quality data. In           Domain randomization for dynamics and perception. We
+our experiments, each task requires less than 30 seconds for          apply a wide range of domain randomizations to ensure
+sufficient amount of hand pose data to be collected.                  reliable sim-to-real transfer. We list the details in Appendix C.
+                      IV. E XPERIMENTS
+   Our proposed approaches form a general recipe that allows
+for the practical application of RL to solve dexterous manipu-
+lation with humanoids. In this section, we show experimental
+results of task capabilities and ablation studies of each pro-
+posed technique. Videos can be found on project website.
+
+A. Real-World and Simulator Setup
+   We use a Fourier GR1 humanoid robot with two arms and
+two multi-fingered hands. Each arm has 7 degrees of freedom
+(DoF). For most experiments, we use the Fourier hands, each
+of which has six actuated DoFs and five underactuated DoFs.
+To show cross-embodiment generalization, we include results
+on the Inspire hands, each with 6 actuated DoFs and six under-      Fig. 3: Policies learned in simulation. Left: grasp; middle:
+actuated DoFs. The hardware has substantially different mass        box lift; right: bimanual handover (right-to-left, left-to-right).
+properties, surface frictions, finger and palm morphologies,
+and thumb actuations. Figure 1 shows a visualization of both                Autotune MSE       Lowest     Median     Highest
+robot hands. We use the NVIDIA Isaac Gym simulator [36].
+Perception. As outlined in Section III-D, we use a combina-                 Grasp Success       8 / 10     3 / 10     0 / 10
+tion of dense and sparse object features for policy learning in             Reach Success       7 / 10     3 / 10     0 / 10
+both simulation and real-world transfer. In the real world, we
+set up an egocentric-view camera by attaching a RealSense           TABLE I: Lower MSE from autotune correlates with
+D435 depth camera onto the head of a humanoid robot                 higher sim-to-real success rate. For each set of modeling
+and a third-view camera by putting another RealSense D435           parameters, we test the sim-to-real transfer performance of
+depth camera on a tripod in front of the robot (illustrated in      10 policy checkpoints (trained identically except for ran-
+Figure 1). In simulation, we similarly set up an egocentric-        dom seed). We evaluate success rate by stages on the
+view camera and a third-view camera by calibrating the camera       grasp-and-reach task, and observe a correlation between
+poses against the real camera poses. The dense object feature       lower MSE measured by autotune module and higher sim-to-
+is obtained by directly reading depth observations from the         real transfer success rate.
+egocentric-view camera. The sparse feature is obtained by
+approximating the object’s center-of-mass from the third-view       masses are varied. For each trial, we randomize the boxes’
+camera, using a similar technique as in Lin et al. [31]. As         initial position and orientation about the vertical axis.
+illustrated in Figure 2, we utilize the Segment Anything Model      Bimanual handover. In this task, the robot needs to grasp
+2 (SAM2) [46] to generate a segmentation mask for the               a block object from one side of the table with one hand
+object of interest at the first frame of each trajectory sequence   — that is too far to reach for the other hand — and hand
+and leverage the tracking capabilities of SAM2 to track the         the object over to the other hand. Objects include blocks of
+mask throughout all remaining frames. To approximate the            varying colors, dimensions, and masses. We vary the initial
+3D center-of-mass coordinates of the object, we calculate           position and orientation of blocks in each trial.
+the center position of their masks in the image plane, then
+obtain noisy depth readings from a depth camera to recover          C. Evaluation of Real-to-Sim Modeling
+a corresponding 3D position. The perception pipeline runs at        Effectiveness of autotuned robot modeling. We apply the
+5 Hz to match the neural network policy’s control frequency.        autotune module outline in Section III-A to find the optimal
+                                                                    parameter set for robot modeling. To evaluate its effective-
+B. Task Definition
+                                                                    ness, we compare the sim-to-real transfer success rates of
+Grasp-and-reach. In this task, the robot needs to use one           three sets of policy checkpoints. All policies are trained with
+hand to grasp a tabletop object, lift it up, and move it to a       identical task and RL settings, but each set of policies uses
+goal position. At task initialization, a scripted visual module     robot modeling parameters that achieve different MSE from
+determines which hand is closer to the object and instructs         autotune, ranging from lowest (i.e., smallest real-to-sim gap)
+the robot to use that hand. The test objects have varying           to highest (i.e., highest real-to-sim gap). The quantitative
+geometric shapes, masses, volumes, surface frictions, colors,       results in Table I indicate that autotuned robot modeling
+and textures; a visualization of all objects can be found in        improves sim-to-real transfer. Additionally, in our video, we
+Figure 1. For each trial, we vary the initial position and          show qualitative results of successful sim-to-real transfer of
+orientation of objects, as well as the goal position.               grasp-and-reach policies to the Inspire hands, demon-
+Box lift. In this task, the robot needs to lift a box that is too   strating the generalizability of our autotune module.
+large to be grasped with a single hand. Box colors, sizes, and      Effectiveness of approximate object modeling. Empiri-
+                                                                    left & right center
+
+
+
+
+                                                                    top & bottom center
+Fig. 4: Training grasp-and-reach policy with different
+object sets. Each curve is computed from the statistics of 10
+training runs with different random seeds. Left: training with
+complex objects v.s. simple geometric primitive objects. Right:
+training with differently grouped geometric objects.
+
+
+cally, we find that modeling objects as primitive geometric
+                                                                    bottom edge
+shapes (cylinders, cubes, and spheres) strikes a good bal-
+ance between training efficiency and sim-to-real transferabil-
+ity. In Figure 4 (left), we compare the training curves of
+grasp-and-reach policies with primitive shapes against
+those with complex shapes, and the former setting is more
+sample efficient. More importantly, policies trained with ran-
+domized primitive shapes can also generalize to a variety of
+unseen objects, as shown in our video.
+D. Evaluation of Reward Design                                    Fig. 5: Different contact patterns emerge from different
+                                                                  placements of contact markers. Top: contact markers on the
+Task capabilities. With our proposed reward design principle,     left and right side centers; middle: markers on the top and
+a wide range of long-horizon contact-rich tasks can be accom-     bottom side centers; bottom: markers on the bottom side edges.
+plished with pure reinforcement learning, as shown in Figure 3
+and our video. The learned policies exhibit a high degree of      in three policies (mix); (4) training with ten single-object
+dexterity and robustness against random force disturbances.       policies (single). As shown in Figure 4, sample efficiency is
+Effectiveness of contact-based rewards. In Figure 5, we vi-       highest for single, followed by shape, all, and mix. There is
+sualize different contact behaviors that emerged from different   also a noticeable difference in the average success rates of
+placements or contact markers, using the box lift task as         each task, which could be explained as an indicator of task
+an example. We find that contact behaviors align closely with     difficulty. Interestingly, while training with a reduced object
+the contact positions specified, showing the effectiveness of     set all reaches the same performance, training all objects in
+using contact markers to specify contact goals.                   one policy shows a consistently lower performance. Second,
+E. Evaluation of Policy Learning                                  we study the sim-to-real transfer success rate of each type
+                                                                  of policy. Over 30 trials of each policy on an in-distribution
+Effectiveness of task-aware hand pose initialization. In          object, we find that sim-to-real performance of the mix policy
+Table II, we compare the percentage of successfully trained       is the highest (90.0%), followed by shape (63.3%), single
+policies for each task with and without task-aware hand pose      (40.0%), and all (23.3%). Based on the qualitative behavior
+initialization. The empirical results show that having human      of policies, we hypothesize that the low success rates of
+priors upon initialization can greatly improve the exploration    mix and single policies stem from overfitting to specific
+efficiency of hard RL tasks.                                      geometries, and that of all policy correlates with its worse
+Divide-and-conquer distillation. We evaluate our divide-and-      performance during RL training. These results suggest that
+conquer distillation approach through two ablation studies.       divide-and-conquer distillation helps achieve a good balance
+First, we study the effect of divide-and-conquer granularity on   between policy training and sim-to-real transfer performance.
+training efficiency. Specifically, we experiment with dividing
+                                                                  F. Evaluation of Vision-Based Sim-to-Real Transfer
+a multi-object grasp-and-reach task into sub-tasks that
+handle different numbers of objects. Starting from a total of     Effectiveness of mixing object representations. We in-
+10 objects, we experiment with three task designs: (1) training   vestigate the effect of using different object representations
+with all objects in one policy (all); (2) training with three     and show the sim-to-real transfer comparisons in Table III.
+groups of similarly shaped objects in three policies (shape);     These results suggest combining dense object representation
+(3) training with three groups of differently shaped objects      (segmented depth image) and sparse object representation (3D
+            % Success       Grasping    Lifting   Handover
+
+      with Human Init          80%        90%         30%
+      w/o Human Init           60%        90%          0%
+
+TABLE II: Initializing with human data. Correlation be-
+tween the percentage of successfully learned task policies and
+whether human play data is used for initialization. We define
+successfully learned policies as those that achieve over 60%
+episodic success during evaluation. For each task and each
+initialization setting, we test with 10 random seeds.
+         Task    Grasping     Lifting   HandoverA     HandoverB
+
+ Depth + Pos
+                                                                    Fig. 6: Policy robustness. Our learned policies remain robust
+       Pickup     10 / 10     10 / 10       10 / 10      10 / 10
+                                                                    under different force perturbations, including knock (top left),
+ Task Success     10 / 10     10 / 10        9 / 10       5 / 10
+                                                                    pull (top right), push (bottom left), and drag (bottom right).
+ Depth Only
+
+       Pickup      2 / 10      0 / 10        0 / 10       0 / 10                           V. L IMITATIONS
+ Task Success      2 / 10      0 / 10        0 / 10       0 / 10       In this work, we investigate the key challenges in apply-
+                                                                    ing RL to robot manipulation and introduce practical and
+TABLE III: Comparison of sim-to-real transfer perfor-               principled techniques to overcome the hurdles. Based on the
+mance between depth-and-position policy and depth-only              techniques proposed, we build a sim-to-real RL pipeline that
+policy. We separate the bimanual handover task into                 demonstrates a feasible path to solve robot manipulation, with
+two columns due to its longer horizon. The pickup success           evidence on generalizability, robustness, and dexterity.
+is an intermediate success metric that measures how often              However, the capabilities achieved in this work are still far
+the hands successfully pick up the object of interest. We           from the kind of “general-purpose” manipulation that humans
+find that combining low-dimensional representation (3D object       are capable of. Much work remains to be done to improve
+position) with depth enables easier sim-to-real transfer.           each individual component of this pipeline and unlock the full
+                                                                    potential of sim-to-real RL. For example, the reward design
+object center-of-mass position) improves sim-to-real transfer.      could be improved by integrating even stronger human priors,
+Notably, the gap between the success rate of the depth-and-         such as task demonstrations collected from teleoperation.
+position policy and that of the depth-only policy increases as         There are also important open problems that our work does
+knowledge of the full object geometry becomes more crucial          not address. For example, our work uses no novel technique
+to task success.                                                    to reduce the sim-to-real gap in dynamics other than applying
+                                                                    naive domain randomization. We hypothesize that this could be
+G. System Capabilities
+                                                                    a reason for the low success rate on bimanual handover
+Task performance, generalization, robustness. We evaluate           task, which is the most dynamic among our collection of tasks.
+the overall capabilities of our system via task success rates          Lastly, we find ourselves heavily constrained by the lack of
+of the best-performing task policy. For each task, we conduct       reliable hardware for dexterous manipulation. While we use
+10 trials for each test object and report the average success       multi-fingered robot hands, the dexterity of these hands is far
+rate across all objects. We report a 62.3% success rate for         from that of human hands in terms of the active degrees of
+the grasp-and-reach task, 80% for the box lift task,                freedom. We believe the dexterity of our learned policies is not
+and 52.5% for the bimanual handover task. We test our               limited by the approach, and we hope to extend our framework
+grasp-and-reach policy’s ability to generalize to out-of-           to robot hands with more sophisticated designs in the future.
+distribution objects and report qualitative results of successful
+zero-shot generalization in our video. We also show the                                   VI. C ONCLUSION
+robustness against force perturbations of our learned policies         We present a comprehensive recipe for applying sim-to-real
+for all tasks in Figure 6 and video. More details on the object     RL to vision-based dexterous manipulation on humanoids. By
+set for each task are reported in Figure 1.                         addressing key challenges in environment modeling, reward
+Extension to a more capable system. The learned RL policies         design, policy learning, and sim-to-real transfer, we show
+can be flexibly chained with finite state machines, teleopera-      that RL can be a powerful tool for learning highly useful
+tion, etc., to perform longer-horizon tasks while maintaining       manipulation skills without the need for extensive human
+dexterity, robustness, and generalization. As an example, we        demonstrations. Our learned policies exhibit strong generaliza-
+present in our video a general pick-and-drop system that can        tion to unseen objects, robustness against force disturbances,
+be scripted by utilizing the grasp-and-reach policy.                and the ability to perform long-horizon contact-rich tasks.
+                   ACKNOWLEDGMENTS                               [13] Jonas Eschmann. Reward Function Design in Rein-
+   We thank members of NVIDIA GEAR lab for help with                  forcement Learning, pages 25–33. Springer International
+hardware infrastructure, in particular Zhenjia Xu, Yizhou             Publishing, Cham, 2021. ISBN 978-3-030-41188-6. doi:
+Zhao, and Zu Wang. This work was partially conducted during           10.1007/978-3-030-41188-6_3. URL https://doi.org/10
+TL’s internship at NVIDIA. TL is supported by NVIDIA and              .1007/978-3-030-41188-6_3.
+the National Science Foundation fellowship.                      [14] DeepSeek-AI et al. Deepseek-r1: Incentivizing reasoning
+                                                                      capability in llms via reinforcement learning, 2025. URL
+                        R EFERENCES                                   https://arxiv.org/abs/2501.12948.
+ [1] Open AI, Sep 2024. URL https://openai.com/index/lea         [15] Kristen Grauman, Andrew Westbury, Lorenzo Torresani,
+     rning-to-reason-with-llms.                                       Kris Kitani, Jitendra Malik, Triantafyllos Afouras, Kumar
+ [2] Ilge Akkaya, Marcin Andrychowicz, Maciek Chociej,                Ashutosh, Vijay Baiyya, Siddhant Bansal, Bikram Boote,
+     Mateusz Litwin, Bob McGrew, Arthur Petron, Alex                  et al. Ego-exo4d: Understanding skilled human activity
+     Paino, Matthias Plappert, Glenn Powell, Raphael Ribas,           from first-and third-person perspectives. In Proceedings
+     et al. Solving rubik’s cube with a robot hand. arXiv             of the IEEE/CVF Conference on Computer Vision and
+     preprint arXiv:1910.07113, 2019.                                 Pattern Recognition, pages 19383–19400, 2024.
+ [3] Maria Bauza, Jose Enrique Chen, Valentin Dalibard,          [16] Tuomas Haarnoja, Ben Moran, Guy Lever, Sandy H
+     Nimrod Gileadi, Roland Hafner, Murilo F Martins,                 Huang, Dhruva Tirumala, Jan Humplik, Markus
+     Joss Moore, Rugile Pevceviciute, Antoine Laurens,                Wulfmeier, Saran Tunyasuvunakool, Noah Y Siegel,
+     Dushyant Rao, et al. Demostart: Demonstration-led auto-          Roland Hafner, et al. Learning agile soccer skills for a
+     curriculum applied to sim-to-real with multi-fingered            bipedal robot with deep reinforcement learning. Science
+     robots. arXiv preprint arXiv:2409.06613, 2024.                   Robotics, 9(89):eadi8022, 2024.
+ [4] Marc Bellemare, Sriram Srinivasan, Georg Ostrovski,         [17] Ankur Handa, Arthur Allshire, Viktor Makoviychuk,
+     Tom Schaul, David Saxton, and Remi Munos. Uni-                   Aleksei Petrenko, Ritvik Singh, Jingzhou Liu, Denys
+     fying count-based exploration and intrinsic motivation.          Makoviichuk, Karl Van Wyk, Alexander Zhurkevich,
+     Advances in neural information processing systems, 29,           Balakumar Sundaralingam, et al. Dextreme: Transfer
+     2016.                                                            of agile in-hand manipulation from simulation to reality.
+ [5] Marc G Bellemare, Yavar Naddaf, Joel Veness, and                 In 2023 IEEE International Conference on Robotics and
+     Michael Bowling. The arcade learning environment:                Automation (ICRA), pages 5977–5984. IEEE, 2023.
+     An evaluation platform for general agents. Journal of       [18] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian
+     Artificial Intelligence Research, 47:253–279, 2013.              Sun. Deep residual learning for image recognition. In
+ [6] Christopher Berner, Greg Brockman, Brooke Chan, Vicki            CVPR, 2016.
+     Cheung, Przemysław D˛ebiak, Christy Dennison, David         [19] Peter Henderson, Riashat Islam, Philip Bachman, Joelle
+     Farhi, Quirin Fischer, Shariq Hashme, Chris Hesse, et al.        Pineau, Doina Precup, and David Meger. Deep reinforce-
+     Dota 2 with large scale deep reinforcement learning.             ment learning that matters. In Proceedings of the AAAI
+     arXiv preprint arXiv:1912.06680, 2019.                           Conference on Artificial Intelligence, volume 32, 2018.
+ [7] Yuri Burda, Harrison Edwards, Amos Storkey, and Oleg        [20] Binghao Huang, Yuanpei Chen, Tianyu Wang, Yuzhe
+     Klimov. Exploration by random network distillation.              Qin, Yaodong Yang, Nikolay Atanasov, and Xiaolong
+     arXiv preprint arXiv:1810.12894, 2018.                           Wang. Dynamic handover: Throw and catch with bi-
+ [8] Yuanpei Chen, Chen Wang, Li Fei-Fei, and C Karen                 manual hands. arXiv preprint arXiv:2309.05655, 2023.
+     Liu. Sequential dexterity: Chaining dexterous poli-         [21] Jemin Hwangbo, Joonho Lee, Alexey Dosovitskiy, Dario
+     cies for long-horizon manipulation. arXiv preprint               Bellicoso, Vassilios Tsounis, Vladlen Koltun, and Marco
+     arXiv:2309.00987, 2023.                                          Hutter. Learning agile and dynamic motor skills for
+ [9] Yuanpei Chen, Chen Wang, Yaodong Yang, and C Karen               legged robots. Science Robotics, 4(26):eaau5872, 2019.
+     Liu. Object-centric dexterous manipulation from human       [22] Sergey Ioffe and Christian Szegedy. Batch normalization:
+     motion data. arXiv preprint arXiv:2411.04005, 2024.              Accelerating deep network training by reducing internal
+[10] Xuxin Cheng, Jialong Li, Shiqi Yang, Ge Yang, and                covariate shift. In ICML, 2015.
+     Xiaolong Wang. Open-television: Teleoperation with          [23] Riashat Islam, Peter Henderson, Maziar Gomrokchi, and
+     immersive active visual feedback.         arXiv preprint         Doina Precup. Reproducibility of benchmarked deep re-
+     arXiv:2407.01512, 2024.                                          inforcement learning tasks for continuous control. arXiv
+[11] Cheng Chi, Siyuan Feng, Yilun Du, Zhenjia Xu, Eric               preprint arXiv:1708.04133, 2017.
+     Cousineau, Benjamin Burchfiel, and Shuran Song. Dif-        [24] Elia Kaufmann, Leonard Bauersfeld, Antonio Loquercio,
+     fusion policy: Visuomotor policy learning via action             Matthias Müller, Vladlen Koltun, and Davide Scara-
+     diffusion. In RSS, 2023.                                         muzza. Champion-level drone racing using deep rein-
+[12] Daniel Dewey. Reinforcement learning and the reward              forcement learning. Nature, 620(7976):982–987, 2023.
+     engineering principle. In 2014 AAAI Spring Symposium        [25] Diederik P Kingma and Jimmy Ba. Adam: A method for
+     Series, 2014.                                                    stochastic optimization. In ICLR, 2015.
+[26] Joonho Lee, Jemin Hwangbo, Lorenz Wellhausen,                    machine learning, pages 2778–2787. PMLR, 2017.
+     Vladlen Koltun, and Marco Hutter. Learning quadrupedal      [40] Aleksei Petrenko, Arthur Allshire, Gavriel State, Ankur
+     locomotion over challenging terrain. Science robotics, 5         Handa, and Viktor Makoviychuk. Dexpbt: Scaling up
+     (47):eabc5986, 2020.                                             dexterous manipulation for hand-arm systems with pop-
+[27] Sergey Levine, Peter Pastor, Alex Krizhevsky, Julian             ulation based training. arXiv preprint arXiv:2305.12127,
+     Ibarz, and Deirdre Quillen. Learning hand-eye coor-              2023.
+     dination for robotic grasping with deep learning and        [41] Haozhi Qi, Ashish Kumar, Roberto Calandra, Yi Ma, and
+     large-scale data collection. The International journal of        Jitendra Malik. In-hand object rotation via rapid motor
+     robotics research, 37(4-5):421–436, 2018.                        adaptation. In Conference on Robot Learning, pages
+[28] Xuanlin Li, Tong Zhao, Xinghao Zhu, Jiuguang Wang,               1722–1732. PMLR, 2023.
+     Tao Pang, and Kuan Fang. Planning-guided diffusion          [42] Haozhi Qi, Brent Yi, Sudharshan Suresh, Mike Lambeta,
+     policy learning for generalizable contact-rich bimanual          Yi Ma, Roberto Calandra, and Jitendra Malik. General in-
+     manipulation. arXiv preprint arXiv:2412.02676, 2024.             hand object rotation with vision and touch. In Conference
+[29] Fanqi Lin, Yingdong Hu, Pingyue Sheng, Chuan Wen,                on Robot Learning, pages 2549–2564. PMLR, 2023.
+     Jiacheng You, and Yang Gao. Data scaling laws in im-        [43] Ilija Radosavovic, Tete Xiao, Bike Zhang, Trevor Dar-
+     itation learning for robotic manipulation. arXiv preprint        rell, Jitendra Malik, and Koushil Sreenath.         Real-
+     arXiv:2410.18647, 2024.                                          world humanoid locomotion with reinforcement learning.
+[30] Toru Lin and Allan Jabri. Mimex: intrinsic rewards from          arXiv:2303.03381, 2023.
+     masked input modeling. Advances in Neural Information       [44] Ilija Radosavovic, Tete Xiao, Bike Zhang, Trevor Darrell,
+     Processing Systems, 36, 2024.                                    Jitendra Malik, and Koushil Sreenath. Real-world hu-
+[31] Toru Lin, Zhao-Heng Yin, Haozhi Qi, Pieter Abbeel,               manoid locomotion with reinforcement learning. Science
+     and Jitendra Malik. Twisting lids off with two hands.            Robotics, 9(89):eadi9579, 2024.
+     arXiv:2403.02338, 2024.                                     [45] Aravind Rajeswaran, Vikash Kumar, Abhishek Gupta,
+[32] Toru Lin, Yu Zhang, Qiyang Li, Haozhi Qi, Brent Yi,              Giulia Vezzani, John Schulman, Emanuel Todorov, and
+     Sergey Levine, and Jitendra Malik. Learning visuotactile         Sergey Levine. Learning complex dexterous manipula-
+     skills with two multifingered hands. arXiv:2404.16823,           tion with deep reinforcement learning and demonstra-
+     2024.                                                            tions. arXiv preprint arXiv:1709.10087, 2017.
+[33] Minghuan Liu, Zixuan Chen, Xuxin Cheng, Yandong Ji,         [46] Nikhila Ravi, Valentin Gabeur, Yuan-Ting Hu, Ronghang
+     Ri-Zhao Qiu, Ruihan Yang, and Xiaolong Wang. Visual              Hu, Chaitanya Ryali, Tengyu Ma, Haitham Khedr, Ro-
+     whole-body control for legged loco-manipulation. arXiv           man Rädle, Chloe Rolland, Laura Gustafson, et al. Sam
+     preprint arXiv:2403.16967, 2024.                                 2: Segment anything in images and videos. arXiv preprint
+[34] Ilya Loshchilov and Frank Hutter. Decoupled weight               arXiv:2408.00714, 2024.
+     decay regularization. arXiv preprint arXiv:1711.05101,      [47] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec
+     2017.                                                            Radford, and Oleg Klimov. Proximal policy optimization
+[35] Tyler Ga Wei Lum, Martin Matak, Viktor Makoviy-                  algorithms. arXiv preprint arXiv:1707.06347, 2017.
+     chuk, Ankur Handa, Arthur Allshire, Tucker Hermans,         [48] David Silver, Thomas Hubert, Julian Schrittwieser, Ioan-
+     Nathan D Ratliff, and Karl Van Wyk. Dextrah-g: Pixels-           nis Antonoglou, Matthew Lai, Arthur Guez, Marc Lanc-
+     to-action dexterous arm-hand grasping with geometric             tot, Laurent Sifre, Dharshan Kumaran, Thore Graepel,
+     fabrics. arXiv preprint arXiv:2407.02274, 2024.                  et al. Mastering chess and shogi by self-play with a
+[36] Viktor Makoviychuk, Lukasz Wawrzyniak, Yunrong                   general reinforcement learning algorithm. arXiv preprint
+     Guo, Michelle Lu, Kier Storey, Miles Macklin, David              arXiv:1712.01815, 2017.
+     Hoeller, Nikita Rudin, Arthur Allshire, Ankur Handa,        [49] Ritvik Singh, Arthur Allshire, Ankur Handa, Nathan
+     et al.      Isaac gym: High performance gpu-based                Ratliff, and Karl Van Wyk. Dextrah-rgb: Visuomotor
+     physics simulation for robot learning. arXiv preprint            policies to grasp anything with dexterous hands. arXiv
+     arXiv:2108.10470, 2021.                                          preprint arXiv:2412.01791, 2024.
+[37] Marius Memmel, Andrew Wagenmaker, Chuning Zhu,              [50] Bradly C Stadie, Sergey Levine, and Pieter Abbeel.
+     Patrick Yin, Dieter Fox, and Abhishek Gupta. Asid:               Incentivizing exploration in reinforcement learning
+     Active exploration for system identification in robotic          with deep predictive models.             arXiv preprint
+     manipulation. arXiv preprint arXiv:2404.12308, 2024.             arXiv:1507.00814, 2015.
+[38] Georg Ostrovski, Marc G Bellemare, Aäron Oord, and          [51] Richard S Sutton and Andrew G Barto. Introduction to
+     Rémi Munos. Count-based exploration with neural                  Reinforcement Learning. MIT Press, Cambridge, MA,
+     density models. In International conference on machine           1998.
+     learning, pages 2721–2730. PMLR, 2017.                      [52] Adrien Ali Taïga, William Fedus, Marlos C Machado,
+[39] Deepak Pathak, Pulkit Agrawal, Alexei A Efros, and               Aaron Courville, and Marc G Bellemare. Benchmarking
+     Trevor Darrell. Curiosity-driven exploration by self-            bonus-based exploration methods on the arcade learning
+     supervised prediction. In International conference on            environment. arXiv preprint arXiv:1908.02388, 2019.
+[53] Haoran Tang, Rein Houthooft, Davis Foote, Adam               forcement and imitation learning for diverse visuomotor
+     Stooke, OpenAI Xi Chen, Yan Duan, John Schulman,             skills. arXiv preprint arXiv:1802.09564, 2018.
+     Filip DeTurck, and Pieter Abbeel. # exploration: A
+     study of count-based exploration for deep reinforcement
+     learning. Advances in neural information processing
+     systems, 30, 2017.
+[54] Yuval Tassa, Yotam Doron, Alistair Muldal, Tom Erez,
+     Yazhe Li, Diego de Las Casas, David Budden, Abbas
+     Abdolmaleki, Josh Merel, Andrew Lefrancq, et al. Deep-
+     mind control suite. arXiv preprint arXiv:1801.00690,
+     2018.
+[55] Marcel Torne, Anthony Simeonov, Zechu Li, April Chan,
+     Tao Chen, Abhishek Gupta, and Pulkit Agrawal. Rec-
+     onciling reality through simulation: A real-to-sim-to-real
+     approach for robust manipulation. Arxiv, 2024.
+[56] Oriol Vinyals, Igor Babuschkin, Wojciech M Czarnecki,
+     Michaël Mathieu, Andrew Dudzik, Junyoung Chung,
+     David H Choi, Richard Powell, Timo Ewalds, Petko
+     Georgiev, et al. Grandmaster level in starcraft ii using
+     multi-agent reinforcement learning. nature, 575(7782):
+     350–354, 2019.
+[57] Jun Wang, Ying Yuan, Haichuan Che, Haozhi Qi, Yi Ma,
+     Jitendra Malik, and Xiaolong Wang. Lessons from learn-
+     ing to spin" pens". arXiv preprint arXiv:2407.18902,
+     2024.
+[58] Philipp Wu, Yide Shentu, Zhongke Yi, Xingyu Lin, and
+     Pieter Abbeel. Gello: A general, low-cost, and intuitive
+     teleoperation framework for robot manipulators, 2023.
+[59] Yuxin Wu and Kaiming He. Group normalization. In
+     ECCV, 2018.
+[60] Zhao-Heng Yin, Changhao Wang, Luis Pineda, Fran-
+     cois Hogan, Krishna Bodduluri, Akash Sharma, Patrick
+     Lancaster, Ishita Prasad, Mrinal Kalakrishnan, Jitendra
+     Malik, et al. Dexteritygen: Foundation controller for un-
+     precedented dexterity. arXiv preprint arXiv:2502.04307,
+     2025.
+[61] Kevin Zakka, Philipp Wu, Laura Smith, Nimrod Gileadi,
+     Taylor Howell, Xue Bin Peng, Sumeet Singh, Yuval
+     Tassa, Pete Florence, Andy Zeng, et al. Robopianist:
+     Dexterous piano playing with deep reinforcement learn-
+     ing. arXiv preprint arXiv:2304.04150, 2023.
+[62] Chong Zhang, Wenli Xiao, Tairan He, and Guanya Shi.
+     Wococo: Learning whole-body humanoid control with
+     sequential contacts. arXiv preprint arXiv:2406.06005,
+     2024.
+[63] Tony Z Zhao, Vikash Kumar, Sergey Levine, and Chelsea
+     Finn. Learning fine-grained bimanual manipulation with
+     low-cost hardware. arXiv preprint arXiv:2304.13705,
+     2023.
+[64] Tony Z Zhao, Jonathan Tompson, Danny Driess, Pete
+     Florence, Kamyar Ghasemipour, Chelsea Finn, and
+     Ayzaan Wahid. Aloha unleashed: A simple recipe for
+     robot dexterity. arXiv preprint arXiv:2410.13126, 2024.
+[65] Yuke Zhu, Ziyu Wang, Josh Merel, Andrei Rusu,
+     Tom Erez, Serkan Cabi, Saran Tunyasuvunakool, János
+     Kramár, Raia Hadsell, Nando de Freitas, et al. Rein-
+                             A PPENDIX                                             TABLE IV: Domain Randomization Setup.
+A. Environment Modeling Details                                           Object: Mass (kg)                                  [0.03, 0.1]
+                                                                          Object: Friction                                    [0.5, 1.5]
+Modeling underactuated joints. Since modeling underactu-                  Object: Shape                                   ×U (0.95, 1.05)
+ated joint structure is not directly supported, we approximate            Object: Initial Position (cm)                   +U (−0.02, 0.02)
+the relationship between each pair of actuated and underac-               Object: Initial z-orientation                   +U (−0.75, 0.75)
+                                                                          Hand: Friction                                      [0.5, 1.5]
+tuated joints by fitting a linear function qu = k · qa + b,
+where qu is the underactuated joint angle and qa is the actuated          PD Controller: P Gain                             ×U (0.8, 1.1)
+                                                                          PD Controller: D Gain                             ×U (0.7, 1.2)
+joint angle. Note that parameters k, b are included as tunable
+parameters to search over using our autotune module detailed              Random Force: Scale                                    2.0
+                                                                          Random Force: Probability                              0.2
+in Section III-A.                                                         Random Force: Decay Coeff. and Interval          0.99 every 0.1s
+B. Reward Design Details                                                  Object Pos Observation: Noise                        0.02
+                                                                          Joint Observation Noise.                           +N (0, 0.4)
+   We design generalizable rewards based on the principle                 Action Noise.                                      +N (0, 0.1)
+outlined in Section III-B and list task reward details below.
+                                                                          Frame Lag Probability                                  0.1
+   Both grasp and lift tasks can be defined with the following            Action Lag Probability                                 0.1
+goal states: (1) finger contact with the object; (2) the object
+                                                                          Depth: Camera Pos Noise (cm)                          0.005
+being lifted up to a goal position. Our reward design can,                Depth: Camera Rot Noise (deg)                          5.0
+therefore, follow by combining the contact goal reward and                Depth: Camera Field-of-View (deg)                      5.0
+the object goal reward terms:
+            r(sh , so ) = rcontact (sh , so ) + rgoal (so )        (3)
+                                                                         apply random forces to the object to simulate the physical
+where sh includes fingertip positions, so includes object                effects that are not implemented by the simulator. Non-
+center-of-mass position, and all contact marker positions (if            physical randomization models the noise in observation (e.g.,
+any).                                                                    joint position measurement and detected object positions)
+   Similarly, the handover task can be defined with the follow-          and action. A summary of our randomization attributes and
+ing goal states: (1) one hand’s finger contact with the object;          parameters is shown in Table IV.
+(2) object being transferred to an intermediate goal position
+while still in contact with the first hand; (3) the second hand’s        D. Distillation Details
+finger contact with the object; (4) object being transferred to             To learn the generalist policy, we reduce the choices of
+the final goal position. Due to the hand switching, we introduce         observation inputs to the robot joint states and selective object
+a stage variable a ∈ {0, 1} and design the reward as follows:            states, including 3D object position and egocentric depth
+                                                                         view, since privileged information is unavailable for sim-to-
+  r(sh , so ) = (1 − a) · (rcontact (shA , soA ) + rgoal (soA ))
+                                                                   (4)   real transfer. To more efficiently utilize the trajectory data and
+            + a · (rcontact (shB , soB ) + rgoal (soB ))                 improve training stability, for each sub-task specialist policy,
+where shA , shB denote fingertip positions of the engaged hand           we evaluate for 5000 steps over 100 environments, saving
+at each stage, so denote object center-of-mass position and              trajectories filtered by success at episode reset on the hard disk.
+desirable contact marker positions (if any) at each stage. At            We then treat the saved data as “demonstrations” and learn a
+completion of each stage, we also reward policy with a bonus             generalist policy for each task with Diffusion Policies [11].
+whose scale increases as stage progresses.                                  The proprioception and object position states are concate-
+                                                                         nated and passed through a three-layer network with ELU
+C. Policy Training Details                                               activation, hidden sizes of (512, 512, 512), and an output
+RL implementation. To learn the specialist policies, the                 feature size of 64. For depth observations, we use the ResNet-
+observation space includes object position and robot joint               18 architecture [18] and replace all the BatchNorm [22] in
+position at each time step, and the action space is robot                the network with GroupNorm [59], following [11]. All the
+joint angles. We use Proximal Policy Optimization [47] with              encoded features are then concatenated as the input to a
+asymmetric actor-critic as the RL algorithm. In addition to              diffusion model. We use the same noise schedule (square
+the policy inputs, we provide the following privilege state              cosine schedule) and the same number of diffusion steps (100)
+inputs to the asymmetric critic: arm joint velocities, hand joint        for training as in [11]. The diffusion output from the model is
+velocities, all fingertip positions, object orientation, object          the normalized 7 DoF absolute desired joint positions of each
+velocity, object angular velocity, object mass randomization             humanoid arm and the 6 DoF normalized (0 to 1) desired
+scale, object friction randomization scale, and object shape             joint positions of each humanoid hand. We use the AdamW
+randomization scale. Both the actor and critic networks are              optimizer [25, 34] with a learning rate of 0.0001, weight
+3-layer MLPs with units (512, 512, 512).                                 decay of 0.00001, and a batch size of 128. Following [11],
+Domain randomization. Physical randomization includes the                we maintain an exponential weighted average of the model
+randomization of object friction, mass, and scale. We also               weights and use it during evaluation/deployment.
+

@@ -1,0 +1,840 @@
+SCIENCE ROBOTICS | REVIEW
+
+ANIMAL ROBOTS                                                                                                                            Copyright © 2023 The
+                                                                                                                                         Authors, some
+The neuromechanics of animal locomotion: From                                                                                            rights reserved;
+                                                                                                                                         exclusive licensee
+biology to robotics and back                                                                                                             American Association
+                                                                                                                                         for the Advancement
+                                                                                                                                         of Science. No claim
+Pavan Ramdya1* and Auke Jan Ijspeert2*                                                                                                   to original U.S.
+                                                                                                                                         Government Works
+Robotics and neuroscience are sister disciplines that both aim to understand how agile, efficient, and robust
+locomotion can be achieved in autonomous agents. Robotics has already benefitted from neuromechanical
+principles discovered by investigating animals. These include the use of high-level commands to control low-
+level central pattern generator–like controllers, which, in turn, are informed by sensory feedback. Reciprocally,
+neuroscience has benefited from tools and intuitions in robotics to reveal how embodiment, physical interac-
+tions with the environment, and sensory feedback help sculpt animal behavior. We illustrate and discuss exem-
+plar studies of this dialog between robotics and neuroscience. We also reveal how the increasing biorealism of
+
+
+
+
+                                                                                                                                                                  Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+simulations and robots is driving these two disciplines together, forging an integrative science of autonomous
+behavioral control with many exciting future opportunities.
+
+
+
+INTRODUCTION                                                                           melanogaster, another popular experimental organism in neurosci-
+Locomotion encompasses the variety of ways in which animals and                        ence [about 106 (7) versus about 104 neurons (8), respectively].
+robots propel themselves through their environments: underwater,                       These conserved organizational principles are schematized in
+on the ground, or in the air. Animals have largely solved the chal-                    Fig. 1. First, in both vertebrates and invertebrates, a relatively
+lenges associated with moving through a fluid (water or air) and                       small number of neurons that descend from the brain are responsi-
+counteracting gravitational forces to propel themselves overground                     ble for engaging downstream motor circuits in the SC and VNC (9).
+by evolving appendages under active neural control, including flap-                    These are thought to engage motor systems principally by driving
+ping wings for flight, undulating bodies and fins, and cyclically                      central pattern generators (CPGs), neurons or neuronal circuits that
+driven legs. The resulting animal locomotion is agile, efficient,                      produce periodic bursts in the absence of a bursting input, to gen-
+and robust enough to effectively navigate unstructured terrain                         erate rhythmic appendage and body movements (Fig. 1, teal) (10).
+and produce maneuvers that counteract unexpected perturbations.                        Descending neurons may also modulate reflexes and directly influ-
+This exceptional locomotor ability arises from a synergistic cou-                      ence lower motor neurons (11). CPG-based control is capable of co-
+pling between neuronal elements and body mechanics, more con-                          ordinating very different modes of locomotion, including
+cisely referred to as “neuromechanics.” Animals’ body                                  swimming and walking (12). Second, motor circuits receive mecha-
+morphologies, including the distribution of feedback sensors, are                      nosensory and proprioceptive feedback from the body and limbs
+strongly correlated with the terrain that must be navigated. This re-                  (6). This feedback can be used for reflex-based control (Fig. 1,
+flects the intimate coupling between neural control and biome-                         red). Third, mechanosensory feedback can be used to adjust
+chanics (1); thus, locomotion cannot be fully understood by                            CPG-based network dynamics to make locomotion robust against
+examining one without the other. This integrative perspective is                       external perturbations or more effective over unstructured terrain
+shared by the field of robotics, a discipline that focuses on physical                 (Fig. 1, red and teal) (13). Fourth, an animal’s awareness of its
+embodiment and real-time control. For these reasons, neuroscience                      own ongoing behaviors is enabled by ascending projections from
+and robotics are “sister” disciplines that can inform one another                      motor circuits to the brain (14, 15) and by supraspinal sensing mo-
+toward obtaining a better understanding of the neuromechanical                         dalities, including exteroception such as vision, smell, hearing, and
+mechanisms underlying autonomous locomotion and leveraging                             the sense of balance through the vestibular system (Fig. 1, orange).
+biological insights to achieve animal-level locomotor fluency in                       Together, these inform the brain’s selection of appropriate future
+robots (2, 3).                                                                         actions, the generation of inverse models to guide such actions,
+    What are some of the core principles of biological locomotor                       and the acquisition of learned motor skills. Last and critically,
+control? Years of study across species have revealed that the                          active neural control is filtered through the passive biomechanics
+global organization of neural circuits for locomotion is largely con-                  of the body and physical interactions with the environment
+served across vertebrates and invertebrates. This is remarkable given                  (Fig. 1, yellow). Embodiment has undoubtedly shaped the evolution
+the evolutionary distance (4–6) across species and the differences in                  of effective neural control strategies.
+the number of neurons: The spinal cord (SC) of the commonly                                These conceptual neural control principles—descending drive,
+studied mouse Mus musculus has orders of magnitude more                                CPGs, sensory feedback, and embodiment—do not exist in isola-
+neurons than the ventral nerve cord (VNC) of the fly Drosophila                        tion but are embedded within complex nested control loops. There-
+                                                                                       fore, although these principles were originally identified through
+1
+                                                                                       human interpretation of experimental results (Fig. 2A), human in-
+ Neuroengineering Laboratory, Brain Mind Institute and Institute of Bioengineer-       tuition alone is not sufficient to evaluate their precise contributions
+ing, EPFL, Lausanne, Switzerland. 2Biorobotics Laboratory, Institute of Bioengineer-
+ing, EPFL, Lausanne, Switzerland.                                                      to effective biological locomotion. Recent technical advances have
+*Corresponding author. Email: pavan.ramdya@epfl.ch (P.R.); auke.ijspeert@epfl.ch       made it possible for computational modeling and robotics to
+(A.J.I.)
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)    31 May 2023                                                                                      1 of 13
+                                     SCIENCE ROBOTICS | REVIEW
+
+                                     Fig. 1. A schematic flow diagram highlights
+                                     motor control principles derived from exper-
+                                     iments performed across diverse species and
+                                     their application to neuromechanical simula-
+                                     tions and robots. Although the precise imple-
+                                     mentation varies, including an orders-of-
+                                     magnitude difference in the number of neurons,
+                                     fundamental similarities in locomotor control are
+                                     apparent. These principles have been tested in
+                                     neuromechanical simulations and used to design
+                                     the morphology and control of robots. First, low-
+                                     dimensional command signals descending from
+                                     the brain drive low-level motor control centers:
+                                     the SC in vertebrates and the VNC in inverte-
+                                     brates. These descending signals then impinge
+                                     on coupled CPGs to generate rhythmic move-
+
+
+
+
+                                                                                                                                                                                      Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+                                     ments (teal). This principle, descending control
+                                     of CPGs, has been used to control quadruped
+                                     robots using reinforcement learning [adapted
+                                     from Bellegarda and Ijspeert (74)]. Alternatively,
+                                     reflex loops based on sensory feedback have
+                                     been studied in neuromechanical simulations of
+                                     crawling worms [adapted from Izquierdo and
+                                     Beer (41)] and walking bipeds [adapted from
+                                     Geyer and Herr (47)] (red). Both CPG- and sensory
+                                     feedback–based approaches have been com-
+                                     bined as demonstrated in neuromechanical
+                                     simulations of a swimming lamprey [adapted
+                                     from Thandiackal et al. (75)] and for a quadru-
+                                     pedal robot [adapted from Owaki et al. (77)] (red
+                                     and teal). Last, the output of motor circuits is
+                                     filtered by passive biomechanics and interac-
+                                     tions with the environment to give rise to ob-
+                                     served kinematics. Biomechanical features can
+                                     strongly constrain controllers, as for leg adhesion
+                                     in a simulation and robot of the fly [adapted from
+                                     Ramdya et al. (36)] and can also yield efficient
+                                     design strategies as for the RHex robot with
+                                     wheel-like legs (adapted from GRASP Laborato-
+                                     ry/University of Pennsylvania) (yellow).
+CREDIT: A. FISHER/SCIENCE ROBOTICS
+
+
+
+
+                                     address this challenge (Fig. 2B). First, the biomechanics of animal     are unable to emulate the complex physics of how the body interacts
+                                     body parts can now be modeled more realistically than before using      with the environment, robots can be used as physical models of
+                                     physics simulations of interlinked structures (appendage segments)      real animals.
+                                     with, in some cases, experimentally defined densities, flexibilities,       In addition to gaining fundamental insights into the neurosci-
+                                     and degrees of freedom. Second, active movements of these struc-        ence of motor control, simulations and robots also facilitate the
+                                     tures can be controlled using artificial neural networks (ANNs) that    translation of biological insights into the design of robotic control-
+                                     drive simulated abstract muscle models. Third, when simulations         lers. It is worth trying to replicate some of the principles of animal
+
+                                     Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)   31 May 2023                                                                      2 of 13
+                                     SCIENCE ROBOTICS | REVIEW
+
+
+
+
+                                     Fig. 2. The progression of interactions between motor control neuroscience and robotics. (A) Classically, human scientists have interpreted the results of biological          Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+                                     experiments (measurements and perturbations) to derive abstract motor control principles. (B) Robotics has more recently been used to test the effectiveness of these
+                                     principles. Image adapted from Owaki et al. (77). (C) In the near future, we anticipate that new principles can be found by leveraging learnable ANNs, with topologies that
+                                     are potentially informed by the motor system connectomes of real animals. These may directly inspire the design of robotic controllers. (D) In the distant future, we expect
+                                     neurorobotics to become fully integrated into neuroscience and partially automated, with an AI scientist using data-informed simulations and robots to identify the next
+                                     most informative experiments while being guided by a human-defined high-level scientific question. The first steps in this approach are illustrated by the use of a fly
+                                     biomechanical model to infer unmeasured forces and the use of a simulation and robot to explore the walking gait of an extinct tetrapod. [Images were adapted from
+CREDIT: A. FISHER/SCIENCE ROBOTICS
+
+
+
+
+                                     Lobato-Rios et al. (110) and Nyakatura et al. (111).] Note that these new approaches (C and D) are expected to coexist with classical approaches (A and B).
+
+
+
+
+                                     Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)    31 May 2023                                                                                                  3 of 13
+SCIENCE ROBOTICS | REVIEW
+
+motor control in robot design because animals typically outperform         NEUROROBOTIC EVALUATION AND APPLICATION OF
+most robots in terms of locomotor agility, efficiency, and robust-         BIOLOGICAL MOTOR CONTROL PRINCIPLES
+ness. These principles may also provide a simpler implementation           Neurorobotics is a research discipline at the interface between neu-
+compared with alternative control approaches, a possibility high-          roscience and robotics (26–29). A neurorobotics framework, lever-
+lighted by the conservation of neuromechanical control principles          aging simulations and robots, can accelerate biological discovery in
+across morphologically diverse and evolutionarily distant animals          a number of ways. First, with these technologies, one can measure
+that use markedly distinct locomotor styles to traverse different          underlying quantities that might otherwise not be experimentally
+media. Robotics has a long tradition of taking inspiration from            accessible. For example, the activities of neurons and muscles as
+biology. Animals have informed robot morphologies—fish-like,               well as torques and forces can be inferred from neuromuscular sim-
+snake-like, legged, and humanoid—as well as robot control. Some            ulations rather than through difficult and invasive direct measure-
+of the first robots, such as the tortoise robots of William Gray           ments in real animals. This has been demonstrated in an early work
+Walter, were driven by animal-like reflexes implemented on                 studying the role of CPGs in lamprey swimming that used embod-
+analog computers to perform phototaxis and obstacle avoidance              ied ANNs to predict the dynamics of underlying spinal networks
+(16, 17). Rodney Brooks’s subsumption control architecture,                (30). In addition, embodied data-inspired controllers have been
+linking sensing to action without the need for internal models of          used to study locomotion in invertebrates such as the stick insect
+
+
+
+
+                                                                                                                                                     Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+the world (18, 19), was also inspired by multilayered controllers hy-      (31–34). Second, simulations and robots permit perturbations
+pothesized to be found in animal nervous systems. Last, the concept        that are difficult to perform on real animals—for example, the ma-
+of embodied intelligence (20), in contrast to an artificial intelligence   nipulation of biomechanical properties such as viscoelasticity and
+disconnected from the physical world, was inspired by body and             adhesion, the precise ablation of neurons within bioinspired
+body-mind interactions found in animals. However, the field of bi-         ANNs, and the modification of environmental properties such as
+oinspired robotics has its own challenges. First, one must decide          fluid viscosity and ground friction. Third, unlike physical experi-
+whether a bioinspired robotics project is mainly driven by the             ments, simulations can often be performed faster than real time
+goal to solve an engineering problem, such as improving locomo-            and increase the speed of experimentation. Simulations can be
+tion performance, or to address a fundamental scientific question,         used to artificially evolve neuromechanical systems or to perform
+such as identifying animal motor control principles. For engineer-         a brute-force grid parameter search. Last, although they are simpli-
+ing objectives, one must precisely define how biological inspiration       fied models of real animals, experiments in simulations and robots
+can contribute to robotics. This depends on the development of             can generate more reproducible results across experiments because,
+good benchmarks and metrics that test whether a bioinspired ap-            unlike real animals, their behaviors do not as heavily depend on in-
+proach actually improves performance over more traditional                 ternal states such as hunger, thirst, and fatigue. Together, these op-
+robot control architectures. Second, it is important to choose the         portunities allow one to identify and test arbitrary motor control
+correct level of biological abstraction and to implement key proper-       approaches, including those that may not be observed in nature.
+ties of an animal that are not artifacts of evolution (behaviorally ir-    These “what-if” experiments allow one to identify criteria that
+relevant properties stemming from ancestral circuits) and that do          may be important for animal behavior (not necessarily optimal
+not aim to satisfy orthogonal objectives. For instance, some limb          but good enough) and to uncover non-motor constraints that
+features have evolved for mate signaling rather than for locomotion        may have driven the evolution of extant animal behaviors.
+and hence might not be useful for improving robot performance.                 In this section, we present case studies that illustrate how exper-
+Without taking these considerations into account, a biologically in-       imentally derived principles of motor control have been tested and
+spired approach may fall into a “death valley” where it neither con-       exploited in scientific and engineering studies, respectively, using
+tributes to robotics nor advances our understanding of biology (21).       this neurorobotic framework. We focus on crawling, swimming,
+A review and consideration of past successes in bioinspired robotics       and walking as a function of CPG-based control, reflex loops
+can help guide future work.                                                from sensory feedback, and features of embodiment. From the
+    Bidirectional interactions between neuroscience and robotics           many studies in this rapidly growing field, we have chosen this
+have been reviewed before, most notably in the context of sensori-         subset because we feel that they reflect well a general framework
+motor navigation and learning in insects and vertebrates (22–24)           that can guide future work. For each subsection, we indicate
+and in bioinspired locomotion (21, 25). In this Review, we focus           whether the presented work informs fundamental science or the en-
+more deeply on the testing and translation of biological motor             gineering of robots.
+control principles using simulations and robots and on highlighting
+opportunities for future research. First, for three core concepts—         Biomechanics, morphological design, and control
+control using CPGs, reflex loops, and taking into account biome-           Locomotion emerges from passive interactions between the body
+chanics—we present case studies that illustrate how robotic tools          and the environment, as well as from the concerted activity of
+can be used to investigate the neuromechanics of animal locomo-            myriad neural circuit elements. Many modern studies of locomo-
+tion and how bioinspiration gives rise to robot designs and control-       tion focus on the latter, primarily by recording neural activity in
+lers that, to some extent, outperform traditional engineering              explant tissues or in behaving animals. However, neural controllers
+designs. Last, we speculate on how, in the future, a closer integration    have evolved in the context of body mechanics and world physics.
+of robotics and biology might uncover new motor control principles         Therefore, it is also necessary to understand how the viscoelastic
+that can be applied toward improving robotic control.                      properties of tissues (muscles, tendons, and bones or exoskeletons)
+                                                                           and the physics of the environment sculpt controlled movements.
+                                                                           This gap in biomechanical knowledge is a fundamental impediment
+
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)   31 May 2023                                                                          4 of 13
+SCIENCE ROBOTICS | REVIEW
+
+toward reproducing animal behaviors in simulations or robots—a              vegetation—that would have been very difficult to traverse using
+benchmark for how well we understand biological motor control.              traditional robots with wheels or continuous tracks. Thus, RHex
+Because it is difficult to measure and perturb these biomechanical          is an excellent example of bioinspiration leading to one of the stur-
+properties in real animals, this gap must also be addressed through         diest robots with outstanding traversability in multiple types of
+experiments with simulated agents and robots. Here, we highlight            environments.
+two research efforts that have used this approach to investigate and
+engineer locomotor controllers that focus on the roles of biome-            Control via reflex loops with sensory feedback
+chanics and morphology in control (Fig. 1, yellow).                         Both the SC in vertebrates and the VNC in invertebrates contain
+Leg adhesion and fast insect walking gaits (informing                       reflex loops in which inputs from sensory neurons, including mech-
+fundamental science)                                                        anoreceptors, project to motoneurons (directly or indirectly via in-
+Walking and running can be characterized by “locomotor gaits”               terneurons) to trigger fast motor responses. These feedback loops
+defined by the relative phases of leg movements. Gaits differ               ensure fast reactions to perturbations but may also generate rhyth-
+widely across species and can depend, for example, on the relative          mic motor patterns through a chain of movements triggered by pre-
+importance of drag and inertial forces (35). Large vertebrates such         ceding sensory signals. As we will discuss in the next section,
+as horses locomote fastest using dynamically stable gaits—often             neuromechanical simulations have been used to show how inverte-
+
+
+
+
+                                                                                                                                                    Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+with flight phases in which every leg is off the ground. By contrast,       brate crawling and human walking may rely on such sensory feed-
+insects walk fastest using a statically stable tripod gait in which each    back loops (Fig. 1, red).
+front leg moves in phase with its contralateral mid- and ipsilateral        Worm crawling can be explained by sensory feedback loops
+hind leg. Thus, even if the insect were to pause while using the            (informing fundamental science)
+tripod gait, its stance would remain stable. One possible explanation       Limbless animals can propel themselves forward or backward in a
+for this key difference in fast locomotor gaits across vertebrates (dy-     viscous media by performing undulatory movements. For example,
+namically stable gaits) and insects (statically stable gaits) is that       the worm Caenorhabditis elegans uses dorsoventral axial undula-
+many insects must locomote in three dimensions (sideways and                tions to move through soil. C. elegans is a popular experimental or-
+upside down) using adhesive pads and claws on their leg tips.               ganism in neuroscience because it offers genetic access to individual
+Testing this hypothesis in real animals is difficult. Therefore in          neurons that can be identified across animals. Thus, in the worm,
+(36), the authors developed a simulation of an adult D. melanogaster        one can express genetically encoded indicators to record neural ac-
+fly in which walking gaits were defined by the phase relationship           tivity of chosen neurons or genetically encoded actuators to drive
+between each of six continuously actuated legs (without a neural            neural activation or silencing of specific neurons. Moreover, the
+network controller). This allowed the authors to focus purely on            connectivity (“connectome”) of the worm’s nervous system was
+the role of biomechanical adhesion in the generation of fast locomo-        the first to be mapped (40). The simplicity of the worm and its be-
+tor gaits. They optimized the walking speed of this fly model under         havior lends itself well to the comprehensive investigation and mod-
+different simulation conditions in which they could run hundreds            eling of locomotion. Recently, Izquierdo and Beer (41) used
+of experiments. They found that statically stable tripod gaits              neuromechanical simulations to test the degree to which a control
+emerged as the fastest when optimizing for vertical walking on              strategy depending only on sensory feedback and biomechanical
+the wall with leg adhesion. By contrast, for fast ground walking            properties can give rise to worm-like locomotion without the
+without leg adhesion, a dynamically stable hexapod “bipod” gait             need for centrally generated rhythmic oscillations. This question
+not seen in nature emerged. Bipod locomotion was also quicker               was also previously explored in (42), which developed a 2D neuro-
+for a large hexapod robot. This study suggests that the requirement         mechanical model of the worm. Here, they populated this model
+for three-dimensional (3D) locomotion using leg adhesion may                with a connectome-inspired neural network that included circuits
+have driven this difference in fast locomotor gaits between insects         for head motoneurons and the VNC. This network could then
+and vertebrates. It also highlights how even abstract simulations and       actuate damped spring-like muscles with Hill-like force-length
+robots can inform our understanding of the interplay among bio-             and force-velocity properties. They performed evolutionary optimi-
+mechanics, ecological goals, and locomotor control strategies.              zation to obtain neural and muscle parameters that could best rep-
+Robust, open-loop hexapodal robot control inspired by                       licate the recorded average velocity of real worms crawling on an
+cockroach locomotion (informing engineering)                                agar plate. Two features of the resulting successful networks are
+The importance of mechanics in locomotion is also well illustrated          noteworthy. First, a large majority of neuromuscular solutions
+in the design of RHex, a hexapod robot with six rotational limbs            could reproduce worm crawling (both average speed and body ki-
+whose design was inspired by the study of fast cockroach gaits              nematics) by generating oscillations that did not rely on CPGs but
+(37, 38). A key insight into its development was that stable locomo-        instead on stretch-receptor feedback signals arising from mechani-
+tion can be obtained using an open-loop tripod gait under the               cal deformations of the body. Because this work was performed in a
+control of a simple clock as long as leg stiffness is properly tuned.       neuromechanical model, the authors could pinpoint these mecha-
+Its control principles were derived from studies showing that, in           nisms by measuring the activities of simulated stretch sensors and
+cockroaches generating fast gaits, motor patterns measured                  motor units. Second, traveling waves along the body remained
+through electromyography did not vary between flat and highly ir-           intact even after neural units in body segment subsets were artifi-
+regular terrains (39). This suggests that these fast gaits are controlled   cially silenced. This was due to the passive propagation of mechan-
+in open loop. With properly tuned limb stiffness, this approach can         ical curvature on one side of the body to neighboring segments.
+be used to generate stable robotic locomotion on complex terrain            Similar control principles based on proprioceptive stretch feedback
+(38). The RHex robot was later commercialized by Boston Dynam-              have been tested on a robot inspired by C. elegans (43), allowing the
+ics and deployed in very complex terrains—mud, sand, and dense
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)   31 May 2023                                                                         5 of 13
+SCIENCE ROBOTICS | REVIEW
+
+robot to successfully navigate a terrain lined with pegs without the    timing of a limited number of descending pathways (pulling a few
+need for exteroception.                                                 strings) to the SC or the VNC. Downstream circuits in the SC and
+    Similar sensory-driven locomotion was also investigated for         VNC then generate movement primitives from a “vocabulary” of
+crawling in the larval stage of the fly D. melanogaster. The brain      possible movements. These movement primitives are thought to
+of a Drosophila larva has also been mapped (44), and specific           be implemented by low-level circuits in the SC and VNC, including
+neurons can be identified across individual animals, genetically tar-   CPGs that can produce periodic activity without the need for peri-
+geted, and manipulated (45). Unlike undulating worms, fly larvae        odic inputs and discrete pattern generators or force fields that
+crawl using axial peristaltic movements that travel along the body      mediate point-to-point movements. Spinal circuits are composed
+segments. Using an elegant mathematical and phenomenological            of multiple CPGs, typically one pair of oscillators per pair of antag-
+analysis of the behavior of a neuromechanical model, Loveless           onistic muscles, that are distributed and coupled together. CPG os-
+et al. (46) found that many simulated instances of their model re-      cillations can be modulated by inputs from descending pathways to
+sembled real larval crawling trajectories. Crawling emerged mostly      change locomotor speed or gaits. CPGs can be viewed as kinds of
+from local (segmental) sensory-motor positive feedback loops and        feedforward controllers that transform simple high-level com-
+long-range (intersegmental) inhibition. As for the C. elegans worm,     mands, such as a desired speed, into multiple periodic signals that
+these mechanisms circumvent the need for centrally coordinated          can be sent to muscles. This principle has been exploited for low-
+
+
+
+
+                                                                                                                                                 Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+CPGs. These findings again highlight the power of neuromechani-         level robotic control in several ways (Fig. 1, teal).
+cal models for the integrative mechanistic study of animal              Dynamical movement primitives inspired by the modularity
+locomotion.                                                             of animal locomotion (informing engineering)
+Reflex loops can control bipedal locomotion in a human                  In robotics, the concepts of modularity and movement primitives
+neuromechanical model (informing both fundamental                       have led to the design of dynamical movement primitives
+science and engineering)                                                (DMPs): pattern generators based on nonlinear dynamical
+Akin to the distributed control principle for invertebrate locomo-      systems with well-defined attractor properties (67). DMPs approx-
+tion described above, Geyer and Herr (47) developed an influential      imate the functions of pattern generators in the SC or VNC and can
+model of human locomotion that demonstrates the importance of           generate either discrete or rhythmic movements like reaching or lo-
+biomechanics and the fact that a limited number of reflexes can gen-    comotion, respectively. They can be trained on the basis of human
+erate locomotion as a limit cycle without the need for CPGs. Their      demonstrations using locally weighted regression. Once they have
+model includes a 2D musculoskeletal model of the human body, in-        learned a particular movement, they can replay the movement
+cluding seven muscles and three rotational degrees of freedom per       while being robust against perturbations and can be reused in
+limb. In their model, a set of negative and positive feedback loops     new conditions, such as for targeting a new point in space by mod-
+representing spinal reflexes are active either during stance or swing   ulating simple command signals. DMPs are now often used for tra-
+to control muscle activation, and a simple balance controller keeps     jectory generation and have been used for different types of motor
+the torso upright. This neuromechanical simulation produces sag-        tasks in humanoid robots (68–70).
+ittal plane gaits that are remarkably human-like, with a good match     Reinforcement learning of high-level controllers for low-level
+to human joint kinematics, ground reaction forces, and even muscle      CPGs (informing engineering)
+activities. The gaits are also robust to small perturbations like en-   How high-level controllers in the brain learn and plan movements
+countering sloped terrain. The model has been extended in               while taking into account the constraints of downstream SC or VNC
+various ways by Geyer and other research groups, for instance, to       circuits remains largely mysterious. In the puppet on strings
+produce 3D running gaits (48), to modulate gaits (49–51), to mod-       analogy mentioned above, we know that strings may have either
+ulate speed by adding CPG circuits (52), to study different pathol-     global or local effects. For example, descending pathways may
+ogies (53–55), and to explore walking in other bipedal animals such     either project to multiple locations in the SC/VNC to affect
+as simulated dinosaurs (56). Although the model was not originally      whole-body movements or project locally to influence the move-
+designed to control robot locomotion, its key ideas, simulating         ments of only a few joints. In addition, some descending inputs
+muscle dynamics and reflex control, have been successfully used         drive rhythmic movements and some discrete movements; some
+to control wearable robots and bipedal robots. For instance, they       inhibit reflexes, whereas others amplify them (13). Therefore, de-
+were used to control an ankle prosthesis (57, 58), an ankle-and-        scending commands are very different from desired joint angles
+knee prosthesis (59), exoskeletons (60), and a simulated torque-        or torques (as in robotics) and from muscle contraction signals
+controlled bipedal robot (61). Interesting properties of these reflex   (as is sometimes assumed in neuroscience). A combination of rein-
+loop–based systems include robust human-like locomotion, modu-          forcement learning, CPG models, and robots has been used to
+larity, active compliance, and fast learning/optimization of control-   explore how brain commands might orchestrate motor circuits
+lers due to domain knowledge embedded in the reflex loops.              and also how to simplify learning on legged robots (71–73). For
+                                                                        example, deep reinforcement learning has been used to train poli-
+Control Via CPGs                                                        cies representing higher brain modulation to control the omnidirec-
+Animal motor control appears to be modular, with actions being          tional locomotion of a quadruped robot controlled by an abstract
+generated by combinations of “movement primitives”: sensorimo-          CPG model (74). The advantages, compared with more traditional
+tor control modules that are activated in sequence and in superim-      reinforcement learning using policies in joint angle space, include
+position to generate rich movements (62–65). A useful analogy is to     simpler rewards for good controllability (including omnidirectional
+view biological locomotor circuits as organized similar to a puppet     locomotion and the ability to change postural height and ground
+on strings (66), in which complex movements planned in the brain        clearance), simpler transfer to the real world, and more natural-
+(the puppeteer) are produced by modulating the amplitude and            looking gaits. The disadvantage is that the approach is possibly
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)   31 May 2023                                                                      6 of 13
+SCIENCE ROBOTICS | REVIEW
+
+less generic and, in this case, specific to periodic movements. Still,    synchronized gaits, the Tegotae principle suggests that sensory feed-
+this work highlights the benefits of CPGs as good building blocks         back to oscillators for actuated joints (or pairs of muscles in
+for fast learning, in contrast to traditional reinforcement learning      animals) might be more important than (strong) direct interseg-
+approaches that require complicated reward functions and millions         mental couplings for interlimb synchronization. This lends more
+of training episodes to learn a control policy.                           importance to the embodiment of the controllers and to physical
+                                                                          interactions with the environment. Such a bioinspired control ap-
+Combining CPGs and sensory feedback for robust                            proach is particularly interesting for robotics: It can offer robust lo-
+motor control                                                             comotor control implemented in a distributed manner on different
+Although CPGs can generate oscillations in isolation, they also           microcontrollers with higher fault tolerance and lower computa-
+receive input from sensory feedback. Thus, in animals, CPGs and           tional cost.
+reflexes are tightly integrated. To achieve animal-like locomotion,
+it is likely that robotics will require the proper integration of feed-
+forward CPGs and feedback control loops. Neuromechanical                  THE FUTURE OF NEUROROBOTICS AND MOTOR CONTROL
+models and robots have been used to decipher the respective con-          These aforementioned examples highlight how some core motor
+tributions of these mechanisms when they are combined to achieve          control principles have been tested to gain insights into fundamen-
+
+
+
+
+                                                                                                                                                     Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+locomotor control (Fig. 1, red and teal).                                 tal science and leveraged to improve our engineering of robots.
+Vertebrate swimming via coupled oscillators and sensory                   However, because these long-standing principles were obtained
+feedback (informing fundamental science)                                  from human interpretation of biological experiments, they probably
+As for crawling, undulatory movements are also used to swim. Thus,        exclude additional undiscovered control principles that might be in-
+a related question arises: To what extent do undulations arise from       strumental to reach the goal of more agile, efficient, and robust
+central CPG-based or peripheral sensory feedback–based mecha-             robotic locomotion. To discover such principles in the future, we
+nisms? Thandiackal et al. (75) addressed this question using an ab-       may complement human abstraction with machine learning
+stract neuromechanical simulation (and a robot) based on the              (Fig. 2C) and a direct dialog between experimental data and realistic
+lamprey. They outfitted the simulation and robot with force feed-         simulations of the (animal or robot) system under consideration
+back sensors communicating with intersegmentally coupled oscilla-         (Fig. 2D). For engineering applications, such a learnable controller
+tors. This allowed them to perturb one or more neural components          might have a generic architecture, as in the case of deep reinforce-
+to measure their relative contribution to swimming speed. They            ment learning of robotic control (83). Alternatively, to gain neuro-
+found that swimming can be produced using either central feedfor-         scientific insights, controllers might have strong inductive biases
+ward or peripheral feedback mechanisms. By varying parameters in          that are based on the connectivity of an animal’s real nervous
+their model, they observed that traveling undulatory waves can be         system (as for the C. elegans neuromechanical simulation described
+generated over a large range of oscillator intrinsic frequencies and      above). Such a detailed, nearly one-to-one mapping between
+feedback strengths. However, controllers that combine both central        models and data would permit the use of simulations to generate
+and peripheral mechanisms are more robust against neuronal                hypotheses that can then be tested by recording, activating, or si-
+lesions than those that use only one of these mechanisms. This            lencing specific neural circuits in a behaving animal (84–88). This
+result was also confirmed in a real aquatic robot.                        latter vision has not yet been achieved thus far, and in most of the
+Distributed and fault-tolerant control using an insect-                   studies described above, the high level of abstraction of computa-
+inspired decentralized approach (informing engineering)                   tional models has made it challenging to generate fine-grained ex-
+Insect legs are embedded and covered with proprioceptive and              perimental predictions. Note that we do not advocate abandoning
+tactile sensors that are thought to play an important role in decen-      more abstract, low-order, models successfully used so far (Fig. 2, A
+tralized locomotor control (33). One group implemented this feed-         and B), but rather, we see opportunities for exploring additional
+back mechanism for interleg coordination in robots. They termed           new avenues thanks to several recent technological developments
+this approach “Tegotae,” a Japanese concept that describes how well       (Box 1).
+a perceived reaction (sensory information) matches an expectation             First, because interaction forces between body parts and the en-
+(an intended motor command) (76). Controllers were made of dis-           vironment are fundamentally important in the study of motor
+tributed oscillators that do not have direct couplings (like typical      control, physics simulation environments must accurately replicate
+CPG models) but rather receive local sensory feedback signals.            the internal and external forces that an animal or robot experiences
+This led to the emergence of gaits via the synchronization of oscil-      in the real world. For instance, although it is computationally ex-
+lators through physical interactions with the environment. For in-        pensive to model the compliance of an insect’s cuticle-based exo-
+stance, a Tegotae feedback loop that slows down the phase of              skeleton, its mechanical properties may play a key role in the
+oscillators when limbs are loaded can lead to stable gaits on a quad-     sensing of limb loading to perform corrective movements. Thus,
+ruped robot (77). Similar types of load-dependent reflex loops are        it is important to design more realistic morphological meshes that
+found in mammals, including cats (78). Interestingly, when the fre-       emulate (in a data-informed manner through careful mechanical
+quency of the oscillators is increased, this leads to gait transitions    characterization) passive elastic and stiffness properties. These
+among walking, trotting, and galloping (79), as has been observed         would be embedded within more realistic physics environments
+in cat experiments (80). Similar ideas have been used to control          and simulations that can model body physics, collisions, and
+snake-like crawling (81), bipedal locomotion (76), salamander-            other interaction forces at increasingly small time steps while retain-
+like walking (82), and, as reviewed above, swimming (75). Com-            ing accuracy and robustness against numerical errors. These chal-
+pared with the traditional view of biological CPGs, emphasizing           lenges have been addressed by the development of improved
+the importance of inter-oscillator coupling to generate                   physics engines, including Bullet, Havok, MuJoCo, ODE, and
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)   31 May 2023                                                                          7 of 13
+SCIENCE ROBOTICS | REVIEW
+
+                                                                                    data (92–94). With these data, one might test the explanatory power
+    Box 1. Technological advances enabling the integrative identification of        of an arbitrary motor controller by assessing the degree to which it
+    biological motor control principles.                                            can accurately reproduce measured animal behaviors. As an addi-
+    Neuromechanical simulations                                                     tional biological constraint, ANN motor controllers can be designed
+       Physics simulators: New physics simulators permit a more realistic           on the basis of animal nervous system connectomes or graphs of
+    modeling of collisions with the appropriate scaling to accurately represent     neural connectivity (95–97) and physiological measurements from
+    the physics of animals of different sizes. This can help address the “sim-to-
+    real” problem: the difficulty of ensuring that the physical realism (and
+                                                                                    identified cell types. Connectomes are becoming available thanks to
+    experimental results) of simulations accurately mimic biological or             advances in automated electron microscopy, image segmentation,
+    robotic systems.                                                                and neuron reconstruction. By combining these data, one might
+       Computation: Compute capacity and GPU-based parallelization enable           use imitation learning of real measured limb kinematics to param-
+    more rapid and even faster than real-time exploration of parameter space        eterize a connectome-based ANN motor controller. However, it
+    for neuromechanical motor controllers.                                          remains difficult to instantiate hundreds of open parameters—syn-
+       Parameterization: Statistical optimization approaches can instantiate
+                                                                                    aptic weights, sensory gains, and muscle parameters—in numerical
+    hundreds of open parameters in numerical neuromechanical models for
+    which biological data are often missing.                                        neuromechanical models in the absence of biological data. The dy-
+       Biological data and tools                                                    namics of a model are typically highly dependent on these param-
+
+
+
+
+                                                                                                                                                              Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+       Digitization of body morphologies: CT enables the accurate                   eters. This important challenge in high-dimensional models can
+    recapitulation of geometric constraints and joint degrees of freedom.           possibly lead to ill-defined problems, with multiple sets of parame-
+       Pose estimation: The rapid collection of precise 3D kinematic data by        ters generating similar behavior. Thus, how to set parameters
+    deploying trained deep neural networks on video data has supplanted
+                                                                                    (through inference from biological data or through optimization),
+    arduous marker-based motion capture or manual annotations in
+    small animals.
+                                                                                    identify which parameters are biologically relevant, and assess pa-
+       Connectomes: Descriptions of the connectivity of all neurons in a            rameter sensitivity are important open questions. It is likely that al-
+    fragment or entire nervous tissue can be used to build biologically inspired    gorithms for parameterizing ANNs will have a strong statistical
+    and constrained ANN controllers.                                                component, enabling the identification of families of well-perform-
+       Genetic tools: Enable investigators to repeatedly record, activate, and      ing solutions and distributions of effective parameters (98). Once
+    silence the same neurons, neural circuits, and muscles across individual        parameters have been set, network solutions represent predictions
+    animals. Optogenetics uses light of different wavelengths for activating or
+    deactivating genetically labeled neurons and microscopes for recording
+                                                                                    about real biological neural controllers. These predictions can then
+    their activity. Chemogenetics uses chemicals to modulate the activity of        be tested using genetic tools to precisely target specific neurons or
+    genetically labeled neurons.                                                    neural populations and then to record, activate, or silence these
+       Bioinspired robots                                                           neurons through optogenetic or chemogenetic means—methods
+       Materials and manufacturing techniques: 3D printing and other                that use particular wavelengths of light or exogenous chemicals to
+    approaches pioneered in the field of soft robotics can facilitate building      perturb specific neurons (45).
+    robots that are more biologically accurate. This includes replicating
+                                                                                        Once these kinds of data-driven, and likely more complex,
+    muscle-like actuation and flexible sensory organs such as touch-
+    sensitive skin.                                                                 motor control networks are identified from a dialog between
+       Onboard computing: The miniaturization of computing hardware allows          animal experiments and simulations, the accessibility of ANNs
+    for the real-time processing of sensory feedback that better mimics motor       then makes it possible to investigate, distill, and abstract their core
+    control in biological nervous systems.                                          features for implementation as robotic controllers. However, some
+                                                                                    of these biological motor control principles may not be readily and
+                                                                                    efficiently emulated using conventional hardware. For example, fast
+PhysX—each with their own advantages and disadvantages for dif-                     real-time processing of sensory feedback may require implementa-
+ferent applications (89). Improved realism comes with a tremen-                     tion on miniaturized onboard computing. In addition, neuromor-
+dous increase in computational cost. This is partially addressed by                 phic chips may be needed to replicate spiking neural networks.
+an improved computing power of workstations and the enabling of                     These have already been used in event-based cameras (99) to
+graphics processing unit (GPU)–based parallelization. The latter                    confer interesting properties such as very high temporal resolution,
+also unlocks the possibility to more rapidly (even faster than real                 very high dynamic range, and low power consumption. In addition,
+time) explore the parameter space of neuromechanical controllers                    to test and apply the results from bioinspired simulations in a real
+in physics simulations such as Nvidia’s Isaac Gym (90).                             robot, one must overcome the so-called “sim-to-real gap”—differ-
+    Advanced biological tools and data are also necessary to generate               ences between simulation and real-world physics cause a robot’s be-
+meaningful comparisons between simulated or robotic agents and                      havior to deviate from that of its associated simulation (100).
+their animal counterparts. For example, one should have precise                     Although this gap is being steadily narrowed with increasingly ac-
+morphological and kinematic measurements of the animal under                        curate physics engines and realistic simulation environments, it
+study. The increased accessibility of 3D computerized tomography                    remains challenging to scale robots down to the size of smaller ex-
+(CT) scans has made it possible to digitize the body morphologies of                perimental animals such as insects and rodents. This scaling is
+small animals, such as insects and rodents, to model their morphol-                 needed to represent the physics of animals of different sizes. For
+ogies, geometric constraints, and joint degrees of freedom in simu-                 example, the relative importance of inertial and viscous forces
+lations and robots (91). Similarly, recent advances in markerless                   strongly determines the behavior of a system in motion, and small
+pose estimation using deep neural networks have made it possible                    animals such as insects experience stronger viscous forces (low Rey-
+to rapidly collect precise 3D kinematic data by deploying trained                   nolds number). It also remains challenging to replicate biomechan-
+deep neural networks on videography, x-ray, and cineradiography                     ical properties in engineered materials, for example, fabricating
+                                                                                    exoskeleton cuticle for robotic models of insects or fabricating
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)     31 May 2023                                                                                 8 of 13
+SCIENCE ROBOTICS | REVIEW
+
+hair, scales, muscles, fat, tendons, and bones for robotic models of       female fly and digitally reconstructed its biomechanical hull. They
+vertebrates. Materials and manufacturing techniques such as 3D             then enabled limb degrees of freedom on the basis of measurements
+printing, pioneered in the field of soft robotics (101), can help over-    of real limb kinematics during grooming and walking. By replaying
+come this challenge by building robots that are more accurately            these limb kinematics in their biomechanical model, they could
+endowed with the viscoelastic properties of biological tissues. Sim-       infer unmeasured torques and ground reaction forces during
+ilarly, the development of fast direct-drive motors without gears can      walking and body part collision forces during antennal grooming
+allow one to simulate muscle dynamics and proprioception in soft-          (Fig. 2D). Importantly, altering the size and shape of the model’s
+ware rather than with complex hardware.                                    forelimbs disrupted the kinematic replay of grooming, illustrating
+    Moving beyond passive properties, animals also have an unpar-          the importance of morphological realism. The authors then lever-
+alleled number of mechanical sensors covering their bodies: hairs in       aged the neuromechanical capabilities of their model to explore lo-
+mammals and bristles in insects. These likely play an important role       comotor controllers. They used a genetic algorithm to optimize a
+in the ability of animals to sense and respond to their environments.      simple neural controller for fast and stable walking. In the future,
+Currently, although vision is well replicated, tactile sensing in          such a network will be constrained by the fly’s VNC connectome
+robots is still relatively primitive, with many fewer and less             (Fig. 2C) (96).
+diverse sensors, although there is fast progress in this area (102–        Using simulations and robots to infer locomotor
+
+
+
+
+                                                                                                                                                     Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+105). Small sensors—such as cameras, accelerometers, and inertial          characteristics of an extinct quadruped (informing
+measurement units—can be more cheaply fabricated thanks to                 fundamental science)
+mass production of smart phones and other portable devices.                Simulations and real robots can also be used to inform our under-
+Last, more rigorous benchmarks will be needed to establish that            standing of motor control in extinct species. Nyakatura and col-
+robotic behaviors can be improved using biologically inspired algo-        leagues (111) explored possible walking gaits of a tetrapodal stem
+rithms. These include defining and quantifying concepts such as            amniote, Orobates pabsti, for which a well-preserved fossil and fos-
+“agility” that include performance across multiple locomotor con-          silized footprints have been found. To assess gaits in a quantitative
+ditions including non–steady-state behaviors. First attempts at            way, the authors first used a 3D skeletal digitization to design a ki-
+quantitatively measuring agility exist through specific measure-           nematic simulation, a robot, and a robotic simulation (Fig. 2D).
+ments, benchmarks, or competitions (106–109) but more are                  They then used x-ray motion analysis and ground reaction force
+needed, ideally with the same scoring methods for both animals             measurements from extant tetrapod sprawling species—salaman-
+and robots.                                                                der, skink, iguana, and caiman—to define and populate a 3D
+                                                                           sprawling gait space in which different sprawling gaits could be
+First steps toward automating the science of motor control                 compared. They performed grid search of dynamic OroBOT and
+New opportunities in motor control can be found through the in-            kinematic Orobates simulations to match fossil trackways assigned
+tegration of the aforementioned computational, biological, and ro-         to Orobates. This revealed a wide range of possible gaits that could
+botics tools. In our opinion, one of the most exciting opportunities       be classified according to metrics including energy consumption,
+involves automated scientific inference using machine learning. As         the amount of roll and pitch (balance) of the gait, and the precision
+for other domains such as computer vision, we envision that                of walking on the track. These results revealed that Orobates likely
+machine learning can be leveraged to overcome human biases and             had a more erect and advanced locomotor pattern than expected
+to accelerate discovery by making new and better use of data.              from previous studies of earlier tetrapods. This work illustrates
+Because of the importance of embodiment and interactions with              how biologically informed robots and simulations can be used to
+the environment, this approach must be taken in tandem with phys-          quantitatively study the behavior of an extinct species.
+ically realistic simulations. In this section, we discuss several recent   Designing motor controllers using deep reinforcement
+studies that illustrate how realistic simulations and robots can be        learning (informing engineering)
+coupled with machine learning/computational optimization to                Reinforcement learning, inspired by the principles of biological
+advance the science of motor control.                                      motor learning, can be used to design unique locomotor controllers
+Using a morphologically realistic simulation of Drosophila to              thanks in large part to advances in simulators and computation
+infer unmeasured collisions and forces (informing                          (Fig. 2C). For instance, Hutter’s group (112–114) has designed a
+fundamental science)                                                       series of locomotion controllers for the quadruped robot ANYmal
+To automate the discovery of biological motor control principles, it       that have tackled increasingly complex scenarios. These learned
+will be useful to first generate more realistic neuromechanical            controllers could cope with substantial perturbations like pushes,
+models of the animal in question—specifically, to have as close to         make maneuvers to self-right after falling, and produce robust
+a direct mapping between simulated and real body parts and, if also        gaits in challenging environments such as walking through rivers
+required, neuronal elements. This approach is particularly interest-       and over slippery ground. Several key contributions were the use
+ing for studying the adult fly D. melanogaster: Its brain and VNC          of neural networks to learn actuator dynamics with supervised
+connectomes are already or becoming available, neural activity in          learning and to facilitate sim-to-real transfer, the use of neural net-
+the brain and VNC can be recorded in tethered behaving animals,            works to learn control policies with reinforcement learning, curric-
+and large collections of transgenic flies are available for testing com-   ulum learning in randomized terrains of increasing complexity, and
+putational predictions by recording or perturbing the activity of          the use of the Isaac Gym simulator to run thousands of simulated
+identifiable subsets of neurons. A neuromechanical simulation of           robots in parallel on GPUs. The trained neural networks can be an-
+the fly may be used as a platform for synthesizing diverse datasets        alyzed like biological circuits to examine and understand underly-
+and generating experimental predictions. Toward this long-term             ing control policies. This addresses the challenge of interpretability
+vision, Lobato-Ríos et al. (110) performed a CT scan of an adult           in deep learning. Interestingly, the learned controllers exhibited the
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)   31 May 2023                                                                          9 of 13
+SCIENCE ROBOTICS | REVIEW
+
+emergence of animal-like reflexes, such as the foot trapping reflex—     We envision future bioinspired robots that are highly fault tolerant,
+a stumbling-correction reaction that leads to a fast retraction and      can self-repair like a salamander regrowing a limb, and possibly
+extension of the limb when it hits something during swing                even split into different parts and keep functioning like flatworms.
+(113)—as well as internal models that estimate how slippery the              In terms of control, bioinspiration can lead to robots that ap-
+ground is (114). The learned controllers are starting to outperform      proach the agility and multifunctionality of animals. Indeed, we
+model-based controllers and have contributed to winning the              need robots that, like animals, can rapidly switch between different
+DARPA Subterranean Challenge (109). Reinforcement learning               modes of locomotion, rarely get stuck, and use their limbs for mul-
+can also be an interesting way to make robots imitate animal             tiple functions. We can also benefit from robots that improve over
+gaits. For instance, Peng and colleagues (115) have used reinforce-      time, learn new motor skills, and possibly transfer skills from one
+ment learning to allow a quadrupedal robot to imitate gaits record-      robot to another. Last, we should also explore the possibility of
+ed from a real dog. This was accomplished by designing a reward          going beyond biology, taking good ideas from nature, and applying
+function composed of several terms that reward both a similarity         them without the genetic and physiological constraints that burden
+to the reference motion and the ability to move forward at a             animals. For instance, while still taking inspiration from biology, we
+desired speed (without falling). The approach is interesting both        can design humanoid robots with more arms, more eyes, and more
+for robotics (by using reference motions to constrain the search of      types of sensing, including electric and magnetic senses. Nature has
+
+
+
+
+                                                                                                                                                                                  Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+possible gaits) and potentially for neuroscience as a method for         given us an incredible library of solutions to problems that robots
+reverse-engineering control circuits underlying animal behavior.         need to solve, and we are just beginning to explore and exploit them.
+
+A future vision for the neurorobotics of motor control
+Animals and robots in the loop (informing                                REFERENCES AND NOTES
+fundamental science)                                                      1. M. H. Dickinson, C. T. Farley, R. J. Full, M. A. R. Koehl, R. Kram, S. Lehman, How animals
+                                                                             move: An integrative view. Science 288, 100–106 (2000).
+The aforementioned approaches to constrain models with data are
+                                                                          2. G.-Z. Yang, J. Bellingham, H. Choset, P. Dario, P. Fischer, T. Fukuda, N. Jacobstein, B. Nelson,
+currently performed offline after animal or robot experiments and            M. Veloso, J. Berg, Science for robotics and robotics for science. Sci. Robot. 1,
+data preprocessing. In the more distant future, with gains in the            eaal2099 (2016).
+speed of computation and model updating, we envision that bio-            3. G.-Z. Yang, J. Bellingham, P. E. Dupont, P. Fischer, L. Floridi, R. Full, N. Jacobstein, V. Kumar,
+and neuromechanical simulations could run “in the loop” in real              M. McNutt, R. Merrifield, B. J. Nelson, B. Scassellati, M. Taddeo, R. Taylor, M. Veloso,
+time with ongoing animal experiments. This will unlock new                   Z. L. Wang, R. Wood, The grand challenges of Science Robotics. Sci. Robot. 3,
+                                                                             eaar7650 (2018).
+types of animal experiments in which neural, mechanical, or
+                                                                          4. N. J. Strausfeld, F. Hirth, Deep homology of arthropod central complex and vertebrate
+visual perturbations can be performed in closed loop in a state-de-          basal ganglia. Science 340, 157–161 (2013).
+pendent manner. For example, complementing existing experimen-            5. A. Tsubouchi, T. Yano, T. K. Yokoyama, C. Murtin, H. Otsuna, K. Ito, Topological and mo-
+tal systems in neuroscience with closed-loop visual virtual reality          dality-specific representation of somatosensory information in the fly brain. Science 358,
+(116, 117), ongoing simulations of measured animal kinematics                615–623 (2017).
+might be used to infer unmeasured internal states like joint              6. J. C. Tuthill, E. Azim, Proprioception. Curr. Biol. 28, R194–R203 (2018).
+                                                                          7. R. Bjugn, The use of the optical disector to estimate the number of neurons, glial and
+torques and trigger leg perturbations at particular torque values.
+                                                                             endothelial cells in the spinal cord of the mous—sWith a comparative note on the rat
+A similar more high-level approach has previously been taken                 spinal cord. Brain Res. 627, 25–33 (1993).
+using robots to manipulate social behaviors in swimming fish              8. H. Lacin, H.-M. Chen, X. Long, R. H. Singer, T. Lee, J. W. Truman, Neurotransmitter identity
+(118), congregating cockroaches (119), and other organisms                   is acquired in a lineage-restricted manner in the Drosophila CNS. eLife 8, e43701 (2019).
+(120). Ultimately, in-the-loop experiments may even include a             9. S. Namiki, M. H. Dickinson, A. M. Wong, W. Korff, G. M. Card, The functional organization of
+high-level robot scientist (121–124) that fine-tunes whole-organism          descending sensory-motor pathways in Drosophila. eLife 7, e34272 (2018).
+                                                                         10. S. Grillner, P. Wallen, Central pattern generators for locomotion, with special reference to
+neuromechanical models using incoming data, then generates a new
+                                                                             vertebrates. Annu. Rev. Neurosci. 8, 233–261 (1985).
+hypothesis, and lastly performs experiments in an optimal way in         11. H. Liang, G. Paxinos, C. Watson, Projections from the brain to the spinal cord in the mouse.
+terms of information theory by performing the minimal number                 Brain Struct. Funct. 215, 159–186 (2011).
+of simulated and real experiments to test the validity of a hypothesis   12. A. J. Ijspeert, A. Crespi, D. Ryczko, J.-M. Cabelguen, From swimming to walking with a
+(Fig. 2D).                                                                   salamander robot driven by a spinal cord model. Science 315, 1416–1420 (2007).
+Bioinspired robotics taken to the limit (informing                       13. S. Rossignol, R. Dubuc, J.-P. Gossard, Dynamic sensorimotor interactions in locomotion.
+                                                                             Physiol. Rev. 86, 89–154 (2006).
+engineering)
+                                                                         14. C.-L. Chen, F. Aymanns, R. Minegishi, V. D. V. Matsuda, N. Talabot, S. Günel, B. J. Dickson,
+Thanks to our better understanding of animal locomotion and ad-              P. Ramdya, Ascending neurons convey behavioral state to integrative sensory and action
+vances in key scientific and engineering aspects, we envision in-            selection brain regions. Nat. Neurosci. 26, 682–695 (2023).
+creasing contributions of bioinspiration to robotics, for instance,      15. L.-H. Wang, W.-Q. Ding, Y.-G. Sun, Spinal ascending pathways for somatosensory infor-
+in field robotics, wearable robots, and assistive robots. Bioinspired        mation processing. Trends Neurosci. 45, 594–607 (2022).
+robots are especially well suited for complex outdoor environments       16. W. G. Walter, An electro-mechanical «animal». Dialectica 4, 206–213 (1950).
+
+to perform repetitive, dirty, or dangerous tasks such as inspection,     17. W. G. Walter, A machine that learns. Sci. Am. 185, 60–63 (1951).
+                                                                         18. R. Brooks, A robust layered control system for a mobile robot. IEEE J. Robot. Autom. 2,
+transport, and environmental monitoring. Bioinspiration offers the
+                                                                             14–23 (1986).
+possibility to create better hardware than traditional robotics: with    19. R. A. Brooks, Intelligence without representation. Artif. Intell. 47, 139–159 (1991).
+better sensing using tactile skins; better efficiency using approaches   20. R. Pfeifer, J. Bongard, How the Body Shapes the Way We Think: A New View of Intelligence
+taken by animals like eels that can travel thousands of kilometers           (MIT Press, 2006).
+without food; and a better mix of hard and soft components to            21. A. J. Ijspeert, Biorobotics: Using robots to emulate and investigate agile locomotion.
+emulate animals that can squeeze through small spaces, endure                Science 346, 196–203 (2014).
+
+high physical impact, and still provide high torques and forces.
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)   31 May 2023                                                                                                   10 of 13
+SCIENCE ROBOTICS | REVIEW
+
+ 22. B. Webb, Can robots make good models of biological behaviour? Behav. Brain Sci. 24,                     49. R. Ramadan, H. Geyer, J. Jeka, G. Schöner, H. Reimann, A neuromuscular model of human
+     1033–1050 (2001).                                                                                           locomotion combines spinal reflex circuits with voluntary movements. Sci. Rep. 12,
+ 23. B. Webb, Robots in invertebrate neuroscience. Nature 417, 359–363 (2002).                                   8189 (2022).
+ 24. B. Webb, Robots with insect brains. Science 368, 244–245 (2020).                                        50. A. Di Russo, D. Stanev, S. Armand, A. Ijspeert, Sensory modulation of gait characteristics in
+ 25. D. Floreano, A. J. Ijspeert, S. Schaal, Robotics and neuroscience. Curr. Biol. 24,                          human locomotion: A neuromusculoskeletal modeling study. PLOS Comput. Biol. 17,
+     R910–R920 (2014).                                                                                           e1008594 (2021).
+ 26. K. Chen, T. Hwu, H. J. Kashyap, J. L. Krichmar, K. Stewart, J. Xing, X. Zou, Neurorobots as a           51. S. Song, H. Geyer, A neural circuitry that emphasizes spinal feedback generates diverse
+     means toward neuroethology and explainable AI. Front. Neurorobot. 14, 570308 (2020).                        behaviours of human locomotion. J. Physiol. 593, 3493–3511 (2015).
+ 27. E. Falotico, L. Vannucci, A. Ambrosano, U. Albanese, S. Ulbrich, J. C. Vasquez Tieck,                   52. F. Dzeladini, J. van den Kieboom, A. Ijspeert, The contribution of a central pattern gen-
+     G. Hinkel, J. Kaiser, I. Peric, O. Denninger, N. Cauli, M. Kirtay, A. Roennau, G. Klinker, A. Von           erator in a reflex-based neuromuscular model. Front. Hum. Neurosci. 8, 371 (2014).
+     Arnim, L. Guyot, D. Peppicelli, P. Martínez-Cañada, E. Ros, P. Maier, S. Weber, M. Huber,               53. A. Bruel, S. B. Ghorbel, A. Di Russo, D. Stanev, S. Armand, G. Courtine, A. Ijspeert, Inves-
+     D. Plecher, F. Röhrbein, S. Deser, A. Roitberg, P. van der Smagt, R. Dillman, P. Levi, C. Laschi,           tigation of neural and biomechanical impairments leading to pathological toe and heel
+     A. C. Knoll, M.-O. Gewaltig, Connecting artificial brains to robots in a comprehensive                      gaits using neuromusculoskeletal modelling. J. Physiol. 600, 2691–2712 (2022).
+     simulation framework: The neurorobotics platform. Front. Neurorobotics. 11, 2 (2017).                   54. C. F. Ong, T. Geijtenbeek, J. L. Hicks, S. L. Delp, Predicting gait adaptations due to ankle
+ 28. J. Krichmar, Neurorobotics. Scholarpedia 3, 1365 (2008).                                                    plantarflexor muscle weakness and contracture using physics-based musculoskeletal
+ 29. J. Li, Z. Li, F. Chen, A. Bicchi, Y. Sun, T. Fukuda, Combined sensing, cognition, learning, and             simulations. PLoS Comput. Biol. 15, e1006993 (2019).
+     control for developing future neuro-robotics systems: A survey. IEEE Trans. Cogn. Dev. Syst.            55. S. Song, H. Geyer, Predictive neuromechanical simulations indicate why walking per-
+
+
+
+
+                                                                                                                                                                                                                    Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+     11, 148–161 (2019).                                                                                         formance declines with ageing. J. Physiol. 596, 1199–1210 (2018).
+ 30. Ö. Ekeberg, A. Lansner, S. Grillner, The neural control of fish swimming studied through                56. T. Geijtenbeek, M. Van De Panne, A. F. Van Der Stappen, Flexible muscle-based loco-
+     numerical simulations. Adapt. Behav. 3, 363–384 (1995).                                                     motion for bipedal creatures. ACM Trans. Graph. TOG. 32, 1–11 (2013).
+ 31. Ö. Ekeberg, M. Blümel, A. Büschges, Dynamic simulation of insect walking. Arthropod                     57. M. F. Eilenberg, H. Geyer, H. Herr, Control of a powered ankle-foot prosthesis based on a
+     Struct. Dev. 33, 287–300 (2004).                                                                            neuromuscular model. IEEE Trans. Neural Syst. Rehabil. Eng. 18, 164–173 (2010).
+ 32. J. Proctor, R. P. Kukillaya, P. Holmes, A phase-reduced neuro-mechanical model for insect               58. F. Tamburella, N. L. Tagliamonte, I. Pisotta, M. Masciullo, M. Arquilla, E. H. F. Van Asseldonk,
+     locomotion: Feed-forward stability and proprioceptive feedback. Philos. Trans. R. Soc.                      H. Van Der Kooij, A. R. Wu, F. Dzeladini, A. J. Ijspeert, M. Molinari, Neuromuscular controller
+     Math. Phys. Eng. Sci. 368, 5087–5104 (2010).                                                                embedded in a powered ankle exoskeleton: Effects on gait, clinical features and subjec-
+ 33. M. Schilling, T. Hoinville, J. Schmitz, H. Cruse, Walknet, a bio-inspired controller for                    tive perspective of incomplete spinal cord injured subjects. IEEE Trans. Neural Syst. Rehabil.
+     hexapod walking. Biol. Cybern. 107, 397–419 (2013).                                                         Eng. 28, 1157–1167 (2020).
+ 34. N. S. Szczecinski, A. E. Brown, J. A. Bender, R. D. Quinn, R. E. Ritzmann, A neuromechanical            59. N. Thatte, H. Geyer, Toward balance recovery with leg prostheses using neuromuscular
+     simulation of insect walking and transition to turning of the cockroach Blaberus discoi-                    model control. I.E.E.E. Trans. Biomed. Eng. 63, 904–913 (2016).
+     dalis. Biol. Cybern. 108, 1–21 (2014).                                                                  60. A. R. Wu, F. Dzeladini, T. J. H. Brug, F. Tamburella, N. L. Tagliamonte, E. van Asseldonk,
+ 35. E. M. Purcell, Life at low Reynolds number. Am. J. Phys. 45, 3–11 (1977).                                   H. van der Kooij, A. J. Ijspeert, A versatile neuromuscular exoskeleton controller for gait
+ 36. P. Ramdya, R. Thandiackal, R. Cherney, T. Asselborn, R. Benton, A. J. Ijspeert, D. Floreano,                assistance: A preliminary study on spinal cord injury patients. Biosyst. Biorobotics. 16,
+     Climbing favours the tripod gait over alternative faster insect gaits. Nat. Commun. 8,                      163–167 (2017).
+     14494 (2017).                                                                                           61. N. Van der Noot, A. J. Ijspeert, R. Ronsse, Bio-inspired controller achieving forward speed
+ 37. R. Altendorfer, N. Moore, H. Komsuoglu, M. Buehler, H. B. Brown, D. McMordie, U. Saranli,                   modulation with a 3D bipedal walker. Int. J. Robot. Res. 37, 168–196 (2018).
+     R. Full, D. E. Koditschek, RHex: A biologically inspired hexapod runner. Auton. Robots. 11,             62. T. Flash, B. Hochner, Motor primitives in vertebrates and invertebrates. Curr. Opin. Neu-
+     207–213 (2001).                                                                                             robiol. 15, 660–666 (2005).
+ 38. U. Saranli, M. Buehler, D. E. Koditschek, RHex—A simple and highly mobile hexapod                       63. S. F. Giszter, Motor primitives—New data and future questions. Curr. Opin. Neurobiol. 33,
+     robot. Int. J. Robot. Res. 20, 616–631 (2001).                                                              156–165 (2015).
+ 39. R. J. Full, K. Autumn, J. I. Chung, A. Ahn, Rapid negotiation of rough terrain by the death-            64. F. A. Mussa-Ivaldi, S. F. Giszter, E. Bizzi, Linear combinations of primitives in vertebrate
+     head cockroach. Am. Zool. 38, 81A (1998).                                                                   motor control. Proc. Natl. Acad. Sci. U.S.A. 91, 7534–7538 (1994).
+ 40. J. G. White, E. Southgate, J. N. Thomson, S. Brenner, The structure of the nervous system of            65. K. A. Thoroughman, R. Shadmehr, Learning of action through adaptive combination of
+     the nematode Caenorhabditis elegans. Philos. Trans. R. Soc. Lond. B Biol. Sci. 314,                         motor primitives. Nature 407, 742–747 (2000).
+     1–340 (1986).                                                                                           66. G. E. Loeb, Learning from the spinal cord. J. Physiol. 533, 111–117 (2001).
+ 41. E. J. Izquierdo, R. D. Beer, From head to tail: A neuromechanical model of forward lo-                  67. A. J. Ijspeert, J. Nakanishi, H. Hoffmann, P. Pastor, S. Schaal, Dynamical movement
+     comotion in Caenorhabditis elegans. Philos. Trans. R. Soc. B Biol. Sci. 373, 20170374 (2018).               primitives: Learning attractor models for motor behaviors. Neural Comput. 25,
+ 42. J. H. Boyle, S. Berri, N. Cohen, Gait modulation in C. elegans: An integrated neurome-                      328–373 (2013).
+     chanical model. Front. Comput. Neurosci. 6, 10 (2012).                                                  68. A. Gams, B. Nemec, A. J. Ijspeert, A. Ude, Coupling movement primitives: Interaction with
+ 43. J. H. Boyle, S. Johnson, A. A. Dehghani-Sanij, Adaptive undulatory locomotion of a C.                       the environment and bimanual tasks. IEEE Trans. Robot. 30, 816–830 (2014).
+     elegans inspired robot. IEEEASME Trans. Mechatron. 18, 439–448 (2013).                                  69. J. Kober, J. Peters, Learning motor primitives for robotics, in 2009 IEEE International
+ 44. M. Winding, B. D. Pedigo, C. L. Barnes, H. G. Patsolic, Y. Park, T. Kazimiers, A. Fushiki,                  Conference on Robotics and Automation (IEEE, 2009), pp. 2112–2118.
+     I. V. Andrade, A. Khandelwal, J. Valdes-Aleman, F. Li, N. Randel, E. Barsotti, A. Correia,              70. A. Ude, B. Nemec, T. Petrić, J. Morimoto, Orientation in cartesian space dynamic move-
+     R. D. Fetter, V. Hartenstein, C. E. Priebe, J. T. Vogelstein, A. Cardona, M. Zlatic, The con-               ment primitives, in 2014 IEEE International Conference on Robotics and Automation (ICRA)
+     nectome of an insect brain. Science 379, eadd9330 (2023).                                                   (IEEE, 2014), pp. 2997–3004.
+ 45. A. Jenett, G. M. Rubin, T.-T. B. Ngo, D. Shepherd, C. Murphy, H. Dionne, B. D. Pfeiffer,                71. P. Manoonpong, T. Geng, T. Kulvicius, B. Porr, F. Wörgötter, Adaptive, fast walking in a
+     A. Cavallaro, D. Hall, J. Jeter, N. Iyer, D. Fetter, J. H. Hausenfluck, H. Peng, E. T. Trautman,            biped robot under neuronal control and learning. PLOS Comput. Biol. 3, e134 (2007).
+     R. R. Svirskas, E. W. Myers, Z. R. Iwinski, Y. Aso, G. M. DePasquale, A. Enos, P. Hulamm,               72. T. Matsubara, J. Morimoto, J. Nakanishi, M. Sato, K. Doya, Learning CPG-based biped lo-
+     S. C. B. Lam, H.-H. Li, T. R. Laverty, F. Long, L. Qu, S. D. Murphy, K. Rokicki, T. Safford, K. Shaw,       comotion with a policy gradient method. Robot. Auton. Syst. 54, 911–920 (2006).
+     J. H. Simpson, A. Sowell, S. Tae, Y. Yu, C. T. Zugates, A GAL4-driver line resource for                 73. G. Endo, J. Morimoto, T. Matsubara, J. Nakanishi, G. Cheng, Learning CPG-based biped
+     Drosophila neurobiology. Cell Rep. 2, 991–1001 (2012).                                                      locomotion with a policy gradient method: Application to a humanoid robot. Int. J. Robot.
+ 46. J. Loveless, K. Lagogiannis, B. Webb, Modelling the mechanics of exploration in larval                      Res. 27, 213–228 (2008).
+     Drosophila. PLOS Comput. Biol. 15, e1006635 (2019).                                                     74. G. Bellegarda, A. Ijspeert, CPG-RL: Learning central pattern generators for quadruped
+ 47. H. Geyer, H. Herr, A muscle-reflex model that encodes principles of legged mechanics                        locomotion. IEEE Robot. Autom. Lett. 7, 12547–12554 (2022).
+     produces human walking dynamics and muscle activities. IEEE Trans. Neural Syst. Rehabil.                75. R. Thandiackal, K. Melo, L. Paez, J. Herault, T. Kano, K. Akiyama, F. Boyer, D. Ryczko,
+     Eng. 18, 263–273 (2010).                                                                                    A. Ishiguro, A. J. Ijspeert, Emergence of robust self-organized undulatory swimming
+ 48. J. M. Wang, S. R. Hamner, S. L. Delp, V. Koltun, Optimizing locomotion controllers using                    based on local hydrodynamic force sensing. Sci. Robot. 6, eabf6354 (2021).
+     biologically-based actuators and objectives. ACM Trans. Graph. 31, 25 (2012).                           76. D. Owaki, S. Horikiri, J. Nishii, A. Ishiguro, Tegotae-based control produces adaptive inter-
+                                                                                                                 and intra-limb coordination in bipedal walking. Front. Neurorobot. 15, 629595 (2021).
+
+
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)                   31 May 2023                                                                                                                     11 of 13
+SCIENCE ROBOTICS | REVIEW
+
+ 77. D. Owaki, T. Kano, K. Nagasawa, A. Tero, A. Ishiguro, Simple robot suggests physical in-                      A. Shinomiya, C. Smith, K. Smith, N. L. Smith, M. A. Sobeski, A. Suleiman, J. Swift,
+     terlimb communication is essential for quadruped walking. J. R. Soc. Interface 10,                            S. Takemura, I. Talebi, D. Tarnogorska, E. Tenshaw, T. Tokhi, J. J. Walsh, T. Yang, J. A. Horne,
+     20120669 (2013).                                                                                              F. Li, R. Parekh, P. K. Rivlin, V. Jayaraman, M. Costa, G. S. Jefferis, K. Ito, S. Saalfeld, R. George,
+ 78. Ö. Ekeberg, K. Pearson, Computer simulation of stepping in the hind legs of the cat: An                       I. A. Meinertzhagen, G. M. Rubin, H. F. Hess, V. Jain, S. M. Plaza, A connectome and analysis
+     examination of mechanisms regulating the stance-to-swing transition. J. Neurophysiol.                         of the adult Drosophila central brain. eLife 9, e57443 (2020).
+     94, 4256–4268 (2005).                                                                                    98. P. J. Gonçalves, J.-M. Lueckmann, M. Deistler, M. Nonnenmacher, K. Öcal, G. Bassetto,
+ 79. D. Owaki, A. Ishiguro, A quadruped robot exhibiting spontaneous gait transitions from                        C. Chintaluri, W. F. Podlaski, S. A. Haddad, T. P. Vogels, D. S. Greenberg, J. H. Macke,
+     walking to trotting to galloping. Sci. Rep. 7, 277 (2017).                                                   Training deep neural density estimators to identify mechanistic models of neural dy-
+ 80. M. L. Shik, F. V. Severin, G. N. Orlovsky, Control of walking and running by means of                        namics. eLife 9, e56261 (2020).
+     electrical stimulation of the mid-brain. Biophysics 11, 756–765 (1966).                                  99. G. Gallego, T. Delbrück, G. Orchard, C. Bartolozzi, B. Taba, A. Censi, S. Leutenegger,
+ 81. T. Kano, R. Yoshizawa, A. Ishiguro, Tegotae-based decentralised control scheme for au-                       A. J. Davison, J. Conradt, K. Daniilidis, D. Scaramuzza, Event-based vision: A survey. IEEE
+     tonomous gait transition of snake-like robots. Bioinspir. Biomim. 12, 046009 (2017).                         Trans. Pattern Anal. Mach. Intell. 44, 154–180 (2022).
+ 82. S. Suzuki, T. Kano, A. J. Ijspeert, A. Ishiguro, Sprawling quadruped robot driven by de-                100. W. Zhao, J. P. Queralta, T. Westerlund, Sim-to-real transfer in deep reinforcement learning
+     centralized control with cross-coupled sensory feedback between legs and trunk. Front.                       for robotics: a survey, in 2020 IEEE Symposium Series on Computational Intelligence (SSCI)
+     Neurorobot. 14, 607455 (2021).                                                                               (IEEE, 2020), pp. 737–744.
+ 83. J. Ibarz, J. Tan, C. Finn, M. Kalakrishnan, P. Pastor, S. Levine, How to train your robot with          101. G. M. Whitesides, Soft Robotics. Angew. Chem. Int. Ed. 57, 4258–4273 (2018).
+     deep reinforcement learning: Lessons we have learned. Int. J. Robot. Res. 40,                           102. G. Cheng, E. Dean-Leon, F. Bergner, J. Rogelio Guadarrama Olvera, Q. Leboutet,
+                                                                                                                  P. Mittendorfer, A comprehensive realization of robot skin: Sensors, sensing, control, and
+
+
+
+
+                                                                                                                                                                                                                             Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+     698–721 (2021).
+ 84. J. Cande, S. Namiki, J. Qiu, W. Korff, G. M. Card, J. W. Shaevitz, D. L. Stern, G. J. Berman,                applications. Proc. IEEE 107, 2034–2051 (2019).
+     Optogenetic dissection of descending behavioral control in Drosophila. eLife 7,                         103. S. Chun, J.-S. Kim, Y. Yoo, Y. Choi, S. J. Jung, D. Jang, G. Lee, K.-I. Song, K. S. Nam, I. Youn,
+     e34275 (2018).                                                                                               D. Son, C. Pang, Y. Jeong, H. Jung, Y.-J. Kim, B.-D. Choi, J. Kim, S.-P. Kim, W. Park, S. Park, An
+ 85. C.-L. Chen, L. Hermans, M. C. Viswanathan, D. Fortun, F. Aymanns, M. Unser, A. Cammarato,                    artificial neural tactile sensing system. Nat. Electron. 4, 429–438 (2021).
+     M. H. Dickinson, P. Ramdya, Imaging neural activity in the ventral nerve cord of behaving               104. R. S. Dahiya, G. Metta, M. Valle, G. Sandini, Tactile sensing—From humans to humanoids.
+     adult Drosophila. Nat. Commun. 9, 4390 (2018).                                                               IEEE Trans. Robot. 26, 1–20 (2010).
+ 86. M. J. Farrar, I. M. Bernstein, D. H. Schlafer, T. A. Cleland, J. R. Fetcho, C. B. Schaffer, Chronic     105. A. Yamaguchi, C. G. Atkeson, Recent progress in tactile sensing and sensors for robotic
+     in vivo imaging in the mouse spinal cord using an implanted chamber. Nat. Methods 9,                         manipulation: Can we turn tactile sensing into vision? Adv. Robot. 33, 661–673 (2019).
+     297–302 (2012).                                                                                         106. P. Eckert, A. J. Ijspeert, Benchmarking agility for multilegged terrestrial robots. IEEE Trans.
+ 87. L. Hermans, M. Kaynak, J. Braun, V. L. Ríos, C.-L. Chen, A. Friedberg, S. Günel, F. Aymanns,                 Robot. 35, 529–535 (2019).
+     M. S. Sakar, P. Ramdya, Microengineered devices enable long-term imaging of the ventral                 107. A. Jacoff, E. Messina, B. A. Weiss, S. Tadokoro, Y. Nakagawa, Test arenas and performance
+     nerve cord in behaving adult Drosophila. Nat. Commun. 13, 5006 (2022).                                       metrics for urban search and rescue robots, in Proceedings 2003 IEEE/RSJ International
+ 88. W. Wu, S. He, J. Wu, C. Chen, X. Li, K. Liu, J. Y. Qu, Long-term in vivo imaging of mouse                    Conference on Intelligent Robots and Systems (IROS 2003) (catalog no. 03CH37453) (IEEE,
+     spinal cord through an optically cleared intervertebral window. Nat. Commun. 13,                             2003), vol. 4, pp. 3396–3403.
+     1959 (2022).                                                                                            108. C. Nie, X. P. Corcho, M. Spenko, Robots on the move: Versatility and complexity in mobile
+ 89. T. Erez, Y. Tassa, E. Todorov, Simulation tools for model-based robotics: Comparison of                      robot locomotion. IEEE Robot. Autom. Mag. 20, 72–82 (2013).
+     Bullet, Havok, MuJoCo, ODE and PhysX, in 2015 IEEE International Conference on Robotics                 109. M. Tranzatto, T. Miki, M. Dharmadhikari, L. Bernreiter, M. Kulkarni, F. Mascarich,
+     and Automation (ICRA) (IEEE, 2015), pp. 4397–4404.                                                           O. Andersson, S. Khattak, M. Hutter, R. Siegwart, CERBERUS in the DARPA Subterranean
+ 90. J. Liang, V. Makoviychuk, A. Handa, N. Chentanez, M. Macklin, D. Fox, GPU-accelerated                        Challenge. Sci. Robot. 7, eabp9742 (2022).
+     robotic simulation for distributed reinforcement learning, in Proceedings of The 2nd                    110. V. Lobato-Rios, S. T. Ramalingasetty, P. G. Özdil, J. Arreguit, A. J. Ijspeert, P. Ramdya,
+     Conference on Robot Learning (PMLR, 2018), pp. 270–282.                                                      NeuroMechFly, a neuromechanical model of adult Drosophila melanogaster. Nat. Methods
+ 91. D. T. Ginat, R. Gupta, Advances in computed tomography imaging technology. Annu. Rev.                        19, 620–627 (2022).
+     Biomed. Eng. 16, 431–453 (2014).                                                                        111. J. A. Nyakatura, K. Melo, T. Horvat, K. Karakasiliotis, V. R. Allen, A. Andikfar, E. Andrada,
+ 92. A. Gosztolai, S. Günel, V. Lobato-Ríos, M. Pietro Abrate, D. Morales, H. Rhodin, P. Fua,                     P. Arnold, J. Lauströer, J. R. Hutchinson, M. S. Fischer, A. J. Ijspeert, Reverse-engineering
+     P. Ramdya, LiftPose3D, a deep learning-based approach for transforming two-dimen-                            the locomotion of a stem amniote. Nature 565, 351–355 (2019).
+     sional to three-dimensional poses in laboratory animals. Nat. Methods 18,                               112. J. Hwangbo, J. Lee, A. Dosovitskiy, D. Bellicoso, V. Tsounis, V. Koltun, M. Hutter, Learning
+     975–981 (2021).                                                                                              agile and dynamic motor skills for legged robots. Sci. Robot. 4, eaau5872 (2019).
+ 93. S. Günel, H. Rhodin, D. Morales, J. Campagnolo, P. Ramdya, P. Fua, DeepFly3D, a deep                    113. J. Lee, J. Hwangbo, L. Wellhausen, V. Koltun, M. Hutter, Learning quadrupedal locomotion
+     learning-based approach for 3D limb and appendage tracking in tethered, adult Droso-                         over challenging terrain. Sci. Robot. 5, 10.1126/scirobotics.abc5986 (2020).
+     phila. eLife 8, e48571 (2019).                                                                          114. T. Miki, J. Lee, J. Hwangbo, L. Wellhausen, V. Koltun, M. Hutter, Learning robust perceptive
+ 94. A. Mathis, P. Mamidanna, K. M. Cury, T. Abe, V. N. Murthy, M. W. Mathis, M. Bethge,                          locomotion for quadrupedal robots in the wild. Sci. Robot. 7, eabk2822 (2022).
+     DeepLabCut: Markerless pose estimation of user-defined body parts with deep learning.                   115. X. B. Peng, E. Coumans, T. Zhang, T.-W. Lee, J. Tan, S. Levine, Learning agile robotic lo-
+     Nat. Neurosci. 21, 1281–1289 (2018).                                                                         comotion skills by imitating animals. arXiv: 2004.00784 [cs.RO] (2 April 2020).
+ 95. D. D. Bock, W.-C. A. Lee, A. M. Kerlin, M. L. Andermann, G. Hood, A. W. Wetzel, S. Yurgenson,           116. C. D. Harvey, F. Collman, D. A. Dombeck, D. W. Tank, Intracellular dynamics of hippo-
+     E. R. Soucy, H. S. Kim, R. C. Reid, Network anatomy and in vivo physiology of visual cortical                campal place cells during virtual navigation. Nature 461, 941–946 (2009).
+     neurons. Nature 471, 177–182 (2011).                                                                    117. M. B. Reiser, M. H. Dickinson, A modular display system for insect behavioral neurosci-
+ 96. J. S. Phelps, D. G. C. Hildebrand, B. J. Graham, A. T. Kuan, L. A. Thomas, T. M. Nguyen,                     ence. J. Neurosci. Methods 167, 127–139 (2008).
+     J. Buhmann, A. W. Azevedo, A. Sustar, S. Agrawal, M. Liu, B. L. Shanny, J. Funke, J. C. Tuthill,        118. Y. Chemtob, L. Cazenille, F. Bonnet, A. Gribovskiy, F. Mondada, J. Halloy, Strategies to
+     W.-C. A. Lee, Reconstruction of motor control circuits in adult Drosophila using automated                   modulate zebrafish collective dynamics with a closed-loop biomimetic robotic system.
+     transmission electron microscopy. Cell 184, 759–774.e18 (2021).                                              Bioinspir. Biomim. 15, 046004 (2020).
+ 97. L. K. Scheffer, C. S. Xu, M. Januszewski, Z. Lu, S. Takemura, K. J. Hayworth, G. B. Huang,              119. J. Halloy, G. Sempo, G. Caprari, C. Rivault, M. Asadpour, F. Tâche, I. Saïd, V. Durier,
+     K. Shinomiya, J. Maitlin-Shepard, S. Berg, J. Clements, P. M. Hubbard, W. T. Katz,                           S. Canonge, J. M. Amé, C. Detrain, N. Correll, A. Martinoli, F. Mondada, R. Siegwart,
+     L. Umayam, T. Zhao, D. Ackerman, T. Blakely, J. Bogovic, T. Dolafi, D. Kainmueller, T. Kawase,               J. L. Deneubourg, Social integration of robots into groups of cockroaches to control self-
+     K. A. Khairy, L. Leavitt, P. H. Li, L. Lindsey, N. Neubarth, D. J. Olbris, H. Otsuna, E. T. Trautman,        organized choices. Science 318, 1155–1158 (2007).
+     M. Ito, A. S. Bates, J. Goldammer, T. Wolff, R. Svirskas, P. Schlegel, E. Neace, C. J. Knecht,          120. T. Landgraf, G. H. W. Gebhardt, D. Bierbach, P. Romanczuk, L. Musiolek, V. V. Hafner,
+     C. X. Alvarado, D. A. Bailey, S. Ballinger, J. A. Borycz, B. S. Canino, N. Cheatham, M. Cook,                J. Krause, Animal-in-the-loop: Using interactive robotic conspecifics to study social be-
+     M. Dreher, O. Duclos, B. Eubanks, K. Fairbanks, S. Finley, N. Forknall, A. Francis,                          havior in animal groups. Annu. Rev. Control Robot. Auton. Syst. 4, 487–507 (2021).
+     G. P. Hopkins, E. M. Joyce, S. Kim, N. A. Kirk, J. Kovalyak, S. A. Lauchie, A. Lohff,
+                                                                                                             121. R. D. King, J. Rowland, S. G. Oliver, M. Young, W. Aubrey, E. Byrne, M. Liakata, M. Markham,
+     C. Maldonado, E. A. Manley, S. McLin, C. Mooney, M. Ndama, O. Ogundeyi, N. Okeoma,
+                                                                                                                  P. Pir, L. N. Soldatova, A. Sparkes, K. E. Whelan, A. Clare, The automation of science. Science
+     C. Ordish, N. Padilla, C. M. Patrick, T. Paterson, E. E. Phillips, E. M. Phillips, N. Rampally,
+                                                                                                                  324, 85–89 (2009).
+     C. Ribeiro, M. K. Robertson, J. T. Rymer, S. M. Ryan, M. Sammons, A. K. Scott, A. L. Scott,
+
+
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)                   31 May 2023                                                                                                                             12 of 13
+SCIENCE ROBOTICS | REVIEW
+
+122. M. Schmidt, H. Lipson, Distilling free-form natural laws from experimental data. Science     Acknowledgments: Competing interests: The authors declare that they have no competing
+     324, 81–85 (2009).                                                                           interests.
+123. A. Sparkes, W. Aubrey, E. Byrne, A. Clare, M. N. Khan, M. Liakata, M. Markham, J. Rowland,
+     L. N. Soldatova, K. E. Whelan, M. Young, R. D. King, Towards robot scientists for autono-    Submitted 12 December 2022
+     mous scientific discovery. Autom. Exp. 2, 1 (2010).                                          Accepted 5 May 2023
+124. D. Waltz, B. G. Buchanan, Automating science. Science 324, 43–44 (2009).                     Published 31 May 2023
+                                                                                                  10.1126/scirobotics.adg0279
+
+
+
+
+                                                                                                                                                                                          Downloaded from https://www.science.org at University of California Berkeley on August 05, 2024
+
+
+
+
+Ramdya and Ijspeert, Sci. Robot. 8, eadg0279 (2023)            31 May 2023                                                                                                    13 of 13
+

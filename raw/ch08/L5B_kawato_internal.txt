@@ -1,0 +1,879 @@
+nb9604.qxd    12/03/1999 10:04 AM         Page 718
+
+
+
+
+             718
+
+
+
+
+             Internal models for motor control and trajectory planning
+             Mitsuo Kawato
+             A number of internal model concepts are now widespread in             modelers, connectionists and neurophysiologists [2–4]),
+             neuroscience and cognitive science. These concepts are                and have been studied increasingly seriously as one of the
+             supported by behavioral, neurophysiological, and imaging data;        major theories of motor control and learning in neuro-
+             furthermore, these models have had their structures and               science and cognitive science. Accordingly, in the past few
+             functions revealed by such data. In particular, a specific theory     years, much more direct and convincing data than ever
+             on inverse dynamics model learning is directly supported by           before have been accumulated. Such data can already
+             unit recordings from cerebellar Purkinje cells. Multiple paired       show the existence, structures, learning, functions and
+             forward inverse models describing how diverse objects and             anatomy of internal models. Of particular importance, we
+             environments can be controlled and learned separately have            have seen significant theoretical advances in elucidation of
+             recently been proposed. The ‘minimum variance model’ is               the generalization, multiplicity and switching of internal
+             another major recent advance in the computational theory of           models, and their possible use in trajectory planning.
+             motor control. This model integrates two furiously disputed
+             approaches on trajectory planning, strongly suggesting that           In this review, I will discuss data supporting the existence
+             both kinematic and dynamic internal models are utilized in            of internal models. It has been shown that the behavioral
+             movement planning and control.                                        paradigms in use are diverse and include adaptation to force
+                                                                                   fields, posture control, grip-force–load-force coupling, ocu-
+             Addresses                                                             lomanual coordination, and the vestibular system. An
+             ATR Human Information Processing Research Laboratories and            explanation will be given on points of controversy between
+             Kawato Dynamic Brain Project, ERATO, JST, 2-2 Hikaridai, Seika-cho,   the equilibrium point control hypothesis and the internal
+             Soraku-gun, Kyoto 619-0288, Japan; e-mail: kawato@hip.atr.co.jp
+                                                                                   model hypothesis, and some clues towards their resolution
+             Current Opinion in Neurobiology 1999, 9:718–727                       will be presented. Recent neurophysiological and imaging
+                                                                                   studies that suggest that the cerebellar cortex is a major site
+             0959-4388/99/$ — see front matter © 1999 Elsevier Science Ltd.
+             All rights reserved.                                                  of internal models will also be discussed. Furthermore,
+                                                                                   structures of internal models will be explored by ‘general-
+             Abbreviations                                                         ization’ experiments; modularity and multiplicity are
+             DLPN    dorsolateral pontine nucleus
+             MST     medial superior temporal
+                                                                                   suggested by the data obtained. Finally, two major
+             OFR     ocular following responses                                    approaches to trajectory planning will be reviewed and a
+             VPFL    ventral paraflocculus                                         new theory will be introduced to integrate them.
+
+             Introduction                                                          Existence of internal models
+             Internal models are neural mechanisms that can mimic the              When subjects first undertake point-to-point arm reaching
+             input/output characteristics, or their inverses, of the motor         movements under force fields which effectively change
+             apparatus. Forward internal models can predict sensory                dynamic characteristics of the arm, their hand trajectories
+             consequences from efference copies of issued motor com-               are distorted compared with the normal, roughly straight
+             mands. Inverse internal models, on the other hand, can                paths; also, the end point errors are large, especially in the
+             calculate necessary feedforward motor commands from                   direction of the applied force. The force fields generated
+             desired trajectory information.                                       predetermined forces which depended on the state space
+                                                                                   point (position, velocity), and were produced by a robot
+             Fast and coordinated arm movements cannot be executed                 manipulandum [5] or by a rotating room [6,7•]. After
+             solely under feedback control, since biological feedback              repeated trials, the hand trajectories gradually become nor-
+             loops are slow and have small gains (Figure 1a). Thus, the            mal, straight paths, and the end point errors decrease in
+             internal model hypothesis (Figure 1b) proposes that the               size. However, when the force fields are removed sudden-
+             brain needs to acquire an inverse dynamics model of the               ly after this adaptation has occurred, the trajectories
+             object to be controlled through motor learning, after which           become distorted and the end-point errors become large in
+             motor control can be executed in a pure feedforward man-              the opposite direction to the previously applied force.
+             ner. In theory, a forward model of the motor apparatus                Such an occurrence can readily be explained as follows by
+             embedded in an internal feedback loop can approximate                 the adaptation of the inverse dynamics model of the arm to
+             an inverse model.                                                     the applied force field (see Figure 1b).
+
+             The internal model concept has its origin in control theory           Under normal conditions, the inverse dynamics model cal-
+             and robotics, but Ito [1] proposed almost 30 years ago that           culates motor commands which appropriately compensate
+             the cerebellum contains forward models of the limbs and               the arm dynamics. Under the altered dynamics conditions,
+             other brain regions. More recently, internal models have              in contrast, the motor commands are insufficient to com-
+             attracted a broader range of specialists (e.g. neural network         pensate for the applied force, and this leads to distortions
+nb9604.qxd    12/03/1999 10:04 AM            Page 719
+
+
+
+
+                                                                                        Internal models for motor control and trajectory planning Kawato                   719
+
+
+
+
+             Figure 1
+
+             Feedback and feedforward control using an
+             inverse model of a controlled object. (a) In        (a)                            Stiffness, viscosity
+             feedback control, the realized trajectory is
+                                                                                                                        Feedback
+             compared with the desired trajectory, and the             Desired                                                                              Realized
+                                                                                                                          motor
+             error is computed. The feedback motor                     trajectory +                                     command                             trajectory
+             command is generated from this error using a                                                                                Controlled
+                                                                                                         Gain                             object
+             relatively simple algorithm, such as a                              –
+             proportional, integral and derivative feedback
+             controller. In robotics, almost all practical
+             applications depend solely on feedback
+             controls. This is because feedback delays in
+             artificial systems can be made small; hence,                                                          Delay
+             sampling and control frequencies can be quite
+             high (from 500–10000 Hz). In biological motor
+             control, however, the delay is very large. For
+             visual feedback on arm movements, the delay         (b)
+             ranges from 150–250 ms. Relatively fast spinal                                                     Feedforward
+             feedback loops still require 30–50 ms time                                                            motor                            Realized
+             delays. These are very large compared with the               Desired
+                                                                                               Inverse           command          Controlled        trajectory
+                                                                          trajectory
+             movement duration of very fast (150 ms) to                                         model                              object
+             intermediate (500 ms) movements. Because
+             time delay occupies a large proportion of                                                                                           Current Opinion in Neurobiology
+             movement execution time, and feedback gains
+             cannot be set high because of instability due to   inverse dynamics model is serially-connected               feedback delays and small feedback gains,
+             large delays, fast and smooth movements            with the controlled object, the serial system              internal models are the only computational
+             cannot be executed depending solely on             gives a mathematical identity function. That is,           possibility for fast and well coordinated
+             feedback control. Muscle intrinsic mechanical      the output (i.e. the realized trajectory) is               movements. Even for artificial robotic systems,
+             properties produce proportional (stiffness) and    identical to the input (i.e. the desired trajectory).      if reduction gears are not used (e.g. direct drive
+             derivative (viscosity) gains without delay.        Thus, the inverse model, if it exists and can be           motors, artificial muscles, hydraulic actuators),
+             However, these viscoelasticities are small for     learned, becomes an ideal feedforward                      inverse models are required (see, for example,
+             well-trained movements [21,23•]. (b) If an         controller. In biological systems with large               the URL http://www.erato.atr.co.jp/DB/).
+
+
+
+             in the trajectories and large end-point errors. During                          movement, or right-hand movement and left-hand move-
+             repeated trials, the inverse dynamics model changes to the                      ment) in any part of the body. Oculomanual coordination
+             inverse of the combined arm dynamics and the applied                            [11••], and bi-manual tracking (E Nakano, DM Wolpert,
+             force field. Then, normal trajectories reappear and the                         personal communications) are examples.
+             end-point errors are reduced. This adaptation is assumed
+             to involve plastic changes of the synaptic efficacy of neu-                     Internal models were also studied in the sensory system for
+             rons constituting the inverse dynamics model. With the                          processes other than motor control. The vestibular system
+             sudden removal of the applied force field, however, the                         is composed of semicircular canals, which report any angu-
+             inverse dynamics model continues to generate the motor                          lar acceleration, and otolith organs, which respond to any
+             commands to compensate for the arm dynamics, as well as                         linear acceleration. Because the otolith responds to both
+             the non-existing force field, and this leads to distortions in                  the occurrence of linear acceleration and gravity, it is com-
+             the trajectories in the opposite direction.                                     putationally difficult to analyse the ambiguous sensory
+                                                                                             information [12]. Through the use of dexterously designed
+             The most convincing set of data for the existence of forward                    vestibular stimuli and the examination of resulting eye
+             models comes from studies on coordination between reach-                        movements in monkeys [13] and humans [14], internal
+             ing and grasping. When an object is held with the tips of the                   models have been suggested to estimate linear accelera-
+             index finger and thumb on either side (Figure 2a), the grip                     tion and gravity from the canal and otolith outputs. This
+             force is precisely controlled (Figure 2b) so that, under nor-                   internal model can be classified as an inverse model of the
+             mal conditions, it is just slightly greater than the minimum                    sensor physics with acceleration and gravity as its inputs.
+             grip force needed to prevent slip [8]; this is also so when the
+             arm dynamics is altered by a robot [9]. Such a grip-                            The necessity for internal models in motor control has been
+             force–load-force coupling is explained by a framework that                      one of the central issues of debate in relation to equilibri-
+             contains both the inverse and forward models of the arm, as                     um-point control. Muscle and peripheral reflex loops have
+             shown in Figure 2c. Functional magnetic resonance imaging                       spring-like properties that pull joints back to their equilib-
+             (fMRI) studies have revealed cerebellar activity specific to                    rium positions by generating a restoring force against
+             grip-force–load-force coupling [10•], suggesting the exis-                      external perturbations. This viscoelasticity can be regarded
+             tence of forward models in the cerebellum. In principle, the                    as peripheral feedback control gain, which is adjustable by
+             scheme shown in Figure 2c can be generalized to the coor-                       regulating the associated muscle co-contraction level and
+             dination of any combined movements (e.g. eye and hand                           reflex gain. It has been hypothesized that by exploiting this
+nb9604.qxd   12/03/1999 10:04 AM            Page 720
+
+
+
+
+             720    Motor systems
+
+
+
+
+             Figure 2
+
+
+              (a)                                           (b)                                                  Coordination of grip force and load force, and a
+                                                                                                                 computational model based on internal forward
+                                  Load force                                                                     and inverse models. (a) When an object is held
+                                                                                     Grip force                  with the tips of the index finger and thumb on
+                                                                                                                 either side, the normal grip force on the contact
+                                                                                                                 surface allows for the development of a
+                                                                                                                 frictional force, which prevents the object from
+                                                    Force                                                        slipping. (b) The grip force is precisely
+                                                    (N)                                                          controlled so that it is just slightly greater than
+                                                                                                                 the minimum grip force needed to prevent slip.
+                                                                                                                 (c) This grip-force–load-force coupling is
+                                                                                       Load force                explained by a framework that contains both
+                                                                                                                 the inverse and forward models of the arm.
+                    Grip force                                                                                   Take, for example, a point-to-point arm-reaching
+                                                                         Time (s)                                movement that takes place while the hand is
+                                                                                                                 grasping an object. The inverse model of the
+              (c)                                                                                                combined dynamics of the arm, hand and
+                                               arm                                                               object calculates the necessary motor
+                                               predicted                   hand                                  commands from the desired trajectory of the
+                                                                           motor
+                                               trajectory                command                                 arm. These commands are sent to the arm
+                                 F orward                   Grip force
+                                                                                                                 muscles as well as to the forward dynamics
+                                  Model                     controller
+                                                                                                                 model as the efference copy. Then, the forward
+                                                                                             Object
+                                                                                                                 model can predict an arm trajectory that is
+                        efference copy of motor command                                                          slightly in the future. Given the predicted arm
+                                                                                           Hand                  trajectory, the load force is calculated; then, by
+                                                                                                                 multiplying a friction coefficient and a safety
+                                                                                                                 factor, the necessary minimum level of grip
+                                 Inverse
+                                                                                          Arm                    force can be calculated. To realize this grip
+               arm                Model          arm motor command
+                                                                                                                 force time course, motor commands are sent to
+               desired
+               trajectory                                                                                        hand muscles. This model predicts that three
+                                                                                                                 different computational elements are necessary
+                                                                                                                 for grip-force–load-force coupling: the inverse
+                                                                               Current Opinion in Neurobiology
+                                                                                                                 model for arm reaching; the forward model for
+                                                                                                                 arm trajectory prediction; and the grip force
+                                                                                                                 controller for grip execution. Tamada et al.
+                                                                                                                 (T Tamada et al., personal communication) have
+                                                                                                                 recently identified three fMRI active loci
+                                                                                                                 corresponding to these three elements.
+
+
+
+
+             viscoelasticity, the brain can control the limbs simply by             [24], however, have supported the empirical observation
+             commanding a series of stable equilibrium positions                    that any stiffness at the beginning of learning may not be
+             aligned along the desired movement trajectory (i.e. the                as low as that after extensive training. Computational
+             equilibrium-point control hypothesis) [15–17,18•]. In par-             models have suggested that there is an advantage to inte-
+             ticular, it was once advocated that internal models are not            grating the muscle viscoelasticity and internal models for
+             necessary provided that the brain utilizes equilibrium con-            efficient learning of internal models [25,26]. Accordingly,
+             trol. This theory, however, requires that viscoelastic forces          one of the major future experimental objectives is to elu-
+             increase as the movement speeds up because the dynamic                 cidate how these two schemes are integrated; Osu, Kato
+             forces acting on the multijoint links grow in rough propor-            and Gomi have obtained new data suggesting a specific
+             tion to the square of the velocity. On the other hand, the             scheme of integration (R Osu, H Kato, H Gomi, personal
+             alternative hypothesis (i.e. the internal model control,               communication).
+             shown in Figure 1b), proposes the realization of a fast and
+             accurate movement even with low viscoelastic forces. A                 Internal models in the cerebellum
+             point of controversy here is whether the CNS relies on high            It is conceivable that internal models are located in all
+             viscoelastic forces without internal models [15–17,18•] or             brain regions having synaptic plasticity, provided that
+             utilizes acquired internal models with low viscoelastic                they receive and send out relevant information for their
+             forces [19–21,22•]. Recent observations of a relatively low            input and output. We have good reason to believe that at
+             stiffness during well-trained movements have supported                 least some internal models are acquired and stored in the
+             the existence of internal models [21,23•].                             cerebellar cortex. For example, there is a new computa-
+                                                                                    tional theory [27••] that allocates supervised learning,
+             Reports showing that the electromyogram (EMG) is high-                 reinforcement learning, and unsupervised learning to the
+             er in a novel environment than in a normal environment                 cerebellum, the basal ganglia and the cerebral cortex,
+nb9604.qxd    12/03/1999 10:04 AM       Page 721
+
+
+
+
+                                                                              Internal models for motor control and trajectory planning Kawato   721
+
+
+
+
+             respectively. This is partially based on previous cerebel-           which neural firings are encoded [40]. Accordingly, examin-
+             lar learning theories [28–30,31 ••]. The learning                    ing inverse dynamics representations is very difficult.
+             acquisition of internal models is best performed by                  However, strong physiological evidence suggests that the
+             supervised learning, and accordingly, the cerebellar cor-            climbing fiber inputs also work to encode error signals for
+             tex seems the most appropriate location as the storage               arm movements [41••]. In addition, imaging, physiological
+             site of internal models.                                             and lesion studies have demonstrated that the cerebellum is
+                                                                                  at least one of the possible sites for internal models for arm
+             The most convincing neurophysiological data for internal             movements [42••,43••,44•,45•]. A theoretical model — that
+             models were obtained for eye movements. Kawano and his               the cerebellum constitutes a major part of the parallel
+             colleagues [32] studied neural circuits involved in control-         inverse models of the arm has been proposed [46••].
+             ling ocular following responses (OFR), which are reflex eye
+             movements with a short latency. These circuits stabilize             The most frustrating missing link in the cerebellar learning
+             retinal images and are driven by large visual field move-            hypothesis is the computational clarification of peculiar
+             ments. It is known that they involve the MST (medial                 physiological and anatomical characteristics of inferior
+             superior temporal) area, dorsolateral pontine nucleus                olive neurons [47]. A compartmental biophysical model of
+             (DLPN), and the ventral paraflocculus (VPFL) of the cere-            inferior olive neurons electrically coupled by gap junctions
+             bellum [32]. Figure 3 summarizes neural networks for OFR             has been found to reproduce many such physiological data
+             based on [32]; a similarity to the feedback–error–learning           both in vivo and in vitro [48••]. Furthermore, there has
+             model [30] is suggested. In accordance with the theory, the          been a suggestion that there is ‘desynchronization’ of cou-
+             climbing fiber inputs to Purkinje cells during OFR carry             pled neurons by gap junctions [48••]. This theoretical work
+             error signals in the motor command coordinates, and                  may in fact provide an important clue towards elucidating
+             accordingly, their temporal waveforms can be well repro-             the computational significance of the above missing link
+             duced by the inverse dynamics model of the eye [33••]. In            (N Schweighofer, K Doya, M Kawato, unpublished data).
+             Figure 3, the simple spikes of the Purkinje cells during
+             OFR are well fitted by the inverse dynamics model of the             Structures of internal models
+             eye, but share an approximate mirror image relationship              The functional structures of internal models can be probed by
+             with the climbing fiber inputs. For both the climbing fibers         the so-called ‘generalization experiment’ [49–52,53•,54,55•].
+             and simple spikes, the position coefficients have the oppo-          Humans or animals are trained for a specific set of movement
+             site sign to the real inverse dynamics model of the eye              trajectories with an altered kinematic or dynamic perturba-
+             [34,35••], suggesting that the VPFL comprises a major,               tion. After sufficient learning, the organism’s ability to cope
+             dynamic part of the inverse dynamics model, and also that            with different trajectories or movements in a different part of
+             other brain regions complement it. The data from monkeys             the workspace in which the motor apparatus can move is
+             could be strengthened by recording in the flocculus of cats          examined. If ‘generalization’ is considered perfect, new tra-
+             during optokinetic responses [36•]. In particular, the nega-         jectories are controlled precisely from the beginning. If
+             tive sign of the position coefficient was confirmed, even            generalization is considered to not exist, the performance of
+             with the inclusion of the slide term.                                subjects undergoing new experiences is as poor as those with
+                                                                                  no prior learning. The brain does not memorize a simple asso-
+             The MST area and DLPN send visual information to the                 ciation between movement instances and motor commands.
+             VPFL [37], and drastic changes of neural codes occur at              Rather, it has an internal memory of the motor apparatus and
+             the parallel fiber Purkinje cell synapses. That is, in the           the external world in the form of an inverse dynamics model
+             area MST and DLPN, population coding is used: the opti-              with state–space representations. The motor commands at
+             mum directions of the visual stimuli cover the entire 360°           each instance are calculated by a functional map from the
+             and the optimum velocities are widespread, and many dif-             state–space input point, including the acceleration, velocity,
+             ferent temporal waveforms of firings can be observed                 and position of the desired trajectory [51,52]. If generalization
+             [32,37]. On the other hand, temporal rate coding is used for         of learning is perfect, the inverse dynamics model after learn-
+             Purkinje cells: either downward or ipsilateral visual motion         ing is very precise over the entire state–space, and must
+             is optimal, the firing rate increases with the stimulus veloc-       therefore take the form of a parametric and analytical model.
+             ity, and the temporal waveform is stereotypically                    In contrast, if there is no generalization apart from the experi-
+             reconstructed by the inverse dynamics model. Computer                enced trajectory, the inverse dynamics model is a local
+             simulations based on the feedback–error–learning theory              table-look-up map. The experimental data [49–52,53•,54,55•]
+             [38,39] have shown that changes to neural codes, as well as          suggests neither is the case. Instead, an intermediate general-
+             the learning acquisition of the inverse dynamics model,              ization level has been consistently reported. It is possible,
+             can be reproduced based on the known synaptic plasticity             therefore, that internal models in the brain are similar to arti-
+             of Purkinje cells, that is, long-term depression, long-term          ficial neural networks or connectionist models in their
+             potentiation, and rebound potentiation.                              generalization capability.
+
+             Studying arm movements is much more difficult than study-            An imperfect generalization of internal models would
+             ing eye movements with respect to the coordinate frame in            strongly suggest the need for modular structures [56]. This
+nb9604.qxd    12/03/1999 10:04 AM                                                                     Page 722
+
+
+
+
+             722      Motor systems
+
+
+
+
+             Figure 3
+
+
+              (a)                                                                                                                                                                                                                              (c)
+                    (i)                             400                                                                                                                                                                                                 (i)
+                            Firing rate (imp/sec)
+
+
+
+
+                                                    300
+
+                                                    200
+
+                                                    100
+
+                                                       0
+
+
+
+
+                                                                                                                                                                                                                                          Probability
+                                                                       40–ms          TIME (ms)                                  43–ms
+                                                                                                                                                   TIME (ms)                                   49–ms
+                                                                                                                                                                                                                  TIME (ms)                              0.1                                                 50
+                    (ii)                                     100
+                                                             80
+                                                                                                                      50
+                                                                             N = 163                                  40              N = 87                                         20            N = 24
+                                                     Cells
+
+
+
+
+                                                                                                              Cells
+
+
+
+
+                                                                                                                                                                             Cells
+                                                             60                                                       30
+                                                             40
+                                                             20
+                                                                                                                      20
+                                                                                                                      10
+                                                                                                                                                                                     10
+                                                                                                                                                                                                                                                        0.05
+                                                              0                                                       0                                                              0
+                                                                        10      20      40       80   160                        10      20        40    80      160                          10       20         40   80       160
+                                                                        Stimulus speed (deg/s)                                   Stimulus speed (deg/s)                                        Stimulus speed (deg/s)
+                                                                                 U                                                             U                                          U                                 U                                          0                                      0
+
+
+
+
+                                                                                                                                                                                                                                                                                                                        Firing frequency
+                    (iii)
+                                                                                                                                                                                                                                                                           0   100              200
+                                                                   C                         I                                                                           C                                  I C                       I
+                                                                                                                             C                            I
+                                                                                                                                                                                                                                                                               Time (ms)
+                                                                                                                                                                                                                                                        (ii)
+                                                                                  D                                                                                                       D                                 D
+                                                                                                                                               D
+                                                                       MST neurons                                           DLPN neurons                                    Vertical cells    Horizontal cells
+                                                                                                                                                                                    VPFL Purk inje cells                                                0.01                                                  5
+              (b)                                                                                                                                             Cerebellar cortex
+
+
+
+
+                                                                                                                                                                                                                                                         Probability
+
+
+
+
+                                                                                                                                                                                                                                                                                                             Spikes/s
+                                                                                                                                                         Granule       Purkinje
+                                                                                                                                                         cells         cells
+                                                                                     Cerebral cortex                                      Mossy
+                                                                                      MT       MST                                        fiber
+
+                                                                                             STS                           DLPN
+
+                                                                                       Visual Cortex                                                                                                                                                             0                                            0
+                                                                                                                                                                                                                                                                           0   100              200
+                                                                                             LGN                                                         Parallel
+                                                                                                                                                         Fiber                                                                                                                 Time (ms)
+
+                                                                                                                                  Climbing fiber
+                                         Visual                                                                            Motor command error                                            +         –
+                                         Stimulus +                                                                                                                                       Brain
+                                                                                                              AOS                                       Inferior olive                                            EOMN                Eye
+                                                                                       Retina                                                                                             stem                                        movement
+                                                                              –                             PT NOT
+                                                                                                                                                                                                   +
+
+
+                                                                                                                                                                                                                                                                                     Current Opinion in Neurobiology
+
+
+             Change of neural codes and learning of inverse dynamics model in                                                                                                                        the inferior olive nucleus, and determines the optimum stimulus
+             the cerebellum for OFR. The neurophysiological data shown in (a) and                                                                                                                    directions of the climbing fiber responses, which are reflected in
+             (c) are taken from [32,33••,37] and reproduced with permission.                                                                                                                         complex spikes (aiii, red lines). Based on known synaptic plasticity
+             (a) The firing characteristics of MST, DLPN and VPFL neurons. (b) A                                                                                                                     (long-term depression, long-term potentiation, rebound potentiation)
+             schematic neural circuit for OFR. (c) Temporal firing patterns of VPFL                                                                                                                  of Purkinje cells, it is predicted that the optimum stimulus direction of
+             Purkinje cells in upward eye movements induced by upward visual                                                                                                                         each Purkinje cell for simple spikes and complex spikes is 180°
+             motion. (a) (i) Peri-stimulus time graphs of the firing rates of a typical                                                                                                              opposite. (aiii, right shows that this is the case). (c) Accumulated
+             neuron in each of the three areas. The origin of time is taken as the                                                                                                                   temporal firing patterns of nine Purkinje cells (black curves) and their
+             onset of visual stimulus motion. (ii) Histograms of a number of cells                                                                                                                   reconstruction based on inverse dynamics model (red and green
+             within a given range of the optimum stimulus speeds. (iii) Polar plots                                                                                                                  curves). The model further predicts that the temporal firing patterns of
+             of optimum stimulus directions. U, C, D and I indicate upward,                                                                                                                          (i) simple spikes and (ii) complex spikes should be mirror images of
+             contralateral, downward, and ipsilateral, respectively. VPFL Purkinje                                                                                                                   each other. Kobayashi et al. [33••] confirmed this, and furthermore
+             cells were classified into two groups, vertical cells and horizontal                                                                                                                    reconstructed simple spike as well as complex spike firing waveforms
+             cells, based on simple spike (green) and complex spike (red) optimum                                                                                                                    by the inverse dynamics model. This strongly supports the most
+             directions. (b) The circuit can be divided into two main pathways. The                                                                                                                  critical assumption of the feedback–error–learning scheme that the
+             upper part shows the cortico–cortical (the cerebral cortex to the                                                                                                                       climbing fiber inputs convey error signals in the motor command
+             cerebellar cortex) pathway, which corresponds to the feedforward arc                                                                                                                    coordinates, and the simple spike firing is learned by being guided by
+             of the feedback–error–learning model. The lower part of the pathway                                                                                                                     this error signal through synaptic plasticity. Yamamoto et al. [38,39]
+             shows the phylogenetically older feedback pathway containing the                                                                                                                        reproduced the dramatic change of neural codes, and the learning
+             accessory optic system, which corresponds to a crude feedback                                                                                                                           acquisition of simple spike firing patterns, as well as eye movement
+             controller in the feedback–error–learning scheme. The theory predicts                                                                                                                   waveforms based on Purkinje cell synaptic plasticity. AOS, accessory
+             that the accessory optic system first determines the motor command                                                                                                                      optic system; EOMN, extraocular motor neuron; LGN, lateral
+             coordinates (upward for PT [pretectum], and contralateral for NOT                                                                                                                       geniculate nucleus; MT, middle temporal area; STS, superior
+             [nucleus of optic tract]). This motor frame of reference is conveyed to                                                                                                                 temporal sulcus.
+
+
+
+             is because a single gigantic internal model with an imper-                                                                                                                              dent from one another because they all exhibit some
+             fect generalization capability cannot possibly learn or deal                                                                                                                            degree of generalization. This means that some interfer-
+             with a whole range of different behavioral situations.                                                                                                                                  ence may occur between multiple internal models unless
+             However, different modules cannot be entirely indepen-                                                                                                                                  an efficient computational mechanism exists to regulate
+nb9604.qxd    12/03/1999 10:04 AM              Page 723
+
+
+
+
+                                                                                                Internal models for motor control and trajectory planning Kawato               723
+
+
+
+
+             Figure 4
+
+
+
+
+                                                                      Responsibility        n
+                                                                        predictor
+
+
+
+                                                                                 3
+                                                                                                +
+                                                                                                –
+                                                                          2
+
+
+                                                                  1
+                                  Contextual                                         +
+                                                                                                        ax
+                                                                                                      ft m
+
+
+
+
+                                    signal       Responsibility                      –
+                                                                                                                           Arm
+                                                                                                    So
+
+
+
+
+                                                   predictor                                                            predicted
+                                  Efference                                                                             trajectory      Grip
+                                                                              +                                                        force
+                                   copy of
+                                                                              –                                   ∑
+                                    motor                                      Prediction                                            controller         Object
+                                  command           Forward
+                                                     model            +          error                                Feedforward
+                                                                                                                         motor                     Hand
+                                                  (arm & obj.)        –
+                                     Arm                                                                               command
+                                   desired                                                                        ∑                               Arm
+                                  trajectory                                                                                                                  Actual
+                                                    Inverse       Predicted trajectory                                                                         arm
+                                                     model                                                                                                  trajectory
+                                                  (arm & obj.)
+                                                                      Motor command                              Feedback
+                                                                                                                   motor
+                                                                                                                 command
+
+
+                                                                                                                                                    Current Opinion in Neurobiology
+
+
+             Multiple paired forward and inverse models (MPFIMs) [62••] in the                       By visual information of the object, an appropriate module for, say, a
+             context of grip-force–load-force coupling for multiple manipulated                      racket could be pre-selected. On actual manipulation of the object, the
+             objects. The computational scheme shown in Figure 2 is fine as long                     forward model for the racket module predicts sensory consequence
+             as only a single object is manipulated. But a single internal model                     from the efference copy of issued motor commands. If its prediction is
+             cannot deal with a large number of objects with different kinematic and                 good, that module will continue to be used. However, if the visual
+             dynamic properties. This is because incomplete learning generalization                  information is erroneous and the object actually grasped is a fork, the
+             leads to a catastrophic interference between different learning epochs                  racket module prediction is bad and the fork module prediction is
+             and between different motor primitives. MPFIM postulates a                              better, thus the racket module will be turned off and the fork module
+             computationally coherent principle to overcome this difficulty. The brain               will be turned on after actual movement execution. Haruno et al. [63••]
+             prepares many modules, each of which comprises three elements: a                        simulated a simple version of this ‘size–weight illusion’. Contextual
+             forward model, an inverse model, and a responsibility predictor.                        information for the responsibility predictor could be virtually anything
+             Learning, switching and blending of these multiple modules are, in                      useful, such as vision, audition, tactile information, reasoning, verbal
+             principle, controlled by the relative goodness of predictions made by                   instruction, sequence of movement elements, outputs from other
+             many forward models. Furthermore, predictive switching between                          responsibility predictors, descending signals from higher brain regions,
+             modules is performed by responsibility predictors based on contextual                   and so on. This gives versatile cognitive capability to MPFIM. From
+             information. In the Bayesian framework, the outputs from the                            previous studies on the interference of two learning epochs
+             responsibility predictors determine prior probability about which                       [51,52,57,58], we infer that if some contextual signal is very unusual
+             module will be recruited for a given environmental situation, and the                   and consequently strong (e.g. a unique combination of tactile and
+             prediction error of each forward model determines which module is                       visual information if an arm is attached to a robotic manipulandum),
+             likely to be appropriate for the situation. A soft max function, gathering              other contextual signals have smaller influences (e.g. color is too weak,
+             all products of the prior probability and the likelihood, finally computes              but posture and time still have discriminating effects). Because MPFIM
+             the responsibility signal (0–1), which specifies the control contribution               introduces a blending of multiple inverse dynamics model (IDM) inputs,
+             of the inverse model, as well as the learning responsibility of inverse                 a finite number of modules could in principle deal with a vast number
+             and forward models within each module. For example, suppose that a                      of different objects (see simulation [63••], as well as supporting
+             person needs to manipulate one of several objects (see upper inset).                    behavioral studies [59,61••]).
+nb9604.qxd   12/03/1999 10:04 AM       Page 724
+
+
+
+
+             724   Motor systems
+
+
+
+
+             their learning and involvement in a specific situation.         both kinematic and dynamic internal models to be utilized
+             Different internal models do seem to compete with each          for the trajectory planning, either implicitly or explicitly.
+             other in learning, especially for events involved in tempo-
+             ral proximity [57,58]. Interestingly, it has been found that
+                                                                             Conclusions
+             multiple internal models can be mixed in an adaptive way
+                                                                             The concepts concerning internal models have now been
+             when necessary [59,60••,61••].
+                                                                             well supported by behavioral studies in the field of senso-
+                                                                             ry motor control. Neurophysiological studies have just
+             On the basis of the findings described above, a new theo-       begun but should be fruitful in the next five years.
+             ry has recently been developed where multiple internal          Theoretically, the concept should be extended from pure
+             models can be learned and combined adaptively                   sensory motor control to cognitive domains as we have a
+             [62••,63••]. Figure 4 shows how this new theory can be          flood of data suggesting cerebellar involvement in higher
+             used to explain the manipulation of many different objects      cognitive functions such as language [78,79,80••]. This is
+             with a finite number of internal model modules, while at        especially important because the cerebellar computational
+             the same time efficiently utilizing contextual information      principle can be ubiquitous, on the basis of the uniform
+             such as the vision of objects, verbal instructions, or the      neural circuit of the cerebellar cortex, despite diverse func-
+             sequence of object presentation.                                tions of different cerebellar loci. In the near future, the
+                                                                             author expects major breakthroughs in the concepts and
+             Trajectory formation                                            computational theories of internal models entering into
+             Computational theories on how arm reaching trajectories         cognitive domains such as communication, thinking, and
+             are planned have been a central issue in motor control since    consciousness, on the basis of their firm foundations in
+             it was shown that they involve roughly straight hand paths      sensory motor integration.
+             and bell-shaped velocity profiles [64]. Many of the different
+             computational models can be classified into two types:          Acknowledgements
+                                                                             I wish to thank my collaborators in ATR and in the ERATO Dynamic Brain
+             kinematic models such as the minimum jerk model [65],           Project as well as those outside, especially, Daniel Wolpert, Chris Miall and
+             and dynamic models such as the minimum torque-change            Randy Flanagan. This research was partially supported by HFSP grants,
+                                                                             special coordination funds of promotion of science.
+             model [66]. Because these two classes of models enable the
+             experimental testing of qualitatively different predictions,
+             rich data sets are now available for discriminating between     References and recommended reading
+                                                                             Papers of particular interest, published within the annual period of review,
+             the two types (for kinematic planning and against dynamic       have been highlighted as:
+             planning, see [67–70]; for dynamic planning and against              • of special interest
+             kinematic planning, see [71,72•,73•,74••]). However, analy-          •• of outstanding interest
+             ses have been complicated and there remain areas of             1.     Ito M: Neurophysiological aspects of the cerebellar motor control
+             controversy [75].                                                      system. Int J Neurol 1970, 7:162-176.
+                                                                             2.     Kawato M, Furawaka K, Suzuki R: A hierarchical neural network
+             The integration of these two approaches has been suggest-              model for the control and learning of voluntary movements. Biol
+                                                                                    Cybern 1987, 56:1-17.
+             ed [76•], and an ingenious theory of integration was recently
+                                                                             3.     Jordan MI, Rumelhart DE: Forward models: supervised learning
+             proposed by Harris and Wolpert [77••]. Their minimum                   with a distal teacher. Cogn Sci 1992, 16:307-354.
+             variance model also takes the form of an optimization           4.     Miall RC, Weir DJ, Wolpert DM, Stein JF: Is the cerebellum a Smith
+             model, in the tradition of many previous models. The objec-            Predictor? J Motor Behav 1993, 25:203-216.
+             tive for optimization in this model is to minimize the end      5.     Shadmehr R, Mussa-Ivaldi FA: Adaptive representation of dynamics
+             point variance, and is therefore a purely kinematic variable.          during learning of a motor task. J Neurosci 1994, 14:3208-3224.
+             This variance, however, critically depends on the magnitude     6.     Lackner JR, Dizio P: Rapid adaptation to Coriolis force
+                                                                                    perturbations of arm trajectory. J Neurophysiol 1994, 72:299-313.
+             of the motor commands. Consequently, the whole optimiza-
+             tion process is completely dynamic — that is, the optimal       7.    Lackner JR, Dizio P: Gravitoinertial force background level affects
+                                                                             •     adaptation to Coriolis force perturbations of reaching movements.
+             trajectory critically depends on the dynamics of the muscles          J Neurophysiol 1998, 80:546-553.
+             involved, the motor apparatus, and the environment.             In a rotating room environment [6], the transient, movement-dependent
+                                                                             Coriolis forces and the static centrifugal forces were generated, and their
+                                                                             combined effects on the adaptation of reaching movements toward a just-
+             The ‘minimum variance model’ is thus kinematic in its           extinguished visual target were examined. An increase in background force
+                                                                             level above normal gravity did not affect the adaptation to restore the straight
+             objective function, but the computational process is            paths, but did hinder restoration of reaching accuracy. This suggests that the
+             dynamic, and the trajectory depends on the dynamics.            inverse dynamics model for trajectory control and the inverse statics model
+                                                                             for posture maintenance are anatomically separate.
+             This model can be viewed as a version of the minimum
+             motor command change model [75]. This is because in the         8.     Johansson RS, Westling G: Roles of glabrous skin receptors and
+                                                                                    sensorimotor memory in automatic control of precision grip when
+             integral of the objective function, the square of the motor            lifting rougher or more slippery objects. Exp Brain Res 1984,
+             commands is increasingly more heavily weighted as the                  56:550-564.
+             time approaches the movement end. Finally, because the          9.     Flanagan JR, Wing AM: The role of internal models in motion
+                                                                                    planning and control: evidence from grip force adjustments
+             computational process takes into account both the kine-                during movements of hand-held loads. J Neurosci 1997,
+             matics and dynamics of the motor task, it is important for             17:1519-1528.
+nb9604.qxd    12/03/1999 10:04 AM               Page 725
+
+
+
+
+                                                                                                 Internal models for motor control and trajectory planning Kawato               725
+
+
+
+
+             10. Tamada T, Miyauchi S, Imamizu H, Yoshioka T, Kawato M: Activation                   27. Doya K: What are the computations of cerebellum, basal ganglia,
+             •     of the cerebellum in grip force and load force coordination: an                   •• and cerebral cortex? Neural Networks 1999, 12:961-974.
+                   fMRI study. Neuroimage 1999, 6:S492.                                              A new, large-scale theory is proposed to explain how the three brain
+             Functional magnetic resonance imaging activation during hand movements                  regions — the cerebral cortex, the basal ganglia and the cerebellum — col-
+             while grasping an object in precision grip was found to be larger than dur-             laborate to solve difficult behavioral learning problems. Computationally,
+             ing power grip in the lateral cerebellum. In consideration of the computa-              these three regions were characterized by unsupervised learning, reinforce-
+             tional model of grip-force–load-force coupling shown in Figure 2, which is              ment learning and supervised learning, respectively.
+             necessary only for the precision grip, it is suggested that a forward model of
+             the object is located in the cerebellum.                                                28. Marr D: A theory of cerebellar cortex. J Physiol 1969, 202:437-470.
+
+             11. Scarchilli K, Vercher JL: The oculomanual coordination control                      29. Albus JS: A theory of cerebellar function. Math Biosci 1971, 10:25-61.
+             •• center takes into account the mechanical properties of the arm.                      30. Kawato M, Gomi H: The cerebellum and VOR/OKR learning
+                  Exp Brain Res 1999, 124:42-52.                                                         models. Trends Neurosci 1992, 15:445-453.
+             When the eyes tracked a target that was controlled by an arm movement, the
+             smooth pursuit latency was 0 ms whereas it was 150 ms for an external tar-              31. Thach WT: A role for the cerebellum in learning movement
+             get. When an electromagnetic brake impeded the arm motion unexpectedly,                 •• coordination. Neurobiol Learn Mem 1998, 70:177-188.
+             the eye movement phase led the target motion. This strongly supports the                This is a review of the author’s brilliant contributions to the elucidation of
+             coordination model shown in Figure 2, originally developed for                          cerebellar functions in motor learning and coordination. A proposed cere-
+             grip–force–load–force coupling. In the figure, the grip force controller                bellar theory of coordination between different degrees of freedom by the
+             should be replaced by the smooth pursuit controller.                                    use of long parallel fibers was a large leap forward from the classical
+                                                                                                     Marr–Albus–Ito theory, and is very closely related to internal model theories
+             12. Snyder L: This way up: illusions and internal models in the                         in computational essence.
+                 vestibular system. Nat Neurosci 1999, 2:396-398.
+                                                                                                     32. Kawano K, Takemura A, Inoue Y, Kitama T, Kobayashi Y, Mustari MJ:
+             13. Hess BJ, Angelaki DE: Oculomotor control of primary eye position                        Visual inputs to cerebellar ventral paraflocculus during ocular
+                 discriminates between translation and tilt. J Neurophysiol 1999,                        following responses. Prog Brain Res 1996, 112:415-422.
+                 81:394-398.
+                                                                                                     33. Kobayashi Y, Kawano K, Takemura A, Inoue Y, Kitama T, Gomi H,
+             14. Merfeld DM, Zupan L, Peterka RJ: Humans use internal models to                      •• Kawato M: Temporal firing patterns of Purkinje cells in the
+                 estimate gravity and linear acceleration. Nature 1999, 398:615-618.                        cerebellar ventral paraflocculus during ocular following
+                                                                                                            responses in monkeys. II. Complex spikes. J Neurophysiol 1998,
+             15. Feldman AG: Functional tuning of nervous system with control of
+                                                                                                            80:832-848.
+                 movement or maintenance of a steady posture. 2. Controllable
+                                                                                                     Although the firing rates of Purkinje cell complex spikes are very low, when
+                 parameters of the muscles. Biophysics 1966, 11:565-578.                             many trials were averaged during ocular following responses, their temporal
+             16. Bizzi E, Accornero N, Chapple W, Hogan N: Posture control and                       firing patterns conveyed high-frequency and smooth waveforms which were
+                 trajectory formation during arm movement. J Neurosci 1984,                          well reconstructed from a linear combination of acceleration, velocity and
+                 4:2738-2744.                                                                        position of eye movement. This supports the most critical assumption of the
+                                                                                                     cerebellar feedback–error–learning theory [2] that climbing fiber inputs carry
+             17.   Flash T: The control of hand equilibrium trajectories in multi-joint              error signals in the motor command coordinates.
+                   arm movements. Biol Cybern 1987, 57:257-274.
+                                                                                                     34. Shidara M, Kawano K, Gomi H, Kawato M: Inverse-dynamics model
+             18. Gribble PL, Ostry DJ, Sanguineti V, Laboissiere R: Are complex                          eye movement control by Purkinje cells in the cerebellum. Nature
+             •     control signals required for human arm movement?                                      1993, 365:50-52.
+                   J Neurophysiol 1998, 79:1409-1424.
+             The data of [21] were reinterpreted by an equilibrium control hypthosesis with          35. Gomi H, Shidara M, Takemura A, Inoue Y, Kawano K, Kawato M:
+             a straight equilibrium trajectory. However, the dynamics of the robotic manip-          •• Temporal firing patterns of Purkinje cells in the cerebellar ventral
+             ulator used in the experiment was neglected, and the complicated muscle                       paraflocculus during ocular following responses in monkeys.
+             model used was not quantitatively validated (see annotation [74••]).                          I. Simple spikes. J Neurophysiol 1998, 80:818-831.
+                                                                                                     The simple spike firing patterns of Purkinje cells were well reconstructed from
+             19. Latash ML, Gottlieb GL: Reconstruction of shifting elbow joint                      a linear combination of acceleration, velocity and position of eye movement
+                 compliant characteristics during fast and slow movements.                           under various stiumulus conditions. The findings of an earlier report [34] was
+                 Neuroscience 1991, 43:697-712.                                                      strengthened by the examination of a larger number of cells and a larger num-
+                                                                                                     ber of stimulus conditions. In combination with [37], this suggests that the
+             20. Katayama M, Kawato M: Virtual trajectory and stiffness ellipse                      cerebellar cortex is a major site of the inverse dynamics model of the eye.
+                 during multijoint arm movement predicted by neural inverse
+                 models. Biol Cybern 1993, 69:353-362.                                               36. Kitama T, Omata T, Mizukoshi A, Ueno T, Sato Y: Motor dynamics
+                                                                                                     •    encoding in cat cerebellar flocculus middle zone during
+             21. Gomi H, Kawato M: Equilibrium-point control hypothesis examined                          optokinetic eye movements. J Neurophysiol 1999, 82:2235-2248.
+                 by measured arm-stiffness during multi-joint movement. Science                      A similar technique to those of [34,35••] was applied to cat flocculus dur-
+                 1996, 272:117-120.                                                                  ing optokinetic eye movements. The results not only confirmed previous
+                                                                                                     studies but also strengthened the negative coefficient of the position even
+             22. Gribble PL, Ostry DJ: Compensation for interaction torques during
+                                                                                                     when the slide term, that is the time derivative of the firing rates, is includ-
+             •     single and multi-joint limb movement. J Neurophysiol 1999,
+                                                                                                     ed in the linear regression.
+                   82:2310-2326.
+             The authors confirmed the conclusion of previous studies [19–21] that the               37.   Takemura A, Inoue Y, Gomi H, Kawato M, Kawano K: Analysis of
+             equilibrium trajectory, if it is used in the brain, cannot be straight by examin-             neuronal activities during ocular following responses in alert
+             ing EMG signals. Compare with conclusions from [18•].                                         monkeys. Tech Rep IEICE 1999, NC99-22:77-84.
+             23. Morasso PG, Schieppati M: Can muscle stiffness alone stabilize                      38. Yamamoto K, Kobayashi Y, Takemura A, Kawano K, Kawato M: A
+             •    upright standing? J Neurophysiol 1999, 82:1622-1626.                                   mathematical model that reproduces vertical ocular following
+             The authors showed that intrinsic muscle stiffness is not strong enough                     responses from visual stimuli. Neurosci Res 1997, 29:161-169.
+             to stabilize upright posture. Usage of internal models was suggested as
+             the alternative.                                                                        39. Yamamoto K, Kobayashi Y, Takemura A, Kawano K, Kawato M: A
+                                                                                                         computational simulation on the adaptation of vertical ocular
+             24. Milner TE, Cloutier C: Compensation for mechanically unstable                           following responses. Tech Rep IEICE 1998, NC97-131:229-236.
+                 loading in voluntary wrist movement. Exp Brain Res 1993,
+                 94:522-532.                                                                         40. Ebner TJ: A role for the cerebellum in the control of limb
+                                                                                                         movement velocity. Curr Opin Neurobiol 1998, 8:762-769.
+             25. Sanger TD: Neural network learning control of robot manipulators
+                 using gradually increasing task difficulty. IEEE Trans Robotics                     41. Kitazawa S, Kimura T, Yin P: Cerebellar complex spikes encode
+                 Automat 1994, 10:323-333.                                                           •• both destinations and errors in arm movements. Nature 1998,
+                                                                                                            392:494-497.
+             26. Katayama M, Inoue S, Kawato M: A strategy of motor learning using                   What is actually represented by cerebellar complex spikes had been much
+                 adjustable parameters for arm movement. Proceedings of the 20th                     less understood for arm movements than for eye movements. This study, by
+                 Annual International Conference of the IEEE Engineering in                          utilizing a sophisticated information measure, clearly revealed that the com-
+                 Medicine and Biology Society; 29 Oct–1 Nov 1998, Hong Kong.                         plex spikes in monkey multijoint arm movements represent errors in motor
+                 IEEE; 1998:2370-2373.                                                               performance at the end of movement. Their coding of the target location at
+nb9604.qxd    12/03/1999 10:04 AM              Page 726
+
+
+
+
+             726     Motor systems
+
+
+
+
+             the beginning of movement can also be interpreted as the predicted error for       53. Sainburg RL, Ghez C, Kalakainis D: Intersegmental dynamics are
+             a default movement response, as simulated in [46••].                               •    controlled by sequential anticipatory, error correction, and
+                                                                                                     postural mechanisms. J Neurophysiol 1999, 81:1045-1055.
+             42. Imamizu H, Miyauchi S, Tamada T, Sasaki Y, Takino R, Putz B,                   Previous adaptation studies introduced force fields that are dependent only
+             •• Yoshioka T, Kawato M: Human cirebellar activity reflecting an                   on velocity and position (e.g. viscous force fields, Coriolis forces, spring
+                   aquired internal model of a novel tool. Nature 1999, in press.               force fields), but inertial force fields were difficult to implement even with a
+             Previous neuroimaging studies reported a decrease in cerebellar activities         high-performance robotic manipulandum. The authors utilized an air sled sys-
+             along with motor or cognitive learning. These results have often been inter-       tem and an off-axis load to introduce an interesting novel inertial force field.
+             preted as suggesting that the cerebellum is important only in the early phase      Generalization of learning was limited to a small range of direction angles,
+             of learning and that it is not the memory site. In these interpretations, the      which is in accordance with previous studies using viscous force fields
+             internal models are not located in the cerebellum. The authors showed that         [51,52] or kinematic rotation [49].
+             cerebellar activity remains even after sufficient learning by dexterously equal-
+             izing error levels between the test and control conditions.                        54. Kitazawa S, Kimura T, Uka T: Prism adaptation of reaching
+                                                                                                    movements: specificity for the velocity of reaching. J Neurosci
+             43. Blakemore SJ, Wolpert DM, Frith CD: Central cancellation of self                   1997, 17:1481-1492.
+             •• produced tickle sensation. Nat Neurosci 1998, 1:635-640.
+             Self-produced tickling is not as amusing as tickling by others. The authors        55. Goodbody SJ, Wolpert DM: Temporal and amplitude generalization
+             found decreased cerebellar activity during tickling by oneself than during the     •     in motor learning. J Neurophysiol 1998, 79:1825-1838.
+             same movements which did not produce tickling, and further decreased               A viscous, rotating-type force field was applied by a robotic interface to the
+             activity compared with externally produced tickling. Cancellation of the sen-      arm. Subjects were trained with a reaching movement having a specific
+             sory inputs by predictions of sensory consequences from the efference copy         amplitude and duration. Then, generalization was examined for different
+             of the motor commands using the forward model is suggested. This is attrac-        durations and amplitudes. Most surprisingly, and in contrast to almost all pre-
+             tive since complex spikes, probably the most energy-demanding processes            vious studies (particularly [54]), generalization was best modeled by a linear
+             in the cerebellar cortex [42••], were known to be activated by unexpected          map — that is, generalization was global rather than local. It is possible that
+             events but not by physically equivalent but predictable events. It is still puz-   parallel fiber inputs to the cerebellum encode velocity information by their fir-
+             zling why the cerebellar activity during self-produced tickling is lower than      ing rates while other information, such as position and direction, is encoded
+             the rest condition. Simple cancellation can explain activity negation, but can-    by population coding. Thus, we expect good generalization only for velocities
+             not explain activity reduction.                                                    because only velocity-dependent terms are represented linearly in Purkinje
+                                                                                                cell outputs on this assumption.
+             44. Miall RC, Keating JG, Malkmus M, Thach WT: Purkinje cell complex
+             •     spikes are predicted by simple spike activity. Nat Neurosci 1998,            56. Jacobs RA, Jordan MI, Nowlan SJ, Hinton GE: Adaptive mixtures of
+                   1:13-15.                                                                         local experts. Neural Comp 1991, 3:79-87.
+             Mean simple spike firing rates triggered by a complex spike during intertask       57.   Shadmehr R, Brashers-Krug T: Functional stages in the formation
+             intervals of monkey cerebellum were examined. It was found that the simple               of human long-term motor memory. J Neurosci 1997, 17:409-419.
+             spike firing rates about 150 ms before the complex spike occurrence were
+             statistically larger than background. This could be interpreted in the frame-      58. Shadmehr R, Holcomb HH: Inhibitory control of competing motor
+             work of the forward model predicting sensory consequences. The simple                  memories. Exp Brain Res 1999, 126:235-251.
+             spikes make predictions about future sensory events, and these are com-
+             pared with the real sensory feedback after a 150 ms sensory time delay; their      59. Ghahramani Z, Wolpert DM: Modular decomposition in visuomotor
+             consequences are represented as complex spikes.                                        learning. Nature 1997, 386:392-395.
+
+             45. Baizer JS, Kralj-Hans I, Glickstein M: Cerebellar lesions and prism            60. Blakemore SJ, Goodbody SJ, Wolpert DM: Predicting the
+             •     adaptation in macaque monkeys. J Neurophysiol 1999,                          •• consequences of our own actions: the role of sensorimotor
+                   81:1960-1965.                                                                      context estimation. J Neurosci 1998, 18:7511-7518.
+                                                                                                Two robots simulated a case in which virtual objects were held in one hand
+             It was suggested that the cerebellum is involved in prism adaptation
+                                                                                                and acted on by the other. Precise predictive grip-force modulation of the
+             because lesion of almost all of the cerebellar cortex, which receives mossy
+                                                                                                restraining hand was observed only when the force feedback gain between
+             fiber visual inputs, abolished prism adaptation capability in a monkey. Internal
+                                                                                                the two robots was close to 1, just like with a real object. The results show
+             models for prism adaptation could also be located in the cerebellum.
+                                                                                                that predictive grip-force modulation requires not only self-generated move-
+             46. Schweighofer N, Spoelstra J, Arbib MA, Kawato M: Role of the                   ments but also a sensory consequence which is consistent with a specific
+             •• cerebellum in reaching quickly and accurately. II. A detailed model             context. That is, if the forward model’s prediction in Figure 2 is not good, that
+                   of the intermediate cerebellum. Eur J Neurosci 1998, 10:95-105.              coordination scheme is not used. The authors proposed the conceptual
+             This is a simulation study of the learning inverse dynamics model of the arm       model, which led to the basic idea of determining the responsibility of each
+             in the intermediate cerebellum based on the feedback–error–learning model.         module by the goodness of the prediction of the forward model within that
+             Realistic time delays were assumed and the inverse model was distributed           module [62••].
+             over the cerebellum and the cerebral cortex.                                       61. Flanagan R, Nakano E, Imamizu H, Osu R, Yoshioka T, Kawato M:
+             47.   De Zeeuw CI, Simpson JI, Hoogenraad CC, Galjart N, Koekkoek SK,              •• Composition and decomposition of internal models in motor
+                   Ruigrok TJ: Microcircuitry and function of the inferior olive. Trends              learning under altered kinematic and dynamic environments.
+                   Neurosci 1998, 21:391-400.                                                         J Neurosci 1999, 19:Rapid Communication 34:1-5.
+                                                                                                Multiplicity of internal models for dynamic and kinematic transformations was
+             48. Schweighofer N, Doya K, Kawato M: Electrophysiological properties              investigated in order to determine whether multiple internal model can be
+             •• of inferior olive neurons: a compartmental model. J Neurophysiol                composed or decomposed when occasion calls. When subjects learned a
+                   1999, 82:804-817.                                                            visuomotor rotation and viscous curl field first, reaching errors were smaller
+             A detailed biophysical model of an inferior olive neuron was developed. The        for a combination of these transformation than without prior experiences.
+             model comprises the soma and the dentritic compartments, and is based on
+             known spatial distributions of gap junctions and diverse ionic conductances.       62. Wolpert DM, Kawato M: Multiple paired forward and inverse
+             The model reproduced many peculiar characteristics found in electrophysio-         •• models for motor control. Neural Networks 1998, 11:1317-1329.
+             logical experiments in vitro. Most surprisingly, it showed that electrical junc-   It was postulated that the best way to control learning and the contributions
+                                                                                                of different motor primitives (controllers, or inverse models) is to use the pre-
+             tions have desynchronization effects on coupled inferior olive neurons for a
+                                                                                                diction goodness of corresponding predictors (forward models). This basic
+             wide range of parameters.
+                                                                                                idea, strengthened by a responsibility predictor, provides an attractive
+             49. Imamizu H, Uno Y, Kawato M: Internal representation of motor                   Bayesian framework to explain rich behaviors in complicated environments.
+                 apparatus: implications from generalization in visuo-motor
+                                                                                                63. Haruno M, Wolpert D, Kawato M: Multiple paired forward-inverse
+                 learning. J Exp Psychol [Hum Percept Perform] 1995, 21:1174-1198.
+                                                                                                •• models for human motor learning and control. In Advances in
+             50. Ghahramani Z, Wolpert DM, Jordan MI: Generalization to local                         Neural Information Processing Systems, 11. Edited by Kearns MS,
+                 remappings of the visuomotor coordinate transformation.                              Solla SA, Cohn DA. Cambridge: MIT Press; 1999:31-37.
+                 J Neurosci 1996, 16:7085-7096.                                                 This describes mathematical and simulation studies examining the basic idea
+                                                                                                proposed in [62••]. Multiple pairs of forward and inverse models were auto-
+             51. Gandolfo F, Mussa-Ivaldi FA, Bizzi E: Motor learning by field                  matically acquired for different behavioral situations. A finite number of mul-
+                 approximation. Proc Natl Acad Sci USA 1996, 93:3843-3846.                      tiple models were shown to be able to deal with a much larger number of
+                                                                                                situations. The ‘size–weight illusion’ was also simulated.
+             52. Conditt MA, Gandolfo F, Mussa-Ivaldi FA: The motor system does
+                 not learn the dynamics of the arm by rote memorization of past                 64. Abend W, Bizzi E, Morasso P: Human arm trajectory formation.
+                 experience. J Neurophysiol 1997, 78:554-560.                                       Brain 1982, 105:331-348.
+nb9604.qxd    12/03/1999 10:04 AM              Page 727
+
+
+
+
+                                                                                                Internal models for motor control and trajectory planning Kawato               727
+
+
+
+
+             65. Flash T, Hogan N: The coordination of arm movements: an                            ports dynamic trajectory planning while taking into account not only environ-
+                 experimentally confirmed mathematical model. J Neurosci 1985,                      mental and link dynamics but also muscle dynamics.
+                 5:1688-1703.
+                                                                                                    75. Kawato M: Trajectory formation in arm movements: minimization
+             66. Uno Y, Kawato M, Suzuki R: Formation and control of optimal                            principles and procedures. In Advances in Motor Learning and
+                 trajectory in human multijoint arm movement — minimum torque-                          Control. Edited by Zelaznik HN. Illinois: Human Kinetics Publishers;
+                 change model. Biol Cybern 1989, 61:89-101.                                             1996:225-259.
+             67.   Flanagan JR, Rao AK: Trajectory adaptation to a nonlinear visuo-                 76. Soechting JF, Flanders M: Movement planning: kinematics,
+                   motor transformation: evidence of motion planning in visually                    •     dynamics, both or neither? In Vision and Action. Edited by Harris LR,
+                   perceived space. J Neurophysiol 1995, 74:2174-2178.                                    Jenkin M. Cambridge: Cambridge University Press; 1998:332-349.
+             68. Wolpert DM, Ghahramani Z, Jordan MI: Perceptual distortion                         The final posture of the arm in a reaching movement can be predicted accord-
+                 contributes to the curvature of human reaching movements.                          ing to a criterion that is related to energy expenditure, and the hand paths dur-
+                 Exp Brain Res 1994, 98:153-156.                                                    ing planar arm movements can be at least partly predicted by another criterion
+                                                                                                    (minimum muscle force change) that is also related to energy expenditure.
+             69. Wolpert DM, Ghahramani Z, Jordan MI: Are arm trajectories planned                  The authors conclude that movement planning must involve dynamics.
+                 in kinematic or dynamic coordinates? An adaptation study.
+                 Exp Brain Res 1995, 103:460-470.                                                   77. Harris CM, Wolpert DM: Signal-dependent noise determines
+                                                                                                    •• motor planning. Nature 1998, 394:780-784.
+             70. Okadome T, Honda M: Kinematic construction of the trajectory of                    A unifying theory on trajectory formation of saccades and arm movements is
+                 sequential arm movements. Biol Cybern 1999, 80:157-169.                            proposed. It is assumed that the neural control signals are corrupted by
+             71. Osu R, Uno Y, Koike Y, Kawato M: Possible explanations for                         noise, which increases with the size of the control signal. A simple principle
+                 trajectory curvature in multijoint arm movements. J Exp Psychol                    to minimize the variance of the final eye or hand position could thus repro-
+                 [Hum Percept Perform] 1997, 23:890-913.                                            duce known invariant trajectory characteristics, Fitts’ law, and the 2/3 power
+                                                                                                    law. The final position error is the time integral of the noise in the motor com-
+             72. Todorov EV, Jordan MI: Smoothness maximization along a                             mand, which is filtered by time-variant linearized dynamics of the motor plant.
+             •      predefined path accurately predicts the speed profiles of complex               In this interpretation, the minimum variance model could be viewed as a tem-
+                    arm movements. J Neurophysiol 1998, 80:696-714.                                 porally weighted version of the minimum motor-command change model,
+             The authors proposed a constrained optimization model to explain known reg-            because the noise variance is related to the square of the motor command.
+             ularities between velocity profiles and hand path curvature. For an observed
+             path of the hand in space, the velocity profile along that path will be the one        78. Kawato M: Bidirectional theory approach to consciousness.
+             that minimizes jerk. This model explains the data better than the 2/3 power-law.           In Cognition, Computation and Consciousness. Edited by Ito M,
+             73. Sabes PN, Jordan MI, Wolpert DM: The role of inertial sensitivity in                   Miyashita Y, Rolls ET. Oxford: Oxford University Press; 1997:223-248.
+             •     motor planning. J Neurosci 1998, 18:5948-5957.                                   79. Middleton FA, Strick PL: The cerebellum: an overview. Trends Cog
+             The kinematics of reaching movements was examined when a visual obsta-                     Sci 1998, 2:305-306. [Also published in Trends Neurosci 1998,
+             cle was set in three-dimensional space. The distribution of the near points,               21:367-368.]
+             where the paths came closest to the obstacle, showed a strong anisotropy,
+             clustering at the poles of a preferred axis through the center of the obstacle.        80. Tamada T, Miyauchi S, Imamizu H, Yoshioka T, Kawato M: Cerebro
+             The mobility minor axis, which represents the most inertially stable direction         •• cerebellar functional connectivity revealed by the laterality index
+             to a force perturbation, was not significantly different from the preferred near              in tool-use learning. Neuroreport 1999, 10:325-331.
+             point axis. These results suggest that the dynamic characteristics of the arm          It is known that the anatomical connections between the cerebral cortex and
+             are taken into account in the trajectory planning process.                             the cerebellar cortex are largely contralateral. Thus, if some area in the cere-
+             74. Nakano E, Imamizu H, Osu R, Uno Y, Gomi H, Yoshioka T, Kawato M:                   bral cortex is anatomically connected with some region in the cerebellar cor-
+             •• Quantitative examinations of internal representations for arm                       tex, their bilateral activation patterns should be correlated. A new method to
+                   trajectory planning: minimum commanded torque change model.                      reveal cerebro-cerebellar functional connectivity was proposed while using
+                   J Neurophysiol 1999, 81:2140-2155.                                               the laterality index. It has been suggested that a posterior–superior fissure of
+             As a computable version of the minimum motor-command change model, a                   the lateral cerebellum is involved in tool-use learning [42••]. Pars opecularis
+             minimum commanded torque change model was proposed and compared                        and pars triangularis were shown to be functionally connected with this part
+             with other optimization models based on a large database of horizontal and             of the cerebellum. This is interesting because some theories advocate that
+             vertical two-joint arm movements. The best performance of the model sup-               language evolution is an extension of human tool usage capability.
+

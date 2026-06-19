@@ -1,0 +1,1403 @@
+Human Hand Function
+This page intentionally left blank
+Human Hand Function
+
+
+
+
+       Lynette A. Jones
+      Susan J. Lederman
+
+
+
+
+            2006
+           Oxford University Press, Inc., publishes works that further
+                    Oxford University's objective of excellence
+                      in research, scholarship, and education.
+                                  Oxford New York
+             Auckland Cape Town Dares Salaam Hong Kong Karachi
+              Kuala Lumpur Madrid Melbourne Mexico City Nairobi
+                         New Delhi Shanghai Taipei Toronto
+                                    With ofﬁces in
+           Argentina Austria Brazil Chile Czech Republic France Greece
+              Guatemala Hungary Italy Japan Poland Portugal Singapore
+             South Korea Switzerland Thailand Turkey Ukraine Vietnam
+         Copyright © 2006 by Lynette A. Jones and Susan J. Lederman
+                    Published by Oxford University Press, Inc.
+               198 Madison Avenue, New York, New York 10016
+                                     www.oup.com
+          Oxford is a registered trademark of Oxford University Press
+      All rights reserved. No part of this publication may be reproduced,
+   stored in a retrieval system, or transmitted, in any form or by any means,
+          electronic, mechanical, photocopying, recording, or otherwise,
+            without the prior permission of Oxford University Press.
+                Library of Congress Cataloging-in-Publication Data
+                                   Jones, Lynette A.
+       Human hand function / Lynette A. Jones and Susan J. Lederman.
+                                        p. cm.
+                   Includes bibliographical references and index.
+                           ISBN-13 978–0–19–517315–4
+                                ISBN 0–19–517315–5
+       1. Hand—Physiology. 2. Hand—Anatomy. 3. Hand—Movements.
+                           I. Lederman, Susan J. II. Title.
+[DNLM: 1. Hand—physiology. 2. Hand—anatomy & history. WE 830J775h 2006]
+                                    QP334.J66 2006
+                              611'.97—dc22 2005018742
+                                      987654321
+To all those who have worked to unravel the mysteries of the human hand
+This page intentionally left blank
+                                     ACKNOWLEDGMENTS
+The ideas and initial planning for this book began in September 2001 during Susan Lederman's sabbatical in the Department of Mechanical
+Engineering at the Massachusetts Institute of Technology. We then collaboratively wrote the book over the next three years, an experience that
+proved both rewarding and enjoyable. The work for this book was shared equally, and the order of authorship was decided by the toss of a
+coin.
+We wish to thank the following colleagues for providing helpful references and graphic materials, for answering the perplexing questions we
+posed, or for offering other valuable information: Massimo Bergamasco, Jim Craig, Roz Driscoll, Antonio Frisoli, Yvette Hatwell, Mark
+Hollins, Peter Hunter, Gunnar Jansson, Charlotte Reed, Hayley Reynolds, and Allan Smith.
+A number of individuals have provided support and assistance with the book's preparation, including Aneta Abramowicz, Catalina Tobon
+Gomez, and Lindsay Eng. We would also like to acknowledge the outstanding assistance provided by Cheryl Hamilton and Monica Hurt.
+We thank Catharine Carlin, our editor at Oxford University Press, who has enthusiastically supported this project throughout and provided us
+with an unusual ﬂexibility, which made writing this book an enjoyable endeavor. We also wish to thank our anonymous reviewers, who offered
+thorough, thoughtful, and excellent evaluations of the manuscript.
+Lynette Jones acknowledges the support of the Massachusetts Institute of Technology and the National Institutes of Health's National
+Institute of Neurological Disorders and Stroke during the preparation of this book. Susan Lederman acknowledges the support of Queen's
+University in Kingston, Ontario, Canada; the Canada Council for the Arts, which generously provided a Killam Research Fellowship; the
+Natural Sciences and Engineering Research Council of Canada; and the Institute for Robotics and Intelligent Systems (Federal Centre of
+Excellence of Canada).
+Finally, we would like to acknowledge the support of our families. Lynette Jones thanks her husband, Ian Hunter, and children, Nicholas and
+Bridget Hunter-Jones, who enthusiastically supported this project, offered encouragement when needed, and were always willing to assist.
+Your affection and love are truly sustaining. Susan Lederman wishes to thank her partner, Les Monkman, and his children, Lindsay and Fraser.
+Each of you has made a profound difference in my life. Your continuing love, support, humor, and irony are gifts offered most generously,
+and I acknowledge them gratefully.
+This page intentionally left blank
+                                              CONTENTS
+1. Historical Overview and General Introduction            3
+2. Evolutionary Development and Anatomy of the Hand       10
+3. Neurophysiology of Hand Function                       24
+4. Tactile Sensing                                        44
+5. Active Haptic Sensing                                  75
+6. Prehension                                            100
+7. Non-prehensile Skilled Movements                      116
+8. End-effector Constraints                              131
+9. Hand Function Across the Lifespan                     150
+10. Applied Aspects of Hand Function                     179
+11. Summary, Conclusions, and Future Directions          204
+References                                               211
+Author Index                                             249
+Subject Index                                            257
+This page intentionally left blank
+                               1
+          Historical Overview and General Introduction
+
+   [W]e must confess that it is in the human hand that we have the consummation of all perfection as an instrument.
+   BELL, 1833
+The human hand is a miraculous instrument that serves us extremely well in a multitude of ways. We successfully use our hands to identify
+objects and to extract a wealth of information about them, such as their surface texture, compliance, weight, shape, size, orientation, and
+thermal properties. We demonstrate impressive manual dexterity when reaching for, grasping, and subsequently manipulating objects within
+arm's reach. Manual gestures, such as those used in sign language and ﬁnger spelling, collectively offer valuable forms of communication to
+those who are deaf or hearing impaired. In addition, raised tangible graphic displays that are explored by hand provide sensory aids to the
+blind when planning how to navigate their environment without a sighted companion. Finally, the human hand serves as a formidable creative
+tool in a variety of aesthetic milieus that include dance, sculpture, playing music, and drawing. Depictions of the human hand in art date back
+to the Upper Paleolithic era (circa 22,000–28,000 years ago) and can still be seen today in caves at Gargas and El Castillo in the Franco-
+Cantabrian region (Napier, 1993; Piveteau, 1991). There is even a museum dedicated speciﬁcally to the hand (La Musée de la Main), which was
+established by Claude Verdan, a Swiss hand surgeon, in Lausanne, Switzerland.
+
+
+
+Historical Roots
+Not surprisingly, the study of human hand function derives its historical roots from multiple sources. From archaeology come the very
+detailed analyses of the changes in the anatomy and structure of the hand as it gradually evolved and became capable of using and, more
+important, manufacturing tools (Marzke & Marzke, 2000). Zoological and anthropological studies have also focused on the structural aspects
+of the hand, although this work has primarily concentrated on the functional use of the hand by various primate species, including Homo sapiens
+(Preuschoft & Chivers, 1993). Consideration of these phylogenetic and ontogenetic changes in primate and human hands has led researchers,
+particularly during the latter half of the 20th century and at the beginning of the 21st century, to examine how such changes relate to the
+development of human hand function over the lifespan.
+4                                           Historical Overview and General Introduction
+
+Philosophers and, more recently, experimental psychologists have been interested in the sense of touch for centuries, although their attention
+did not focus on manual sensing per se. As early as Aristotle, those interested in touch recognized that this sensory modality was indeed
+different from the others (i.e., vision, audition, taste, and smell), a perspective that was maintained throughout the 19th century by individuals
+such as Weber (1834/1978), Blix (1884), Goldscheider (1886), and Frey (1896).
+Two particularly noteworthy developments of the 19th century that have proved to be of signiﬁcant value to those who study hand function
+today derive from the work of Weber and, subsequently, Gustav Fechner. It was Weber (1834/1978) who ﬁrst introduced quantitative
+techniques to the study of sensory physiology by measuring both absolute and differential thresholds. He also documented a mathematical
+relation between the size of the change in stimulus magnitude and the just noticeable difference in perceived intensity, which came to be
+known as Weber's law. Fechner (1860/1966), both a physicist and a philosopher, was interested in offering an alternate interpretation, monism,
+to Descartes' mind-body dualism. To do so, he argued that the relation between mental and physical events could be described by a general
+quantitative “psychophysical law” that assumed that all just noticeable differences are subjectively equal and that Weber's law is true. Toward
+this end, he developed several classical psychophysical methods for measuring sensory thresholds, all of which remain in common use today.
+Early tactile concerns centered on issues related to determining the appropriate number of human sensory modalities and submodalities and to
+the varying sensitivity and spatial acuity of the skin across the entire human body when stimulated by mechanical and thermal forms of energy.
+During the 19th century, anatomists whose names are well known today (e.g., Meissner, Pacini, Krause) showed much interest in using the new
+histological techniques of their day to identify the various receptors within the skin. The results of such studies served as the basis for
+addressing a third important issue, namely, the links between the receptor populations known at that time and the speciﬁc human cutaneous
+sensibility (or sensibilities) that each served. Although the hand was frequently included as a site of stimulation, it was only one among many.
+Weber (1834/1978) ﬁrst introduced the well-known two-point touch threshold as a measure of the skin's spatial acuity, a measure that has
+subsequently become an important, albeit highly controversial, measure of human hand function. He deﬁned the two-point threshold as the
+shortest distance between two contact points that could be perceived as two separate contacts, as opposed to just one. Weber made extensive
+measurements of tactile acuity using his own body and that of his brother. In his work, Weber initially employed an instrument known as the
+beam compass (or beam trammel), which consisted of a beam with two adjustable connectors that held two steel or pencil points in place at
+right angles to the beam. To avoid damage to the skin, these points were further enclosed in cork stoppers borrowed from medicine bottles.
+Eventually, Weber switched to using a pair of metal compasses to stimulate the skin. The two points were applied to many places on the body,
+including the dorsal and volar regions of the palm and ﬁngers. Weber reported that the normal tactile acuity of the hand improved from the
+back of the hand to the palm to the ﬁngertips. Indeed, the ﬁngertips, along with the tip of the tongue, were reportedly the most spatially acute
+parts of the body.
+Another important focus during the late 19th century was the skin's sensitivity to applied pressure. The German physiologist Max von Frey
+(1896) invented two instruments that were used to study pressure sensitivity and the location of “touch” spots on the skin. One device, the
+limen gauge, was capable of applying force to the skin at any predetermined rate of loading. The other comprised a graduated series of horse
+and human hairs that were mounted in the ends of sticks and used to measure pressure thresholds (Boring, 1942). These instruments have
+been employed extensively in studies of pressure sensitivity on the hand over the past 100 years. Indeed, a variant of the von Frey hairs (the
+Semmes-Weinstein monoﬁlaments) is still in use today.
+Much of this early sensory research focused on the tactile sensitivity of a passive subject; however, there was also considerable interest at the
+same time in understanding the perception of weight (Weber, 1834/1978) and other aspects of what was called the “muscular sense.” This
+term fell into disuse in the early 20th century and was replaced by proprioception, a term coined by Sherrington (1906), and kinesthesis, a
+concept introduced by Bastian (1887).
+                                            Historical Overview and General Introduction                                                          5
+
+Proprioception was deﬁned as the sense subserved by receptors in muscles, tendons, and joints and in the labyrinth, part of the vestibular
+apparatus. The concept of kinesthesis included sensory information arising from receptors in the skin, muscles, and other deep structures of
+the limbs, such as tendons and joints. Bell (1826) was the ﬁrst to postulate the existence of the muscular sense, which he considered to be at
+parity with the other senses. That is, he regarded it as a sixth sense, although he did not think that muscles were the exclusive site of peripheral
+sensations (Sherrington, 1900a). The muscular sense was considered to include three classes of sensations: pain and fatigue, weight and
+resistance, and movement and position. In his 1833 treatise on the hand, Bell noted that “without a sense of muscular action or a
+consciousness of the degree of effort made, the proper sense of touch could hardly be an inlet to knowledge at all.” (p.193). He argued that
+both muscle and cutaneous sensations must be involved in perceiving the distance, size, form, weight, hardness, and roughness of objects.
+This indicates a very early recognition of the functional role played by sensors in the skin and muscles in what is now called active haptic
+processing. These ideas were elaborated further by Sherrington (1900b) in his chapter on cutaneous sensations in Shäfer's Textbook of Physiology.
+In this chapter, Sherrington made the important distinction between active touch, in which the touch sense is related to a series of “muscular
+sensations,” and passive touch, in which an object is allowed to move over a series of tactual points (Phillips, 1986).
+The origin of sensations governing the awareness of the forces generated during muscular contractions was fervently debated during the latter
+part of the 19th century (e.g., Bastian, 1887; Lewes, 1879). In these discussions, a distinction was made between sensations arising in the
+periphery and sensations of innervation, which were of central origin. Many physiologists and psychologists of the period, including Helmholtz
+and Wundt, believed that innervation of the motor tracts during voluntary movements produced sensations within the brain. These sensations
+of innervation were thought to form the basis of the awareness of muscle force and were called a sense of effort. The idea of sensations of
+innervation declined in popularity, however, with Bastian, Ferrier, and Sherrington all supporting Bell's concept of the muscular sense with its
+emphasis on peripheral sensations. The notion that internally generated motor signals might have perceptual consequences did, however,
+reemerge in the 20th century with the work of Sperry (1950) and Holst (1954), who used the terms corollary discharges and efference copy,
+respectively, to describe internal signals that arose from centrifugal motor commands and that inﬂuenced perception.
+From the perspective of human hand function, studies of the muscular sense elucidated two important ﬁndings. First, in his research on
+weight perception, Weber (1834/1978) observed, as was subsequently conﬁrmed by other investigators (e.g., Ferrier, 1886), that although
+weight discrimination is precise with touch alone (i.e., tactile sensing), it is always more exact if the weight is lifted by the hand (i.e., active
+haptic sensing). The ability to discriminate between weights of different mass by voluntary muscular exertion was termed a sense of force
+(Frey, 1914) and was considered one of the essential elements of the muscular sense. The second observation relates to the degree of
+sensitivity of different joints in the hand and arm in detecting movements. In 1889, Goldscheider published the results from a series of
+carefully executed experiments in which he measured the movement detection thresholds for various joints while attempting to exclude
+cutaneous sensations of pressure as much as possible. He found that the thresholds for detecting both active and passive movements were
+much smaller for more proximal joints, such as the shoulder, as compared to the distal ﬁnger joints. This proved especially true for slower
+movements. In interpreting these ﬁndings, he noted that the speed of natural movements of a joint is related to the lever arm over which that
+joint acts; hence, slower movements are more characteristic of proximal rather than distal joints. Goldscheider's results also showed that there
+is a well-developed capacity to detect movements passively imposed on the limbs, and so it seemed unnecessary to resort to a concept of
+sensations of innervation to explain movement perception.
+Following the more common examples set by 19th-century investigators interested in internal tactile sensations as opposed to those interested
+in muscular sensations, the study of touch in the ﬁrst half of the 20th century focused primarily on tactile sensing by passive (stationary)
+observers (Boring, 1942; Geldard, 1972). The observer's unmoving hand (and other body sites) was stimulated with a variety of punctuate
+instruments, some blunt, some sharp, others warm or
+6                                           Historical Overview and General Introduction
+
+cool, all in the service of assessing the sensitivity and spatiotemporal acuity of the observer's tactile, thermal, and pain experiences. In keeping
+with Fechner's signiﬁcant move away from the dualistic mindbody philosophy of Descartes, these researchers also began to explore the
+functional relation between numerically assessed sensory magnitudes of perceptual events and their corresponding physical magnitudes. In
+addition to this behavioral approach, which used psychophysical methodologies, neurophysiologists began to uncover corresponding
+relationships between the magnitude of the neural activity of cutaneous ﬁbers in nonhuman observers (usually primates) and the
+corresponding magnitude of the physical stimulus (e.g.. Werner & Mountcastle, 1965). Although not the focus of the current book, the study
+of nonhuman primates has also contributed signiﬁcantly to our knowledge of how the brain controls the hand.
+During the early to mid-20th century, only three individuals—David Katz (1925/1989). Geza Révész (1950), and James J. Gibson (1962.
+1966)—stand out for their uncommon emphasis on the critical importance of active, voluntary manual exploration. The focus of their
+research was on the perception and recognition of external objects and their physical properties rather than on subjective internal tactile
+sensations. Katz offered a wealth of fascinating and critical observations regarding the sense of touch and how it functions, both in
+comparison to and in concert with vision and audition. He regarded the hand, as opposed to the skin with its atomistic tactile receptors, as the
+primary organ for touch. His comprehensive work on the perception of texture, or microstructure, is truly impressive and offers a striking
+contrast to the historically more common focus on shape, or macrostructure. For example. Révész was particularly interested in form
+perception by hand as opposed to by eye and to this end proposed a previously unrecognized tactual mode of experience known as haptics.
+Using his background in philosophy and aesthetics, he offered a theory of haptic form perception, which in turn led him to carefully observe
+blind individuals as they manually appreciated or created three-dimensional sculptures. He questioned the possibility that the blind can ever
+possess a meaningful aesthetic appreciation of plastic works of art. an issue we will revisit later. J. J. Gibson continued the pioneering work of
+Katz and Révész, highlighting the fact that hands are used to explore and to alter the environment, thus serving both perceptive and executive
+functions simultaneously. He too critically emphasized the importance of the hand and the haptic system for actively gathering information
+about the external world. As the works of these three individuals have become better known, particularly those of Gibson, they have led to a
+surge of scientiﬁc and applied interest in haptic sensing as formally deﬁned below, since the early 1990s.
+There is a parallel and complementary evolution of research that focuses on the natural actions of the hand. As described above, much of the
+early experimental research in the motor ﬁeld focused on the muscular sense. This reﬂected the belief that it was involved in the regulation of
+voluntary motor activity and was also probably motivated by the success of psychophysical procedures in the study of vision, audition, and
+touch (Granit. 1981). Early neurophysiological research on the motor system in the 19th century was also dominated by studies of reﬂexes, a
+concept ﬁrst formulated by Descartes in the mid-17th century. The development of anatomical techniques and methods for physiological
+experimentation during the 19th century contributed to an understanding of the sensory and motor structures involved in spinal reﬂex
+pathways. At this time, the role of sensory inputs in the control of voluntary movement was conclusively demonstrated by Mott and
+Sherrington (1895). They showed that when the dorsal roots in the brachial region of the spinal cord (C4–T4) of monkeys were unilaterally
+transected (i.e., dorsal rhizotomy), the animals made no voluntary movements and their affected hands appeared paralyzed, even though
+electrical stimulation of the motor cortex elicited movements. More recent studies have shown that many aspects of purposive movement can
+indeed be recovered following dorsal rhizotomy if appropriate care and training procedures are followed (Taub & Berman. 1968). Similar
+observations had in fact been made by Munk (1909). who described the learning that occurred in monkeys following unilateral deafferentation.
+provided that their normal limbs were bound. These animals were trained to open and close their hands, to grip, and to produce a variety of
+movements with their deafferented arms.
+During this period in which the focus of motor research was on reﬂex pathways, there are isolated examples of studies on human movements,
+such as Bryan and Harter's (1899) analysis of the performance
+                                            Historical Overview and General Introduction                                                        7
+
+of Morse code operators and the improvement in their skills with training and Woodworth's (1899) and Hollingworth's (1909) monographs on
+the accuracy of voluntary arm movements. In his research. Woodworth examined the relation between speed and accuracy in goal-directed
+arm movements, a topic that continued to be of interest throughout the 20th century (e.g.. Fitts. 1954: Keele. 1968: Stetson & McDill, 1923).
+He was also interested in the contribution of feedback (i.e.. visual, proprioceptive. and auditory) to movement control and in the movement
+control processes that result in asymmetries in manual performance. For much of the 20th century, the study of human hand function was
+limited to the analysis of simple movements similar to those studied by Woodworth. although there were some notable exceptions, such as
+Bernstein and his colleagues, who started their analysis of movements using tasks such as hammering a nail and striking piano keys (Bernstein.
+1967). By the later part of the 20th century, an emphasis on more natural movements emerged, in part stimulated by new methods that
+enabled the measurement of the kinematic and dynamic features of tasks, such as pointing (Georgopoulos. Kalaska. & Massey, 1981). reaching
+(Jeannerod. 1984: Wing & Fraser. 1983). and grasping (Westling & Johansson. 1984).
+The scientiﬁc study of human hand function has always been signiﬁcantly impeded by the technological demands inherent in systematically
+producing and displaying objects with multiple attributes and in precisely recording behavioral and neural responses. However, some of these
+difﬁculties have been surmounted recently by a third research thrust, which focuses on hand function from the perspective of hardware (e.g.,
+robotics, haptic displays, recording somatosensory neural responses) and software design (e.g.. virtual environment technology). The goal of
+this research is to design and build haptic and multisensory interfaces for remotely exploring and manipulating virtual and real worlds. We note
+that it is of critical ergonomic
+
+
+
+
+Figure 1.1. A sensorimotor continuum of human hand function.
+importance that these hardware and software systems be built with the capabilities and limitations of the tactile/haptic and motor systems of
+the human user carefully considered. For example, software designers who are interested in haptically rendering objects and their properties (e.
+g.. shape, size, surface texture, and compliance) in a virtual environment must deliver the types of tactile and haptic cues that the human user
+can use effectively. This holds true as well for teleoperator systems that deliver information to the hand(s) of a user who must interact with and
+act upon a real remote environment, as in the case of performing telerobotic repairs in space.
+
+
+
+A New Conceptual Framework for Human Hand Function
+The framework that we have adopted in this book conceptualizes hand function along a continuum that ranges from activities that are
+essentially sensory in nature to those that have a strong motor component. Within this sensorimotor continuum, we delineate four categories
+in detail, as listed in ﬁgure 1.1. Each of these categories was selected because it represents a comprehensive set of primary manual functions.
+Tactile sensing serves to effect contact between the person's stationary hand and a surface or object which may or may not be moving. In
+contrast to the active haptic mode, in tactile sensing, the hand is always passive. This type of mode produces a variety of internal, subjective
+sensations. Although not typically used to learn about the properties of external objects and surfaces, tactile sensing does provide some
+information about certain properties (e.g., surface texture, thermal conductivity), especially when the object or surface is moved across the
+skin.
+Active haptic sensing serves to effect contact between the person's hand as it moves voluntarily over a surface or object. The term haptic will be
+considered in detail later in the book, but in brief, it
+8                                            Historical Overview and General Introduction
+
+involves the use of sensory inputs provided by the stimulation of receptors embedded in skin, muscles, tendons, and joints. In contrast to the
+tactile mode, the hand is always active. This mode is preferred, if not essential, for identifying objects and extracting more precise information
+about their properties.
+Prehension refers to those activities in which the hand reaches to grasp an object. Most of these activities involve holding an object in the hand.
+The conﬁguration of the grasp is determined by the task objective and so will often change as the task progresses (e.g., reaching to pick up a
+pen and then writing with it). Precise and timely completion of the task usually relies on sensory feedback from mechanoreceptors in the hand
+and in the muscles controlling movements of the ﬁngers.
+Non-prehensile skilled movements refer to a diverse class of activities ranging from the gestures made as part of normal speech or as a substitute for
+speech, to the movements involved in depressing the keys on a keyboard. With the exception of pointing and aiming movements, these
+activities typically involve all ﬁngers and both hands.
+
+
+
+Scope and Contributions
+This book surveys normal hand function in healthy humans. It does not attempt to compare tactile and proprioceptive sensory processing
+with other sensory systems, nor does it examine the vast literature on how damage to the peripheral or central nervous systems inﬂuences
+human hand function. Any comprehensive investigation of human hand function requires the exploration of a wide diversity of disciplines and
+research areas, including anatomy, neurophysiology, cognitive science, experimental psychology (including psychophysics), developmental
+psychology and gerontology, kinesiology, hand surgery and rehabilitation medicine, haptic software development and robotics, and human
+factors/ergonomics. Until very recently, these ﬁelds have tended to function relatively autonomously. To the best of our knowledge, there
+exists no single multidisciplinary source that has attempted to integrate these different but complementary research literatures. We therefore
+believe the time is now appropriate to provide such a compendium of human hand function.
+Our book should be viewed as complementary to several other excellent books on the hand. Most of these may be categorized in terms of one
+or two of the disciplines listed above. Typically, each has focused in greater depth on a speciﬁc aspect of the hand, such as prehension
+(MacKenzie & Iberall, 1994), handedness and laterality (McManus, 2002), neural control of hand movements (Phillips, 1986; Wing, Haggard,
+& Flanagan, 1996), and tactile function (Gordon, 1978). In contrast, Human Hand Function selectively analyzes and synthesizes the results of
+fundamental research drawn from a broad range of disciplines that contribute in important ways to our understanding of human hand
+function. The book further explores how the results of research drawn from more than one of these disciplines may be applied to real-world
+scenarios that require effective use of the hand. In addition, the book considers ways in which other relevant disciplines might broaden a given
+ﬁeld by expanding its current perspectives and methodologies.
+
+
+
+Organization
+Chapter 2 begins by describing the evolution of the hand. It then examines the hand's anatomy, mechanics, and skin structure. Finally, it
+considers biomechanical models of the hand.
+Chapter 3 considers human hand function from a neurophysiological perspective. It is there that we describe in detail the peripheral receptors
+that are embedded in the hand's skin, muscles, and joints and the role of corollary discharges that accompany voluntary movements. We
+further address their associated neurophysiological functions and brieﬂy describe the primary somatosensory pathways that arise in the
+peripheral receptors and end in the somatosensory cortex.
+Chapters 4 and 5 review the performance of a number of manual behavioral tasks that require tactile and active haptic sensing, respectively.
+Collectively, these tasks span the sensory portion of the sensorimotor continuum of human hand function presented in ﬁgure 1.1. Topics in
+chapter 4 include spatial and temporal tactile sensitivity and resolution, tactile motion, and space-time interactions within somatosensory
+processing as they pertain to human hand function. In addition, we address the perception of objects (as opposed to internal sensations) and
+their properties, especially those pertaining to material and geometric attributes. Chapter 5
+                                           Historical Overview and General Introduction                                                        9
+
+covers topics that include the critical role that hand movements play in recognizing common objects and their raised 2-D outline
+representations and in perceiving object properties, and sensory gating with active movement. Finally, we consider the active haptic sensing of
+objects and their properties when we use a variety of intermediate links (e.g., rigid probes) between the hand and the external environment.
+Chapters 6 and 7 address performance related to prehensile and non-prehensile activities, respectively, which relate to the motor portion of the
+sensorimotor continuum (ﬁgure 1.1). In chapter 6, we analyze both reaching and grasping movements and discuss theories of reaching, the
+role of visual feedback in these movements, the coordination between grip and load force, the adaptation of grip forces to object properties,
+and anticipatory models of grasping. In chapter 7, we discuss pointing and aiming movements, the keyboard skills of typing and piano playing,
+issues related to sensory feedback and errors in performance, and the control of movement speed and force in keyboard skills. Finger tapping
+is also covered in this chapter.
+Chapter 8 addresses the complete sensorimotor continuum in terms of the particular constraints imposed on human performance by using
+different parts of the hand. For tactile and active haptic sensing, topics include site of contact, unimanual versus bimanual sensing, and direct
+versus remote sensing; for prehension, topics include site of contact, number of digits, bimanual grasping, remote versus direct action; and for
+non-prehensile skilled movements, topics include the independent action of individual ﬁngers, the coupling of movements, hand preference,
+and bimanual movements.
+Chapter 9 adopts a developmental perspective in which we consider what is (or needs to be) known about human hand function across the
+entire life-span from birth through old age. Up to this point, we have considered human hand function in terms of fundamental research.
+Chapter 10 explores ﬁve application areas for which a sufﬁcient amount of relevant fundamental research has been conducted so that
+directions and guidelines can be provided about how to approach problems that may arise in these ﬁelds. In addition, we consider how such
+knowledge can be used to guide the ways in which we may potentially improve on manual performance in these domains. The topics covered
+include evaluation of hand function and rehabilitation; talking and listening with the hand; sensory communication systems for the blind,
+speciﬁcally to display graphic information to the hand and to assist in the manual denomination of banknotes; haptic interfaces; and exploring
+art by touch.
+Chapter 11 draws some conclusions about human hand function and offers a guide to future research on this fascinating topic.
+                            2
+       Evolutionary Development and Anatomy of the
+                          Hand
+
+   For all its primitiveness, the human hand is functionally a highly sophisticated organ. The qualities that elevate it to the peerage lie in the degree of differentiation
+   of its musculature, the intricacy of its nerve supply, and its generous representation in the higher centers of the brain.
+   NAPIER, 1976
+
+
+In this chapter, the evolutionary development of the hand is ﬁrst considered in the context of changes in the structure and function of primate
+hands. The differences between modern human and nonhuman primate hands are discussed with particular reference to tool use and
+manufacture. We then review the basic anatomy of the human hand as reﬂected in its bones, joints, muscles, and the structure of the skin
+surface. The sensory and motor innervation of the muscles and skin is described, and ﬁnally we conclude with a brief summary of some of the
+biomechanical models of the hand that have been developed.
+
+
+
+Evolutionary Development of the Hand
+From an evolutionary perspective, there are three major developments in the structure and function of the hand as it evolved from a support
+structure for locomotion to an organ devoted to manipulation. First, there is the development of the pentadactyl (ﬁve-ﬁngered) hand with
+enhanced mobility of the digits, as compared to its predecessors. Second, claws thinned and moved dorsally to become ﬂat nails and so no
+longer provided assistance in holding the body when climbing; this was now accomplished by ﬂexing the digits around a branch or by grasping
+a branch between the digits (Schultz, 1969). Finally, there is the development of highly sensitive tactile pads on the volar (palmar) surface of the
+digits (LeGros-Clark, 1959). In spite of these advances, the hands of primates have remained primitive in their skeletal structure; indeed, the
+primate hand is considered to be more primitive than the foot, face, shoulder, knee, or hip (Napier, 1976). The pentadactyl hand has been
+termed “the absolute bedrock of mammalian primitiveness” (Wood-Jones, 1944, p. 19), as it was established more than 350 million years ago
+(Mya) in the Devonian period (see ﬁgure 2.1) and is seen in the fossil lobeﬁn ﬁsh Eusthenopteron (Kemble, 1987; Marzke, 1992). The phalangeal
+structure of 2–3–3–3–3 has also been a mammalian characteristic since the beginning of the Tertiary period (65 Mya), and the only change in
+the structure of the human hand from this ancient scheme is the absence of the os centrale, a small bone of the carpus (wrist) which has fused
+with the adjacent scaphoid bone as shown in ﬁgure ﬁngered) hand with enhanced mobility of the digits, as compared to its predecessors.
+Second, claws thinned and moved dorsally to become ﬂat nails and so no longer provided assistance in holding the body when climbing; this
+was now accomplished by ﬂexing the digits around a branch or by grasping a branch between the digits (Schultz, 1969). Finally, there is the
+development of highly sensitive tactile pads on the volar (palmar) surface of the digits (LeGros-Clark, 1959). In spite of these advances, the
+hands of primates have remained primitive in their skeletal structure; indeed, the primate hand is considered to be more primitive than the
+foot, face, shoulder, knee, or hip (Napier, 1976). The pentadactyl hand has been termed “the absolute bedrock of mammalian primitiveness”
+(Wood-Jones, 1944, p. 19), as it was established more than 350 million years ago (Mya) in the Devonian period (see ﬁgure 2.1 (Napier, 1976).
+The implication of this evolutionary
+                                     Evolutionary Development and Anatomy of the Hand                                                   11
+
+
+
+
+Figure 2.1. Skeletons of the hand from a mammal-like reptile (Ophiacodon) to modern Homo sapiens. The hatched bones represent the os
+centrale, which has fused with the adjacent scaphoid bone in Homo sapiens. Reprinted from Napier, 1976. Used with permission of the Carolina
+Biological Supply Company.
+12                                      Evolutionary Development and Anatomy of the Hand
+
+record is that the hand evolved early with capabilities that well preceded the cerebral structures required to take advantage of its potential.
+A major factor in the evolutionary change in hand use was the development of the opposable thumb, which resulted in a remarkable increase
+in the versatility of hand function and promoted the adoption of bipedal locomotion. Opposition involves ﬂexion, abduction, and medial
+rotation of the thumb so that the pulp surface can make contact with the terminal phalanges of one or all of the remaining digits. The
+articulation of the thumb metacarpal (the proximal bone of the thumb) and the trapezium (a bone of the wrist), in what is known as a saddle
+joint, enables the thumb to rotate 45° around its longitudinal axis. This movement of opposition is essential for effective handling and
+exploration of small objects and greatly facilitated primate tool use and construction. Not all primates have an opposable thumb; only Old
+World monkeys and apes are capable of rotating the thumb, and some primates, such as the colobus and spider monkey, are thumbless
+(Napier, 1993). The spider monkey compensates for its lack of manual dexterity by using its prehensile tail to pick up small objects. This is
+possible because the skin on the underside of the distal one third of its tail is hairless and is similar in function to the papillary skin on the hand.
+Although opposition of the thumb is evident in many Old World monkeys and apes (Napier & Napier, 1985), the extensive area of contact
+between the compressible pulps of the thumb and index ﬁnger is a unique human characteristic, as the thumb is positioned more distally and is
+longer relative to the index ﬁnger in human as compared to nonhuman primates (Napier, 1961). In addition, human hands are distinctive in
+the relative mass of the thumb musculature, which makes up about 39% of the weight of the intrinsic muscles within the hand, as compared to
+33% in gibbons and 24% in chimpanzees and orangutans (Tuttle, 1969). Figure 2.2 illustrates various primate hands, including those of the
+three larger apes most closely related to humans, namely, the orangutan (Pongo), gorilla, and chimpanzee (Pan). For these primates, the ﬁngers
+are so long relative to the thumb that manipulation typically involves the thumb with the lateral surface of the index ﬁnger rather than with the
+tips of the ﬁngers (Marzke, 1992).
+In the human hand, unlike those of other primates, the distal phalanges have rough horseshoeshaped tuberosities (see ﬁgure 2.3) to which the
+soft tissues of the palmar pads are attached. These pads distribute pressure during grasping and allow the ﬁngertips to conform to uneven
+surfaces (Napier, 1976; Young, 2003). The pad on the volar surface of the distal phalanx of the thumb is broader in humans than in other
+primates and is distinctive in that it is divided into two wedged-shaped compartments. This permits forces that are applied to the ﬁngerpad to
+be dissipated more evenly. The proximal compartment is more deformable and mobile than the distal compartment, which allows the soft
+tissue to mold around an object so that it is held against the distal pulp (Shrewsbury & Johnson, 1983). The tip pinch between the pads of the
+thumb and index ﬁnger that is used to pick up very small objects appears to be a unique human characteristic and is possible because of the
+human ability to hyperextend the distal phalanx of the index ﬁnger passively. In many nonhuman primate species, the ﬁngers must be ﬂexed in
+order for the tips to meet the tip of the thumb, due to the considerably longer ﬁnger lengths relative to that of the thumb, as can be seen in
+ﬁgure 2.2 (Marzke, 1992).
+A number of indices derived from the relative projections of various parts of the hand have been used to characterize the structure of different
+primate hands (Napier & Napier, 1967). These measures, and in particular the opposability index, which expresses the ratio between the
+lengths of the thumb and index ﬁnger (100(total length of thumb/total length of index ﬁnger)), have proven useful in characterizing the
+manipulative capacity of different hands. As the lengths of the index ﬁnger and thumb become more similar, the opposability index increases.
+In Homo sapiens, this ratio is 60, in the baboon 57–58 (Papio in ﬁgure 2.2), but in the orangutan (Pongo in ﬁgure 2.2) only 40 (Napier, 1993;
+Schultz, 1956). The baboon has a high ratio because its ﬁngers are short relative to the metacarpals, presumably as part of its adaptation to
+terrestrial digitigrade locomotion. When it walks, the palmar surfaces of its phalanges make contact with the ground and the metacarpals are
+hyperextended (Marzke, 1992). Arboreal primates, such as the orangutan and chimpanzee (Pongo and Pan, respectively, in ﬁgure 2.2), have
+tended to develop a prehensile forelimb for locomotion from tree to tree, at the expense of having pulp-to-pulp contact between the thumb
+and other ﬁngers (Kemble, 1987). However, in their manual activities, captive chimpanzees
+                                      Evolutionary Development and Anatomy of the Hand                                                     13
+
+
+
+
+Figure 2.2. Right hands of a range of adult primates, all reduced to the same length. Reprinted from Schultz, 1969, with permission of the
+Orion Publishing Group.
+make extensive use of grips that involve the thumb and lateral surface of the index ﬁnger, which does not require a long thumb (Marzke &
+Wullstein, 1996).
+There has been a considerable amount of research on the relation between cranial capacity, the morphology of the hominid hand as it evolved,
+and the use and construction of stone tools. The discovery in 1960 in the Olduvai Gorge of 1.75 million-year-old fossil hand bones from an
+early human ancestor (Homo habilis) at the same level as primitive stone tools led to a debate that has continued for more than 40 years on the
+role of tools in the evolution of the human hand (Marzke & Marzke, 2000). The manufacture of speciﬁc tools was preceded by a period of
+unmodiﬁed tool use in which objects found in the environment, such as stones, bones, or pieces of wood, were used for obtaining food or
+providing protection. It seems likely that tool use, which is evident in many animals, including primates, was followed by a period in which
+tools were modiﬁed or adapted to improve their performance. This type of behavior is evident in present-day chimpanzees, who “ﬁsh” for
+termites by poking long slender twigs down ﬂight holes to a termite nest and then retracting the twig that is now covered in termites.
+Chimpanzees have been observed collecting twigs prior to arriving at a termite nest and removing any small offshoots or branches that would
+impede the twig's
+14                                    Evolutionary Development and Anatomy of the Hand
+
+
+
+
+Figure 2.3. Bones of the hands of a chimpanzee (left) and a human (right). Note the tufts on the distal phalanges in the human hand. Reprinted
+from Young, 2003, with the permission of Blackwell Publishing.
+movement into the nest (Napier, 1993). From tool modiﬁcation came tool manufacture, in which objects occurring naturally in the
+environment (stones) were transformed into tools (hand axes) that had a speciﬁc purpose. This ﬁnal stage required the intellectual capacity for
+conceptual thought and is considered to have taken more than 1 million years to emerge in tool users (Wiesendanger, 1999).
+It is from analyses of fossil hands associated with various prehistoric tools that an understanding has arisen of how these tools were made and
+which species were capable of making them. It appears that a primitive tool culture existed at least 2 million years ago in Tanzania and that
+Homo habilis was capable of fashioning stones into useful shapes (Leakey & Lewin, 1977). Studies of contemporary stone tool-making behavior
+in both human (New Guinea stone tool makers) and nonhuman primates reveal the patterns of hand use required to make different types of
+tools. They indicate that a number of precision grips are used in tool manufacture, but that a ﬁne precision grip between the tips of the thumb
+and index ﬁnger is not essential (Marzke, 1997).
+
+
+
+Anatomy of the Hand
+The basic structure of the human hand can be considered in terms of its bones and associated joints, muscles, and skin. Standard terminology
+is used to refer to the various digits and parts of the hand as shown in ﬁgure 2.4. The hand has a dorsal surface, a volar or palmar surface, and
+radial and ulnar borders. The palm of the hand is divided into three regions: the thenar mass or eminence that overlies the thumb metacarpal,
+the midpalm area, and the hypothenar mass that overlies the metacarpal of the little ﬁnger.
+
+
+Bones and Joints
+There are 27 bones in the hand, with 8 carpal bones constituting the wrist, 5 metacarpal bones in the palm, and 14 phalangeal bones that make
+up the digits (2 in the thumb and 3 in each ﬁnger). The carpal bones are arranged in two rows, with the more proximal row articulating with
+the radius and ulna in the forearm. The proximal row comprises the scaphoid, lunate, triquetrum, and pisiform, and the distal row, which
+articulates with the metacarpals, comprises the trapezium, trapezoid, capitate, and hamate. The metacarpal bones in the palm of the hand
+articulate closely with the adjacent carpal bones in the distal row, and these carpometacarpal joints are capable of ﬂexion/extension
+movements and radial and ulnar deviation. With the exception of the ﬁrst metacarpal of the thumb, independent motion of these joints is very
+limited, but the range of movement increases
+                                      Evolutionary Development and Anatomy of the Hand                                                       15
+
+
+
+
+Figure 2.4. Volar aspect of the hand and standard anatomical terminology.
+from the second to the ﬁfth metacarpal (Kapandji, 1970; Taylor & Schwarz, 1970). The ﬁve meta-carpophalangeal joints (biaxial or condyloid
+type) are universal or saddle joints capable of both ﬂexion/extension and abduction/adduction movements (movements away from and
+toward the midline of the hand), whereas the nine interphalangeal joints in the digits are hinge joints capable of only ﬂexion and extension. The
+three bones in the ﬁngers are known as the proximal, middle, and distal phalanges, and each ﬁnger has three joints, the metacarpophalangeal
+(MP), the proximal interphalangeal (PIP), and the distal interphalangeal (DIP) joints.
+The total active range of motion of a typical ﬁnger is 260°, which is the sum of active ﬂexion at the MP (85°), PIP (110°), and DIP (65°) joints
+(American Society for Surgery of the Hand, 1983). The range of active extension at the MP joint varies between people but can reach 30–40°
+(Kapandji, 1970). Passive and active ﬂexion of the MP joint increases linearly from the index to the little ﬁnger, and the total active range of
+motion of the ﬁngers also increases from the index to the little ﬁnger (Mallon, Brown, & Nunley, 1991). Although there is no passive extension
+beyond 0° at the PIP joint, at 30° it is appreciable at the DIP joint, a uniquely human feature, as noted previously. With the exception of the
+thumb, the index ﬁnger has the greatest range of abduction/adduction movements at 30°. These movements become difﬁcult, if not
+impossible, when the MP joint is ﬂexed due to tautness in the collateral ligaments of the joint. In contrast to the other digits,
+16                                     Evolutionary Development and Anatomy of the Hand
+
+the thumb does not have a second phalanx and so has only two phalangeal bones and much greater mobility in the carpometacarpal joint, as
+described earlier. The carpometacarpal joint of the thumb is described by many authors as a saddle joint with two degrees of freedom.
+Although there is considerable axial rotation in addition to ﬂexion/extension and abduction/adduction movements, this is constrained and so
+it is not considered a true third degree of freedom (Cooney, Lucca, Chao, & Linscheid, 1981). In total, the human hand, including the wrist,
+has 21 degrees of freedom of movement.
+
+
+Muscles
+There are 29 muscles that control movements of the hand, although some of these muscles are divided into distinct parts with separate
+tendons, such as the ﬂexor digitorum profundus, which sends tendons to the distal phalanx of all four ﬁngers. If these subdivisions of
+multitendoned muscles are counted separately, the number of muscles controlling the hand increases to 38 (Alexander, 1992). Most of the
+muscles that control movements of the hand are in the forearm and are known as the extrinsic hand muscles (see ﬁgure 2.5). These long ﬂexor
+and extensor muscles of the wrist and ﬁngers take their origin from the bones in the arm, and as they approach the wrist the muscle bellies are
+replaced by tendons (Kapandji, 1970). The ﬂexor muscles arise from the medial epicondyle of the humerus in the upper arm or from the volar
+surface of the radius and ulna, and they then travel down the inside of the forearm. At the wrist, the ﬂexor tendons pass through the carpal
+tunnel bounded dorsally by the carpal bones and on the volar surface by the transverse carpal ligament. The main ﬂexor muscles are the ﬂexor
+pollicis longus that ﬂexes the distal joint of the thumb, the ﬂexor digitorum profundus that ﬂexes the DIP joint of each ﬁnger, and the ﬂexor
+digitorum superﬁcialis that ﬂexes the PIP joint of each ﬁnger. Flexion of the wrist involves the ﬂexor carpi ulnaris, ﬂexor carpi radialis, and
+palmaris longus. It is of interest to note that the palmaris longus muscle is absent in about 15% of the population (Taylor & Schwarz, 1970),
+apparently without any functional consequences. It is sometimes used, however, as a donor of tendon graft material in correcting hand
+deformities (Taylor, Raj. Dick. & Solomon. 2004).
+The extensor muscles take their origin from the ulna and course down the dorsal side of the forearm (see ﬁgure 2.5). The dorsal carpal
+ligament guides the extensor tendons at the wrist, where they are arranged in six tendon compartments. The tendons of one of the extensors
+(extensor pollicis brevis) and abductors (abductor pollicis longus) of the thumb, which originate in the mid and distal parts of the radius, are in
+the ﬁrst dorsal compartment. The second compartment contains the tendons of the extensor carpi radialis longus and extensor carpiradialis
+brevis muscles, which insert into the dorsal base of the index and middle metacarpals, respectively. The extensor pollicis longus, which is in the
+third dorsal compartment, inserts into the dorsal base of the distal phalanx of the thumb, and the extensor indicis proprius and extensor
+digitorum communis, which are the MP joint extensors of the ﬁngers, are in the fourth dorsal compartment. The extensor digiti minimi, which
+extends the MP joint of the little ﬁnger, is in the ﬁfth dorsal compartment, and the sixth compartment contains the tendon of the extensor
+carpi ulnaris. This muscle inserts into the dorsal base of the ﬁfth metacarpal (American Society for Surgery of the Hand, 1983).
+Muscles that take their origin and insertion within the hand are known as the intrinsic hand muscles. There are four groups of these, as shown
+in ﬁgure 2.6. The three thenar muscles (i.e., the abductor pollicis brevis, opponens pollicis, and ﬂexor pollicis brevis) cover the thumb
+metacarpal and are involved in pronating the thumb, that is, raising the thumb up straight to form a 90° angle with the palm, and in opposing
+the thumb to the ﬁngertips. The three muscles of the hypothenar eminence (abductor digiti minimi, ﬂexor digiti minimi, and opponens digiti
+minimi) abduct (move the ﬁnger away from the midline of the hand) and ﬂex the little ﬁnger. The four lumbrical muscles ﬂex the MP joints of
+the ﬁngers and extend the interphalangeal joints together with the four dorsal and three palmar interosseus muscles, which also adduct and
+abduct the ﬁngers. The lumbrical muscles are unique in the human body in that they originate from tendons and not from bone.
+
+
+Motor and Sensory Innervation
+The muscles and skin of the hand are innervated by the radial, median, and ulnar nerves. The radial nerve innervates the extensors of the hand
+and the thumb abductor (abductor pollicis longus), and so its primary
+                                      Evolutionary Development and Anatomy of the Hand                                                      17
+
+
+
+
+Figure 2.5. Extrinsic hand muscles in the forearm. The ﬂexor (left) and extensor (right) muscles are shown separately. Geometric models of
+the muscles were created using ﬁnite element geometries that were ﬁtted to anatomical data digitized from the Visible Human data set.
+Adapted from from Reynolds, Smith, & Hunter, 2004.
+motor function is to innervate the muscles that extend the wrist and metacarpophalangeal joints and that abduct and extend the thumb. The
+median nerve innervates the ﬂexors of the wrist and digits, the abductors and opponens muscle of the thumb, and the ﬁrst and second
+lumbrical. The ulnar nerve innervates all other intrinsic muscles of the hand. Each of these major nerves branches extensively. The wrist and
+hand receive their blood supply from the radial and ulnar arteries, which run parallel to the bones and enter the hand through the ﬂexor
+tunnel.
+The sensory innervation of the hand is also provided by the radial, median, and ulnar nerves. The radial nerve innervates the radial three
+quarters of the dorsum of the hand and the dorsal surface of the thumb. It also supplies sensibility to the dorsal surfaces of the index and
+middle ﬁngers and the radial half of the ring ﬁnger, as far as the proximal interphalangeal joint of each ﬁnger. The median nerve innervates the
+volar surfaces of the thumb, index, and middle ﬁngers and the radial side of the ring ﬁnger. Dorsal branches of the nerve arise to innervate the
+dorsal aspect of the index and middle ﬁngers distal to the proximal interphalangeal joint and the radial half of the ring ﬁnger. The ulnar nerve
+innervates the little ﬁnger and the ulnar half of the ring
+18                                     Evolutionary Development and Anatomy of the Hand
+
+
+
+
+Figure 2.6. Four main groups of intrinsic muscles in the hand. Geometric models of the muscles were created using ﬁnite element geometries
+that were ﬁtted to anatomical data digitized from the Visible Human data set. Adapted from Reynolds et al., 2004.
+ﬁnger on the palmar surface as well as the dorsal aspect of the hand over the ring and little ﬁnger metacarpals, the dorsum of the little ﬁnger,
+and the dorso-ulnar half of the ring ﬁnger (American Society for Surgery of the Hand. 1983).
+The exact pattern of sensory and motor innervation does vary considerably across individuals. For example, the entire ring ﬁnger and ulnar
+side of the middle ﬁnger may be innervated by the ulnar nerve, or the whole ring ﬁnger may be innervated by the median nerve. The index
+linger appears to be the only digit whose volar surface is always supplied by the median nerve. Similarly, the little ﬁnger is invariably innervated
+by the ulnar nerve (Önne. 1962). These variations need to be taken into account when there is injury to a major nerve innervating the hand.
+From the perspective of the functional use of the hand, the median nerve is the most important in that it conveys information from a large
+area of skin on the palmar surface of the hand and innervates the intrinsic muscles controlling the thumb.
+
+
+Structure of the Skin
+The skin on the volar surface of the hand is described as “glabrous.” in contrast to hairy skin, which is found on the dorsal surface of the hand.
+The skin on the volar aspect is relatively thick and is capable of bending along the ﬂexure lines of the hand when objects are grasped. These
+folds enhance the security of the grasp and demarcate the areas of the hand where the skin is mobile as compared to the adjacent areas that are
+tightly bound to the underlying tissue and bones. The skin is tethered by librillar tissue that connects the deep layers of the dermis with the
+sheaths of the ﬂexor tendons. Papillary ridges are found on the palm of the hand and occur on those areas involved in grasping, where it is
+assumed that they act as friction pads (Napier. 1976). In contrast to the volar surface, the skin on the dorsum of the hand is thin, soft, and
+pliable. When the ﬁngers are ﬂexed, the skin opens out along the tension lines (Langer's lines), and when the hand is relaxed the
+                                       Evolutionary Development and Anatomy of the Hand                                                       19
+
+skin recoils and accumulates as the transverse wrinkles evident over the phalangeal joints.
+All skin consists of two major subdivisions: epidermis and dermis. The epidermis is the outermost layer, which is responsible for the
+appearance and health of the skin. It also provides a protective barrier to prevent the loss of moisture and intrusion of bacteria and houses free
+(unencapsulated) nerve endings. The skin of the hand contains numerous eccrine sweat glands that keep the skin damp and assist in
+controlling body temperature through evaporative heat loss.
+We show the structure of glabrous skin and the location of the mechanoreceptor endings in ﬁgure 2.7, although we reserve discussion of the
+structure and function of these mechanoreceptors until chapter 3. On the glabrous skin of the hand, the epidermis is composed of ﬁve
+sublayers: from outer to inner layer, these are the stratum corneum, the stratum lucidum (particularly evident in the thick palmar skin), the
+stratum granulosum, the stratum spinosum, and the stratum germinativum (ﬁgure 2.8).
+
+
+
+
+Figure 2.7. Vertical section through the glabrous skin of the human hand schematically depicts the two major divisions of the skin (epidermis
+and dermis) and the underlying subcutaneous tissue. The locations of the organized nerve terminals, which are discussed in detail in chapter 3,
+are also shown. Mr = Meissner corpuscle; M1 = Merkel cell neurite complex; R = Rufﬁni ending; P = Pacinian corpuscle. Reprinted from
+Johansson & Vallbo, 1983, with permission of Elsevier Biomedical Press.
+The cells in the stratum germinativum reproduce by subdividing. They subsequently migrate toward the surface while progressively
+dehydrating and ﬂattening in shape. With increasing age, this layer thins, making it more difﬁcult to retain water. In young people, the newly
+generated cells take about 28 days (37 days for persons over the age of 50) to travel from the stratum germinativum to the stratum corneum.
+During cell migration, the cells ﬁll with a granular substance known as keratin. The outermost layer, known as the stratum corneum or
+corneum layer, which varies in thickness from 0.2 to 2 mm, contains ﬂattened, dry cells of soft keratin that are tightly bound together and
+sloughed off. Indeed, it has been suggested that about 80% of all house dust consists of these dead skin cells.
+The second major layer of skin, the dermis, is shown in ﬁgure 2.7. It consists of only two sublayers (not shown): the papillary (upper) and
+reticular (lower) layers (Thomine, 1981). The dermis is normally ﬁve to seven times thicker than the epidermis and makes up 15–20% of the
+total body weight (Montagna, Kligman, & Carlisle, 1992). The dermis serves two primary functions: ﬁrst, it nourishes the epidermis through
+its extensive network of blood vessels and capillaries; second, the dermis is composed of collagen and elastin and reticular ﬁbers which form a
+strong supportive structure. The elastin ﬁbers, which are concentrated in the lower layer of the dermis, give the skin its elasticity. Elasticity
+declines with increasing age. Within the dermis's ﬁbrillar network are found encapsulated nerve endings, such as the Meissner corpuscles and
+Rufﬁni endings that are described in chapter 3, as well as blood vessels and sweat glands.
+The epidermis and dermis are interconnected via a series of papillary folds, which give rise to the externally observable ﬁngerprint structure. It
+is interesting to note that during contact, droplets of sweat form evenly along the ﬁngerprint ridges, as shown in ﬁgure 2.9. This has led to the
+intriguing speculation that during contact, the ﬁngertip skin is softened, rendering it more compliant (Quilliam, 1978). The sweat also increases
+friction between skin and surface. In both ways, then, the production of sweat may help to stabilize an object when it is grasped.
+A third layer of subcutaneous tissue consisting of fatty tissue lies beneath the dermis (ﬁgure 2.7) and houses the largest of the four
+mechanoreceptors, the Pacinian corpuscles, described in chapter 3. This layer,
+20                                   Evolutionary Development and Anatomy of the Hand
+
+
+
+
+Figure 2.8. Detail of the structure of the epidermis. Reprinted from Geldard, 1972, with permission.
+
+
+
+
+Figure 2.9. Scanning electron micrograph (SEM) of ﬁngertip skin. The papillary ridges and the intervening sulci recur at regular intervals. At
+short intervals, globules of sweat exude from the summits of the ridges. Quilliam notes that it is possible that the shape and position of the
+sweat globules, which are seemingly permanently poised on the ridges, may be artifacts due to the method used to obtain the SEM (human
+index ﬁnger; araldite replica, ﬁeld of view 5 mm). Reprinted from Quilliam, 1978, with permission of Pergamon Press.
+                                       Evolutionary Development and Anatomy of the Hand                                                        21
+
+known as the subcutis or hypodermis, is not formally considered to be a part of the skin and consists of a loose network of connective tissue
+bundles and septa, which connects with the dermis and muscles. The primary functions of the hypodermis are thermoregulation, protecting
+the underlying tissues against mechanical trauma, and providing a source of energy (Montagna et al., 1992).
+The hairy skin on the dorsal surface of the hand is histologically similar to palmar skin, in terms of the layered structure of the epidermis
+(Montagna et al., 1992). The epidermis is thinner on the dorsal as compared to the palmar surface and the stratum corneum is only 0.02 mm
+thick (Thomine, 1981). The dermis is also thinner and more mobile in dorsal skin, as it lacks the connective and elastic elements that anchor
+the palmar skin to the underlying fascial planes. This allows the dorsal skin to stretch considerably with ﬁnger movements, and so as the
+middle ﬁnger moves from extension to full ﬂexion, the skin can be lengthened by up to 30 mm. As discussed in chapter 3, it is this stretching
+of the dorsal skin during ﬁnger movement that provides an important input to cutaneous mechanoreceptors.
+
+
+
+Models of the Hand
+Biomechanical models of the forces and moment arms of the tendons and muscles controlling the ﬁngers have been developed from anatomic
+and radiographic experiments on cadaverous specimens (Biryukova & Yourovskaya, 1994; Chao, An, Cooney, & Linscheid, 1989; Poznanski,
+1974) and from measurements of the external dimensions of the hands (Garrett, 1971). Given the complex anatomical structure of the hand
+with 29 independent muscles, ligaments, and tendons and its anatomical and kinematic redundancy, a number of simplifying assumptions have
+been made in developing these models. Nevertheless, they have been used to estimate the centers of joint rotation, determine the muscle-
+tendon moment arms during angular rotation of the joint (Buford & Thompson, 1987), predict the posture of the hand as it grasps different
+sizes of objects (Buchholz, Armstrong, & Goldstein, 1992), and assist in selecting muscles for tendon transfer surgery (Brand, 1985).
+The mechanical behavior of the ﬁngers has also been studied in terms of their mechanical impedance, which speciﬁes the static and dynamic
+relation between limb movement and an externally applied force. The focus of this research has been to understand what factors inﬂuence the
+mechanical impedance of the hand (e.g., joint angle, muscle activation level, velocity of joint movement) and how this in turn affects the
+stability and performance of the haptic interfaces that are used for teleoperation (Colgate & Brown, 1994). For the index ﬁnger, the relation
+between force and displacement has been well characterized by a second-order linear model for both rapid (Hajian & Howe, 1997) and longer-
+term transients applied to the hand (Becker & Mote, 1990). In both of these studies, the stiffness and damping components of the identiﬁed
+models increased with ﬁngertip force; for extension movements over the force range of 2–20 N, Hajian and Howe (1997) found that the
+damping ratio doubled (on average from 2.2 N s/m to 4.0 N s/m), and the stiffness increased fourfold (from 200 N/m to 800 N/m). This
+experiment involved very brief displacement perturbations, and the damping ratios identiﬁed were considerably higher than those reported in
+other studies with longer perturbations (e.g., Becker & Mote, 1990), during which reﬂex responses could have contributed to the system's
+response. It is therefore predicted that with longer time scales, the ﬁnger would be underdamped, consistent with the behavior of other joints.
+The ﬁngertip is essential for haptic exploration of the external world and is the point of contact in the hand for many motor activities, such as
+grasping and typing. Any force that is applied at the ﬁngertips is transmitted to the muscles, tendons, and other soft tissues in the hand and
+arm. There has therefore been interest in determining how the mechanics of the ﬁngertip contribute to tactile perception and the control of
+grasping. Measurements of the contact force and ﬁngertip displacement as individuals tap on a ﬂat, rigid surface (Serina, Mote, & Rempel,
+1997) or grasp an object between the thumb and index ﬁnger (Westling & Johansson, 1987) indicate that most of the displacement of the
+ﬁngertip pulp occurs at forces of less than 1 N. As can be seen in ﬁgure 2.10, this relation is nonlinear. Due to the curvature of the ﬁngertip, as
+the compression increases, there is a larger contact area, and so even at these low forces, the contact area increases rapidly with displacement as
+illustrated in ﬁgure 2.10. On the index ﬁnger, the contact area at 1 N is almost 70% of that at 5 N (Serina, Mockensturm, Mote, &
+22                                     Evolutionary Development and Anatomy of the Hand
+
+
+
+
+Figure 2.10. Relation between the force applied at the ﬁngertip and the area of contact on the tip of the index ﬁnger during grasping (ﬁlled
+circles) and between ﬁnger force and the displacement of the index ﬁngertip pulp during contact with a rigid surface (open circles). The force-
+contact area data are from Westling & Johansson, 1987, and come from a single participant, and the force-pulp displacement data are from
+Serina et al., 1998, and are also from a single participant. Redrawn from Serina et al., 1998. with the permission of the authors and Elsevier.
+Rempel, 1998; Westling & Johansson, 1987). At higher forces, the pulp stiffens rapidly from around 3.5 N mm-1 at 1 N to over 20 N mm-1 at 4
+N, which mechanically protects the distal phalanx from impact (Serina et al., 1997). These data suggest that it is the characteristics of the pulp
+tissues, and not the underlying hard tissues, that determine the force-displacement relation in the ﬁngertip. They also indicate why the ﬁngertip
+functions effectively as a tactile sensor at low forces (less than 1 N) in that small changes in force result in a considerable enhancement in
+tactile mechanoreceptor activity, due to the increase in contact area. At higher forces, there is only a modest increase in contact area, and so
+little additional tactile information is gained (Serina et al., 1998). The effect of ﬁngertip force on tactile perception is discussed further in
+chapter 8.
+The response of the ﬁnger pulp to forces applied tangential to the skin surface has also been investigated. These tangential forces play an
+important role in the control of grasping, particularly when an object begins to slip between the ﬁngers (see chapter 6). Nakazawa, Ikeura, and
+Inooka (2000) measured the deformation of the tip of the thumb and middle and little ﬁngers as forces were applied tangentially to the skin
+surface, while the contact force was maintained constant at 1.9 N. Using a Kelvin model to represent the dynamics of the ﬁngertips in the
+shearing direction, they estimated the stiffness and viscosity as a function of shear force amplitude. At small shear forces of around 0.6–1.2 N,
+they found that the stiffness and viscosity were large in comparison to the values obtained at higher shear force amplitudes and that at shear
+forces greater than 1.7 N, they remained relatively constant. Nakazawa et al. (2000) also reported that the shear stiffness of the thumb was the
+largest of the three digits tested, when the data were normalized for contact area. These ﬁndings suggest that when an object grasped in the
+hand is light, the shear deformation of the ﬁngertip is small and that changes in shear stiffness will occur with compression of the ﬁngertip.
+A number of models of the ﬁngertip pulp have been developed to predict the force-displacement and force-contact area responses of the
+human ﬁngertip during contact with rigid objects. Serina et al. (1998) modeled the ﬁngertip as an inﬂated, ellipsoidal membrane that was
+assigned the properties of skin and ﬁlled with an incompressible ﬂuid. They showed that this structural model of the ﬁngertip, which
+incorporated
+                                      Evolutionary Development and Anatomy of the Hand                                                       23
+
+both its inhomogeneity (i.e., the layered structure) and geometry, predicted the nonlinear force-displacement data from the ﬁngertip well
+(Serina et al., 1997). In addition, the model's predictions of contact area closely matched those measured experimentally. However, the model is
+limited in that the loading on the ﬁngertip must be quasi-static and applied at a ﬁxed angle. At other angles, the contact area is not circular,
+which violates one of the model's assumptions. Srinivasan (1989) modeled the pulp as a two-dimensional, inﬁnite channel ﬁlled with
+incompressible ﬂuid that was covered with a ﬂat, elastic membrane. This model predicted the surface deformation of the ﬁngerpad that
+matched experimental data from the primate ﬁnger to within 3 mm of the load, but it was limited to line loads. More recently, Dandekar, Raju,
+and Srinivasan (2003) have developed a multilayered, 3-D, ﬁnite-element model of the ﬁngertip based on realistic external geometries, which is
+able to predict the behavior of mechanoreceptors in the skin. Nonlinear viscoelastic models of soft tissue (Fung, 1993) have also been used to
+describe the force-displacement response of the ﬁngertip pulp to a range of compression velocities (Pawluk & Howe, 1999). This viscoelastic
+model, which incorporates a force-relaxation function, was able to predict ﬁngertip force from pulp compression during rapid ﬁnger tapping,
+such as occurs when typing (Jindrich, Zhou, Becker, & Dennerlein, 2003). Fung's model's parameters were similar to those estimated by
+Pawluk and Howe (1999), despite the much greater dynamic loading conditions in the ﬁnger-tapping experiments.
+These models of the dynamic response of the human ﬁngerpad to loads have generally been evaluated within fairly restricted experimental
+conditions. Due to the complexity of the skin and underlying tissues, which are nonlinear, inhomogeneous, and anisotropic, many assumptions
+have been made in developing these models. Nevertheless, from a biomechanical point of view, they have achieved some success in identifying
+the critical elements involved in prehension and in maintaining a stable grasp. This research would clearly beneﬁt from better in vivo models of
+the glabrous skin of the hand.
+The evolution of the hand and its present anatomical conﬁguration provide a framework for understanding the versatility and limitations of
+the human hand. Clearly, the development of an opposable thumb resulted in a dramatic increase in the types of tasks that the hand could now
+undertake, from exploring small items within the hand to grasping objects between the ﬁngers and thumb. These functions are described in
+more detail in chapter 8. However, it is not only the structural elements of the hand that have contributed to its versatility, but also the soft
+tissues within the hand and the properties of the glabrous and hairy skin that covers the palmar and dorsal surfaces, respectively. The sensory
+mechanoreceptors within the skin are uniquely positioned to provide the central nervous system with information about ﬁnger movements
+and the material and geometric properties of objects held within the hand. These receptors are the subject of the next chapter.
+                                          3
+                           Neurophysiology of Hand Function
+
+   An important conceptual advance of recent years is the understanding that the study of sensory performance by quantitative methods, called Psychophysics, and
+   the study of neural events that follow sensory stimuli by the method of electrical recording, called Sensory Neurophysiology, represent only different approaches to
+   what are generically the same set of problems. The methods and the concepts of the two can be combined to yield greater insight into those problems than is possible
+   with either alone.
+   MOUNTCASTLE, 1975
+
+
+In this chapter, we commence with a discussion of the structure and function of peripheral sensory mechanisms that are relevant to all four
+subclasses that collectively deﬁne the hand-function continuum (ﬁgure 1.1). This includes mechanoreceptors and thermoreceptors in the skin,
+proprioceptive inputs from muscles and joints, and centrally originating signals known as corollary discharges. Peripheral motor
+neurophysiology is not covered in this chapter, as the general principles of motor unit organization and muscle activation are similar in skeletal
+muscles throughout the body (see McComas, 1996; Vrbova, 1995). We subsequently describe the primary sensory pathways that project to the
+cortex and the principal cortical areas that are involved in processing sensory and motor information involving the hand. We close the chapter
+by discussing the nature of cortical sensory and motor representation and plasticity.
+
+
+
+Mechanoreceptors: Glabrous Skin
+
+Areas of Controversy
+Before describing the different mechanoreceptor-afferent populations and their presumed functions, it is important to highlight several critical
+areas of discussion or controversy. First, a good deal of what is known about hand function originally derived from two separate but related
+scientiﬁc disciplines, namely, psychophysics and single-unit neurophysiology. It was Mountcastle (1967) who provided the critical impetus to
+combine these two experimental perspectives simultaneously within a single organism because they served the same purpose: to understand
+sensory performance and its underlying neural mechanisms. At that time, however, it was not possible to perform both techniques within the
+same subject. Hence, monkeys were used in the neurophysiological studies and humans in the corresponding psychophysical research. It was
+assumed that “what monkeys and humans feel with their hands is in principle the same, and that neurophysiological observations made in the
+one may with some validity be correlated with psychophysical measures in the other, given the precise experimental design in the two cases”
+(Talbot, Darian-Smith, Kornhuber, & Mountcastle, 1968, p. 301).
+It is important to highlight the fact that while the structure and function of their nervous systems are highly similar, there are also differences
+that may
+                                                   Neurophysiology of Hand Function                                                            25
+
+alter perceptual function in humans and monkeys in meaningfully different ways. In the next section, we will discuss in detail the four
+mechanoreceptor populations that are present in the glabrous skin of humans. For now, we merely note that while one of these
+mechanoreceptor populations, slowly adapting type II (SA II), has been reliably identiﬁed in the human hand using microneurography (Vallbo
+& Johansson, 1978), it has never been observed in neurophysiological studies with monkeys (Johnson, 2001). Another difference between
+human and monkey hands relates to the location of the Pacinian corpuscle mechanoreceptors. These are concentrated near nerves and blood
+vessels in the metacarpophalangeal (MP) region of the human cadaver hand (Stark, Carlstedt, Hallin, & Risling, 1998), as opposed to the
+thenar and hypothenar areas in monkey hands (Kumamoto, Senuma, Ebara, & Matsuura, 1993). The functional consequences, if any, of
+differences such as these have rarely been investigated.
+Second, for well over a century now, investigators have argued over the relationship between various cutaneous afferent ﬁbers and their
+receptor endings. A number of different methods have been used to address this issue, including histology, single-unit recordings,
+immunoﬂuorescence labeling, and even to some extent simple logic. Given incomplete evidence pertaining to afferent ﬁber-receptor
+associations in human skin, investigators have assumed the existence of several associations based on the available histological and
+neurophysiological evidence in animals and humans. Conclusive evidence has only been obtained for the association between the considerably
+larger Pacinian corpuscles and fast adapting type II (FA II) afferents.
+Third, over the past several decades, researchers in the ﬁelds of neurophysiology and psychophysics have become interested in determining
+the nature of the codes that the nervous system uses to represent human somatosensory sensations and percepts. Until about the middle of
+the 20th century, the two disciplines worked separately but in parallel on complementary facets of this problem. Whereas neurophysiological
+studies focused on the relation between the physical stimulus (physical events) and the responses of single afferent units (neural events),
+psychophysical studies focused on the nature of the psychophysical law, that is, the mathematical function describing the relation between the
+physical stimulus (physical events) and human tactual sensory experiences (mental events). More recently, investigators have tried to relate
+these two branches in their attempt to understand how the somatosensory system represents human perceptual experience. However,
+problems do arise because in many cases the neurophysiological research has been based on animal models and often on the responses of
+anesthetized animals (e.g., monkey, cat, raccoon, mouse), whereas the psychophysical work has been based on the responses of alert humans.
+One interesting attempt to bridge the gap was developed in Sweden in the late 1960s, when investigators combined two techniques,
+microneurography (recording from a single afferent unit) and microstimulation (stimulation of the same afferent), within an attentive human
+observer (e.g., Knibestöl & Vallbo, 1970; Maceﬁeld, Gandevia, & Burke, 1990; Vallbo, 1995).
+The manner in which the somatosensory system represents sensory experiences is a matter of some controversy. One approach advocates a
+feature-detector model, in which a speciﬁc population of tactile units is responsible for encoding a speciﬁc feature, such as roughness, softness,
+curvature, orientation, slip, skin stretch, or vibration (see Connor & Johnson, 1992; Dodson, Goodwin, Browning, & Gehring, 1998;
+Goodwin & Wheat, 1992; Johansson & Westling, 1987; LaMotte & Srinivasan, 1987a, 1987b; Talbot et al., 1968). An alternate class of model
+has argued for a multichannel approach to human sensation in which multiple information-processing channels with overlapping sensitivities,
+each one mediated by its own neural mechanism, simultaneously encode the physical stimulus continuum (e.g., the multichannel model of
+vibratory sensation proposed by Bolanowski, Gescheider, Verrillo, & Checkosky, 1988). We will discuss some aspects of these approaches in
+greater detail.
+
+
+Types of Mechanoreceptors
+Tactile sensing activates a variety of tactile units, each consisting of an afferent ﬁber and its (presumed) ending. There are four different types
+of endings in the glabrous skin of the human hand: Merkel cells, Meissner's corpuscles, Rufﬁni endings, and Pacinian corpuscles. Merkel cells
+are located in clusters within the basal layer at the tip of the deep epidermal folds that project into the dermis. Meissner's corpuscles are ovoid
+structures that are also somewhat superﬁcially located, speciﬁcally at the epidermal'dermal junction
+26                                                 Neurophysiology of Hand Function
+
+in the dermal papillary ridges. Rufﬁni endings are spindle-shaped structures that are located more deeply within the connective tissue of the
+dermis. Pacinian corpuscles are multilayered, onion-shaped structures that are large enough to be visible to the naked eye. They are located
+deep within both the dermis and the subcutaneous fat layer that lies below the dermis. The four types of endings can be seen in ﬁgure 3.1.
+Four separate populations of tactile afferents have been documented in the glabrous skin of the human hand (e.g., Knibestöl & Vallbo, 1970;
+for valuable summaries, see Johansson & Vallbo, 1983; Johnson, 2001; Vallbo & Johansson, 1984). These are known as SA I (slowly adapting
+type I; described as SA in the monkey), FA I (fast adapting type I; in the monkey described as RA, or rapidly adapting, and in the older
+literature, as QA, or quick adapting), FA II (fast adapting type II; also known as PC or Pacinian in the monkey), and SA II (slowly adapting
+type II; never reported in the monkey) afferents. In this book, we adopt the ancient nomenclature used by the author(s) of each study under
+discussion. Although all populations respond to mechanical stimulation, they may be differentiated using several criteria. First, each type of
+afferent ﬁber is (presumed to be) associated with a speciﬁc type of ending. In human glabrous skin, SA I afferents end in Merkel cell neurite
+complexes, SA II afferents in Rufﬁni endings, FA I afferents in Meissner's corpuscles, and FA II units in Pacinian corpuscles.
+Microneurography has been used to differentiate and identify the physiological responses of the four types of human cutaneous afferents (e.g.,
+Knibestöl & Vallbo, 1970). In this procedure, the nerve is ﬁrst located by palpation or low-intensity electrical stimulation. A recording
+microelectrode (an insulated tungsten needle) is then manually inserted into the skin, usually with a pair of isolated forceps. The microelectrode
+penetrates the underlying tissue until a nerve fascicle (skin or muscle) is found and impaled. The electrode is then moved in very small
+increments until the appropriate activity from a single unit in the nerve is recorded, which may take from a few minutes to an hour (Prochazka
+& Hulliger, 1983). The receptive ﬁeld of the speciﬁc tactile unit that has been engaged by the electrode is initially mapped out by exploring the
+skin of the hand with a probe. The relative physiological response of the single afferent unit to sustained stimulation is then determined. These
+two parameters, relative receptive-ﬁeld size and relative response to sustained stimulation, are the criteria used to identify the type of unit, as
+shown in ﬁgure 3.2.
+Figures 3.3 and 3.4 should also be consulted in conjunction with the following description of the four mechanoreceptor populations. Figure
+3.3 shows the innervation density for each of the four mechano-receptor-afferent
+
+
+
+
+Figure 3.1. Vertical section through the glabrous skin of the human hand (center) schematically demonstrating the structure and locations of
+organized nerve terminals found in this area. The Meissner corpuscle and the Merkel cell neurite complex are shown in the expanded drawings
+(top left and top right, respectively). Reprinted from Andres & Düring, 1973, ﬁgure 16; and from Iggo & Muir, 1969, ﬁgure 1, with the
+permission of the authors, Springer, and the Physiological Society and Blackwell Publishing, respectively. The Pacinian corpuscle and Rufﬁni
+ending are shown in the expanded drawings (bottom left and bottom right, respectively). Reprinted from Chambers, Andres, During, & Iggo,
+1972, ﬁgure 8, with the permission of the Physiological Society and Blackwell Publishing. The combined ﬁgure was adapted from Vallbo &
+Johansson, 1984, with the permission of Springer-Verlag.
+                                                   Neurophysiology of Hand Function                                                            27
+
+
+
+
+Figure 3.2. Types of mechanoreceptive afferent units in the glabrous skin of the human hand, classiﬁed on the basis of adaptation and
+receptive ﬁeld properties (Knibestöl, 1973, 1975; Knibestöl & Vallbo, 1970). Graphs show the impulse discharge (lower trace) to the
+perpendicular ramp indentation of the skin (upper trace) for each unit type. The FA I units are preferentially sensitive to the rate of skin
+indentation, whereas the FA II units are highly sensitive to acceleration and higher derivatives. The fast adapting units, particularly the FA II
+units, respond not only when the indentation is increased, but also when the stimulus is retracted. The slow adapting units exhibit a sustained
+discharge during constant skin indentation in addition to their discharge during increasing skin indentation. The SA I units have a high
+dynamic sensitivity and often a rather irregular sustained discharge. The SA II units, on the other hand, have a less pronounced dynamic
+sensitivity and a very regular sustained discharge. Often they show a spontaneous discharge in the absence of tactile stimulation. Reprinted
+from Johansson & Vallbo, 1983, with permission of Elsevier Biomedical Press.
+populations in glabrous skin on the palm and at two different sites on the ﬁnger (see Paré, Smith, & Rice, 2002, for mechanoreceptor
+distributions in the distal ﬁngerpads of the monkey). Figure 3.4 shows the receptive-ﬁeld sizes of the mechanoreceptors across the palmar
+surface of the hand.
+The SA I units are assumed to end in Merkel cell neurite complexes (Figure 3.10) and are densely distributed (i.e., about 1 per mm2; ﬁgure 3.3).
+They are particularly sensitive to features of the local stress-strain ﬁeld (Phillips & Johnson, 1981), which render them strongly sensitive to ﬁne
+spatial details (e.g., points, edges, bars, corners, and curvature) as opposed to overall indentation. Their receptive ﬁelds are relatively small,
+about 2–3 mm in diameter (see ﬁgure 3.4), with local areas within the receptive ﬁeld that are highly sensitive. Relative to the receptive ﬁelds of
+the FA I units, their size is minimally affected by increasing the depth of penetration. This implies that human tactile pattern recognition is
+independent of contact forces ranging from 0.2 to 1.0 N (Johnson, Yoshioka, & Vega-Bermudez, 2000). SA I spatial resolution is minimally
+inﬂuenced by the scanning velocity up to at least 80 mm/second (Vega-Bermudez, Johnson, & Hsiao. 1991). The response of SA I units to
+repeated skin indentation is invariant; that is to say, the variability is around 1 impulse/trial, independent of the number of action potentials
+elicited (Vega-Bermudez & Johnson, 1999). Given these response characteristics, humans can discriminate form and texture very well. As SA I
+units constitute the only population that responds linearly to skin indentations up to about 1500 μm (Blake, Johnson, & Hsiao, 1997), they also
+code curvature very well (Bisley, Goodwin, & Wheat, 2000). Humans are able to differentiate curvature without regard to contact force
+(normal) (Goodwin, John, & Marceglia, 1991) or contact area (Goodwin & Wheat, 1992), which suggests that like other forms of spatial
+pattern, curvature is neurally represented by a spatially distributed, as opposed to an intensive, code. Based on psychophysical data, it has been
+suggested that the SA I units are maximally sensitive to very low temporal frequencies of vibrotactile stimulation ranging from about 0.4 to 3
+Hz, which usually result in the sensation of “pressure” (Bolanowski et al., 1988). Single-unit recording data have also been obtained with
+respect to the SA I unit responses to sinusoidal stimulation across a frequency range of 0.5–400 Hz (Johansson, Landström, & Lundström,
+28                                                 Neurophysiology of Hand Function
+
+
+
+
+Figure 3.3. Average density of the four afferent units: FA I (A), SA I (B), FA II (C), and SA II (D) within different glabrous skin areas. Each
+dot in the drawings of the hand represents a single sensory unit innervating the skin area. Histograms give the density of innervation in the
+following three skin regions: the tip of the ﬁnger, the rest of the ﬁnger, and the palm. Reprinted from Vallbo & Johansson, 1984, with
+permission of Springer-Verlag.
+1982). When these responses, which were originally reported in terms of number of impulses/cycle, are replotted in terms of the intensity
+characteristics of the mechanoreceptor, the low-frequency range of sensitivity of the physiological data resembles the human psychophysical
+data (Bolanowski et al., 1988). SA I units in the human ﬁngertip respond to the application of normal force (e.g., Westling & Johansson, 1984).
+In addition, when a force is applied to a site on the human ﬁngertip at a 20° angle from the normal, all afferents that are reliably activated (i.e.,
+SA I, SA II, and FA I, but not FA II units) respond; however, in most units the responses are broadly tuned to a speciﬁc direction. With
+respect to the SA I population, response sensitivity is greatest to tangential force components applied in the distal direction (Birznieks,
+Jenmalm, Goodwin, & Johansson, 2001; Goodwin & Wheat, 2004). SA units in the primate ﬁngerpad also show sustained responses to lateral
+stretch (Srinivasan, Whitehouse, & LaMotte, 1990).
+The FA I units are presumed to terminate in Meissner's corpuscles (ﬁgure 3.1). They are even more densely distributed than the SA I units,
+about 1.5 units per mm2 in the ﬁngertip (ﬁgure 3.3). Like the SA I units, their receptive ﬁelds are relatively small, about 3–5 mm in diameter
+(ﬁgure 3.4). However, because they respond evenly across their entire receptive ﬁeld, they are poorer at discriminating very ﬁne spatial details.
+Although they are insensitive to static contact, they respond well to transient deformation and particularly to the low-frequency vibration
+(Johnson et al., 2000) that occurs during initial contact and periods of relative motion between skin and object. FA I units respond to the
+application of normal force (e.g., Westling & Johansson, 1984) and are most sensitive to tangential force components in the proximal and
+radial directions (Birznieks et al., 2001). In addition, FA I units provide critical feedback for precise grip control (Johansson & Westling, 1984),
+in that they detect both actual slip between skin and object and local micro-slips. FA I units also signal forces that act suddenly on an object
+grasped in the hand (Maceﬁeld, Häger-Ross, & Johansson, 1996). Based on psychophysical data, it has been suggested that FA I units are
+maximally sensitive to vibrotactile temporal frequencies ranging from about 3 to 40 Hz, which produce the sensation of “ﬂutter” (Talbot et al.,
+1968). As noted above, the shape of the psychophysical curve for threshold amplitude as a function of sinusoidal frequency is similar to that
+obtained for FA I unit responses to sinusoidal stimulation (0.5–400 Hz) by Johansson et al. (1982), when the latter data are replotted in terms
+of intensity characteristics (ﬁgure 3.5). We further note, however,
+                                                   Neurophysiology of Hand Function                                                            29
+
+
+
+
+Figure 3.4. Receptive ﬁeld size of four types of afferent unit. Each graph indicates the cumulative distribution curves of receptive ﬁeld sizes for
+all four unit types, with the relevant function of interest highlighted (dark line). (A, B) The black patches on the drawings of the hand indicate
+receptive ﬁelds of 15 FA I units (A) and 15 SA I units (B), as measured with von Frey hairs that provide a force of 4–5 times the threshold
+force of the individual unit (based on a total sample of 255 units). Dark curves refer to the FA I (A) and SA I (B) units, respectively. Most of
+the ﬁelds are circular or oval, and they usually have a size between 3 mm2 and 50 mm2, which correspond to circular areas of 2–8 mm
+diameter. (C, D) The shaded areas in the drawings of the hand illustrate the receptive ﬁelds of two FA II units (C) and four SA II units (D), as
+determined by manually delivered taps with a small glass rod and skin stretch, respectively. The locations of the zones of maximal sensitivity
+are indicated by dots. With respect to the SA II units (D), the arrows indicate directions of skin stretch, which give rise to an increased
+discharge. Dark curves on the graphs indicate cumulative distributions of receptive ﬁeld sizes of the FA II (C) and SA II (D) units, respectively.
+Combined ﬁgure adapted from Vallbo & Johansson, 1984.
+that the psychophysical function is more sensitive than the neurophysiological function. For a detailed discussion of the cause of the
+discrepancy, the reader should consult Bolanowski et al. (1988).
+Each FA II unit ends in a single Pacinian corpuscle (ﬁgure 3.1). These units are less densely distributed in the hand than are either SA I or FA I
+units (about 350 per ﬁnger and 800 in the palm; ﬁgure 3.3). They also have extremely large receptive ﬁelds, which render the FA II units poor
+at discriminating spatial details (ﬁgure 3.4). However they are exquisitely sensitive to transient stimulation, including vibration. For example,
+Talbot et al. (1968) showed that the thresholds of some FA II units for sinusoidal stimulation were as low as ˜1 μm at 200–300 Hz. Sensitivity
+dropped steeply below about 150 Hz, presumably the result of the low-frequency temporal ﬁltering properties of the Pacinian corpuscle with
+its multilayer structure. FA II units are also very important for detecting more remote events, for example, those that occur with hand-held
+objects (Johnson, 2001). Based on psychophysical data, it has been suggested that FA II units are maximally sensitive to vibrotactile temporal
+frequencies ranging from 40 to >500 Hz, with a maximum sensitivity around 300 Hz, and that they produce the sensation of “vibration”
+within that frequency range (Bolanowski et al., 1988). One notable difference between the psychophysical function and the FA II
+neurophysiological function directly obtained by Johansson et al. (1982) is that the decrease in sensitivity over the lower frequency range is
+steeper for the former than for the latter.
+30                                               Neurophysiology of Hand Function
+
+
+
+
+Figure 3.5. Relationship between physiologically measured frequency characteristics for different ﬁber types—(a) RA; (b) PC; (C) SA I; and (d)
+SA II—and psychophysically obtained vibrotactile thresholds as a function of frequency for (a) NP I (Bolanowski et al., 1988: 2.5–12 Hz;
+Verrillo & Bolanowski, 1986: 12–150 Hz); (b) P (Bolanowski & Verrillo, 1982); (C) NP III (Bolanowski et al., 1988); and (d) NP II
+(Gescheider, Sklar, Van Doren, & Verrillo, 1985: 15–150 Hz; Verrillo & Bolanowski, 1986: 100–500 Hz) channels. Neurophysiological data
+points are interpolations and extrapolations of the average results presented by Johansson et al., 1982, for selected response criteria: (a) 1
+impulse/stimulus; (b) 4 impulses/stimulus; (C) 0.8 impulses/s; and (d) 5 impulses/s. For the P channel (b), an additional physiological curve
+(Pacinian corpuscle), which was derived from unpublished results of Bolanowski, 1981, has been plotted. This curve is the average response of
+six excised Pacinian corpuscles maintained at 33°C and for a response criterion of four impulses occurring during the central 200 ms of a 300-
+ms stimulus burst. Reprinted from Bolanowski, Gescheider, Verrillo, & Checkosky, 1988, with the permission of the Acoustical Society of
+America and the authors.
+SA II units have never been found in monkey skin (Darian-Smith & Kenins, 1980; Lindblom, 1965), although they have been reliably detected
+in the skin of humans (Knibestöl & Vallbo, 1970). Like FA II units, their density is relatively low compared to either the SA I or FA I units
+(ﬁgure 3.3; Wu, Ekedahl, & Hallin, 1998). They have long been associated with Rufﬁni endings that are situated within the dermis (ﬁgure 3.1).
+However, this traditional view has been challenged by a recent study on the distribution of Rufﬁni endings in the distal phalanx of the human
+ﬁnger in three human donors (Paré, Behets, & Cornu, 2003). Using immunoﬂuorescence labeling, Paré et al. found only one presumptive
+Rufﬁni corpuscle. They
+                                                    Neurophysiology of Hand Function                                                               31
+
+concluded, “[I]t seems unlikely that Rufﬁni corpuscles in human glabrous skin account for all but a small proportion of physiologically
+identiﬁed SA II afferents” (p. 265). Paré, Smith, and Rice (2002) have suggested that “clumped” Merkel endings are the terminals of the SA I
+units, and further that the elongated “chain” Merkel endings may in fact be the source of the SA II afferent responses. The receptive ﬁelds of
+SA II units are about ﬁve times larger and their sensitivity to skin deformation about six times poorer than those of the SA I units (ﬁgure 3.4).
+Hence, they are not useful in detecting ﬁne spatial details. Based on human psychophysical data and by a process of elimination, Bolanowski et
+al. (1988) have suggested that SA II units are most sensitive to vibrotactile frequencies ranging from 100 to >500 Hz and produce the
+sensation of “buzzing” (personal observation; Bolanowski, Gescheider, & Verrillo, 1994). SA II units are two to four times more sensitive than
+SA I units to skin stretch (particularly in the proximal direction), as described later in this chapter (Birznieks et al., 2001; Johnson et al., 2000).
+They contribute to the perception of the direction of object motion and force when an object produces skin stretch (Olausson, Wessberg, &
+Kakuda, 2000). Together with muscle spindles (and perhaps joint afferent units), SA II units also play an especially important role in perceiving
+hand conﬁguration and ﬁnger position (Edin & Johansson, 1995).
+
+
+
+Mechanoreceptors: Hairy Skin
+There are ﬁve main types of mechanoreceptors with large myelinated afferents that have been identiﬁed in hairy skin, two of which are slowly
+adapting, namely, Merkel cells and Rufﬁni endings, and three that are rapidly adapting. The latter include non-encapsulated hair-follicle
+receptors that innervate hairs, ﬁeld units whose histological structure remains unclear, and Pacinian corpuscles (Vallbo, Olausson, Wessberg, &
+Kakuda, 1995). These mechanoreceptors and their associated afferent ﬁbers have properties similar to the tactile units described in glabrous
+skin (Greenspan & Bolanowski, 1996; Järvilehto, Hämäläinen, & Soininen, 1981). In hairy skin, the SA I receptors are Merkel cells that are
+found within the epidermis and are grouped under visible touch domes with each cell receiving a single afferent that innervates many
+receptors. The Rufﬁni endings (SA II receptors) are usually found around hair follicles in the dermis. Hairfollicle receptors are usually
+identiﬁed by their brisk response to movements of individual hairs and light air puffs, whereas ﬁeld units are not sensitive to hair movements
+and are classiﬁed on the basis of their rapidly adapting responses and the multiple spots with high sensitivity found within their receptive ﬁelds
+(Vallbo et al., 1995). In contrast to glabrous skin, Pacinian corpuscles are rare in hairy skin and when found are usually in the vicinity of joints,
+tendon sheaths, and interosseous membranes (Gandevia, 1996; Zimny, DePaolo, & Dabezies, 1989). There are also unmyelinated (conduction
+velocities of about 1 m/s) tactile units in hairy skin, some of which have low thresholds to mechanical stimuli. Their effects within the central
+nervous system (CNS) and the role they play in perception have not been fully elucidated as yet (Vallbo, Olausson, & Wessberg, 1999),
+although there is some evidence that they are involved in the affective aspects of touch, sometimes termed “limbic touch” (Olausson et al.,
+2002).
+Neurophysiological studies of large myelinated afferents indicate that RA units on the dorsum of the hand have discrete receptive ﬁelds with
+distinct borders and are primarily found close to joints, whereas SA units are more uniformly distributed across the dorsal surface (Edin &
+Abbs, 1991). The relative number of SA units is higher in the hairy skin on the back of the hand than in the glabrous skin on the palm
+(Järvilehto et al., 1981), and the distinction between SA I and SA II units is not as clear as in glabrous skin (Edin & Abbs, 1991). In addition,
+the properties of some SA units in hairy skin differ from those in glabrous skin (Järvilehto et al., 1981). One difference between SA I units in
+hairy and glabrous skin is that in hairy skin they are responsive to levels of stimulation that are below human perceptual thresholds
+(Harrington & Merzenich, 1970), and they can discharge continuously without eliciting any perceptual response (Järvilehto, Hämäläinen, &
+Laurinen, 1976). However, the force thresholds for activating tactile units in hairy skin are similar to those reported for glabrous skin, with SA
+II units having the highest thresholds (5 mN) and the ﬁeld units the lowest (0.1 mN) (Edin & Abbs, 1991).
+Bolanowski et al. (1994) have suggested that tactile sensations resulting from mechanical (i.e., vibratory) stimulation of hairy skin are
+determined by activity in three psychophysically deﬁned channels, each neurally controlled by a separate mechanoreceptor population. Based
+on the threshold-frequency
+32                                                Neurophysiology of Hand Function
+
+characteristics recorded from afferent ﬁbers arising from mechanoreceptors in the hairy skin of the forearm and the changes in their responses
+with variations in skin temperature and contact area, Bolanowski et al. proposed that three channels mediate mechanoreception in hairy skin:
+the NPh low channel (non-Pacinian, hairy skin, low frequency), the NPh mid (non-Pacinian, hairy skin, middle frequency), and the P
+(Pacinian) channel. The NPh low is mediated by SA II ﬁbers that innervate Rufﬁni endings and is the neural substrate for low-frequency
+responses (0.4–4 Hz). The NPh mid channel, which is probably mediated by rapidly adapting hair-follicle receptors, responds to stimulation
+frequencies in the midrange (4–45 Hz or 4–150 Hz), depending on contactor area. Finally, the P channel mediates responses to high-frequency
+vibrotactile stimulation ranging from about 45 to more than 500 Hz. The responses in this channel are probably mediated by Pacinian
+corpuscles located in the subcutaneous tissue. The above results suggest that the capacity of hairy skin to signal mechanical events differs from
+glabrous skin, which probably uses four channels, with one channel (P) being considerably more sensitive than any of the channels seen in
+hairy skin. The threshold functions for vibratory stimuli measured on the hairy skin of the forearm are an order of magnitude higher than
+those recorded on the palm of the hand (Merzenich & Harrington, 1969). This is not only due to variations in the innervation density of the
+two types of skin, but also reﬂects differences in the response properties of the mechanoreceptors and possibly in the mechanical coupling of
+the skin and stimulator.
+Mechanoreceptors in hairy skin respond to mechanical deformation of the skin and also discharge in response to ﬁnger movements, which
+typically stretch the loosely connected skin on the dorsum of the hand. The majority of these receptors respond to movements of more than
+one joint, as shown in ﬁgure 3.6, with the pattern of skin stretch during ﬁnger movements determining which units respond. SA II units are
+particularly responsive to different types of movements around a joint (Edin & Abbs, 1991). Their responses to joint movements are similar to
+those of muscle spindle afferents with ﬁring rates up to 50 impulses/second, which is considerably lower than their discharge rates for tactile
+inputs, which can be greater than 200 impulses/second (Grill & Hallett, 1995).
+
+
+
+
+Figure 3.6. Number of slowly adapting (SA I and SA II) and fast adapting (FA) units in the dorsal skin of the human hand that responded to
+movements of one or more than one joint. The boxes indicate the number and type of units that discharged in response to movement of the
+joint indicated. For example, 20 units responded only to movement of the MP joint of the index ﬁnger, whereas 8 units responded to
+movements of both the MP and PIP joints; a further 10 units responded to movements of the MP joints of both the index and middle ﬁngers;
+and 3 units responded to movements of the MP joint of the index ﬁnger and of the thumb. Reprinted from Edin & Abbs, 1991, with the
+permission of the American Physiological Society.
+The proprioceptive information that SA II mechanoreceptors provide the CNS is ambiguous with respect to movement direction and
+amplitude. However, the ensemble response from a population of SA II receptors on the back of the hand could provide a sensory population
+vector that may reliably differentiate individual ﬁnger movements, as Edin (1992) has argued. When these inputs are eliminated following
+anesthesia of the skin, there is an impairment in proprioception (Ferrell & Milne, 1989). It has also been shown that when mechanical strain
+patterns are imposed on the skin overlying a joint in the absence of any ﬁnger movement, subjects can perceive these as indicating an actual
+movement of the joint (Collins & Prochazka, 1996;
+                                                 Neurophysiology of Hand Function                                                          33
+
+Edin & Johansson, 1995). Afferent inputs from the skin inﬂuence most levels of the motor system from motoneurons in the spinal cord
+(Garnett & Stephens, 1980) to the motor cortex.
+In closing this section on mechanoreceptors, we raise the possibility (A. Smith, personal communication, June 2005) that neurophysiologists
+may have oversimpliﬁed receptor innervation and function in cases where a one-receptor/one-ﬁber association has been assumed.
+Electrophysiological studies have tended to ignore the multiple large- and small-ﬁber innervations of Meissner corpuscles and hair follicles.
+
+
+
+Thermoreceptors
+During active haptic exploration and object manipulation, information concerning hand movements and the objects contacted is derived from
+mechanoreceptors in skin and muscle. Thermal information about objects comes from thermoreceptive afferent units in the skin. There are
+two kinds of thermoreceptors, known as cold and warm receptors, both of which are free nerve endings located in the epidermal and dermal
+skin layers (Spray, 1986). Cold receptors are more numerous than warm receptors, respond to decreases in temperature over a range of
+5–43°C, and discharge most vigorously at skin temperatures of 25°C. In contrast, warm receptors discharge with increasing skin temperature
+and reach a maximum around 45°C (Stevens, 1991). When the skin is maintained at a temperature of 30–36°C, no thermal sensation is noted,
+although both types of receptor exhibit spontaneous ﬁring. During the course of daily activities, the skin temperature of the hand can span a
+range of 20–40°C, but typically remains between 30 and 35°C. The relative distribution of thermoreceptors in glabrous and hairy skin has not
+been studied, and so it is not known to what extent differences in thermal sensitivity in different regions of the hand reﬂect variations in
+innervation.
+There is a fairly abrupt change in the character of thermal sensation to one of pain if the temperature rises above 45°C or falls below 13°C
+(Darian-Smith & Johnson, 1977; Havenith, van de Linde, & Heus, 1992; Johnson, Darian-Smith, & LaMotte, 1973). At these extreme
+temperatures, thermal information is conveyed by thermal nociceptors, which signal tissue damage. The onset of cold pain, which is associated
+with skin temperatures below 14°C is slow, as damage from freezing usually takes time. This is very different from the rapid withdrawal of the
+affected body part when the skin temperature rises to 45°C, and damage is imminent.
+It has been estimated that the innervation density of cold and probably warm ﬁbers in the area of glabrous skin innervated by the median
+nerve in the hand is approximately 50–70 ﬁbers/cm2 (Darian-Smith, 1984; Johnson et al., 1973). Afferent ﬁbers innervating warm receptors
+have conduction velocities in the range of 1–2 m/s, which identiﬁes them as unmyelinated ﬁbers. In contrast, the conduction velocities of
+afferent ﬁbers innervating cold receptors are much faster at 10–20 m/s, indicating that they are small-diameter myelinated ﬁbers (Darian-
+Smith, 1984).
+
+
+
+Nociceptors
+The skin also possesses myelinated and unmyelinated afferent units known as nociceptors that are selectively sensitive to high-intensity
+stimulation of several different energy forms (e.g., electrical, mechanical, chemical, or thermal) that can damage tissue. These units mediate
+pain sensations (Lynn & Perl, 1996) and will not be covered in this book.
+
+
+
+Muscle Receptors
+There are three types of mechanoreceptor in muscle that provide the central nervous system with information about muscle length and force.
+Two of these are stretch receptors known as the primary and secondary spindle receptors. They are located in muscle spindles, which are
+elongated structures ranging from 4 to 10 mm in length, that are composed of bundles (up to 14) of small intrafusal ﬁbers (Swash & Fox,
+1972). The spindles lie in parallel to the extrafusal muscle ﬁbers, the force-generating component of muscle, and attach at both ends either to
+extrafusal ﬁbers or to muscle tendons. Each spindle normally has one or two primary sensory receptors innervated by Group la (large
+myelinated) afferent ﬁbers and one to ﬁve secondary sensory receptors innervated by Group II afferent ﬁbers, as illustrated in ﬁgure 3.7.
+Muscle spindles have their own motor innervation through the fusimotor, or gamma, system, which regulates the sensitivity of the receptors
+34                                                 Neurophysiology of Hand Function
+
+
+
+
+Figure 3.7. Schematic illustrations of a mammalian muscle spindle. When the ends of the intrafusal ﬁbers that compose the spindle contract in
+response to gamma or beta motor axon stimulation, the central regions are stretched, which causes the primary (Ia) and secondary (II) endings
+to discharge. Reprinted from Prochazka, 1996, which was adapted from Kandel, Schwartz, & Jessel 1991. Reprinted with the permission of
+McGraw-Hill and Oxford University Press.
+and is activated with the skeletomotor system. Some spindles are also innervated by skeletofusimotor, or beta, ﬁbers that project to both
+extrafusal and intrafusal muscle ﬁbers (Hulliger, 1984).
+The number of spindles in human muscles varies depending on the function of the muscle, and for the hand has been estimated to range from
+12 for the abductor digiti minimi, one of the hypothenar muscles, to 356 for the ﬂexor digitorum superﬁcialis (Voss, 1971). When expressed in
+terms of the number of spindles per gram of mean weight of adult muscle, higher spindle densities are generally found in muscles involved in
+ﬁne movements, such as the distal ﬁnger muscles, and in the maintenance of posture. In contrast to the tactile sensory system, in which higher
+densities of mechanoreceptors are clearly associated with superior tactile acuity, for the proprioceptive system, higher spindle densities do not
+appear to be associated with superior sensory acuity. There is no evidence indicating a superior acuity for detecting movements and changes in
+limb position as one goes from proximal to distal joints. When expressed in terms of the absolute angular rotation of the joint, the ability to
+detect movements is in fact better for more proximal joints, such as the elbow and shoulder, than for the distal joints of the hand, as
+Goldscheider ﬁrst noted in 1889. This superior performance of more proximal joints is not surprising because they move more slowly than
+distal joints, and rotation of these joints results in a larger displacement of the end-point of the limb (the ﬁngertip in the case of the arm) than
+the same angular rotation at a more distal joint. If the extent of movement is expressed in terms of changes in muscle fascicle length during
+joint rotation, then proximal and distal joints actually give comparable proprioceptive performance, and the distal to proximal gradient in
+sensitivity disappears (Hall & McCloskey, 1983).
+Muscle spindle receptors are speciﬁcally responsive to changes in muscle length because of their location in muscles. Both primary and
+secondary afferents respond to changes in muscle length, but primary afferents are much more sensitive to the velocity of the contraction and
+respond more vigorously
+                                                  Neurophysiology of Hand Function                                                            35
+
+as the velocity of the stretch increases. Primary afferents are, however, highly nonlinear, and their discharge rates depend on several factors,
+including the recent contractile history of the muscle, the length of the muscle, the velocity with which the muscle changes length, and the
+activity of the fusimotor system. Secondary afferents demonstrate much less dynamic responsiveness and have a more regular discharge rate
+than do primary afferents at a constant muscle length (Prochazka, 1996). They also display much greater (around 50%) position sensitivity
+than do primary muscle spindle afferents (Edin & Vallbo, 1990). The higher dynamic sensitivity of the primary spindle receptors is consistent
+with the idea that they signal the velocity and direction of muscle stretch or limb movement, whereas the secondary spindle receptors provide
+the central nervous system with information about static muscle length or limb position. Figure 3.8 provides a schematic summary of the
+discharge rates of primary and secondary spindle afferent ﬁbers during changes in muscle length, with and without fusimotor stimulation. As
+can be seen, the discharge rates of these receptors are not simply a function of changes in muscle length but also reﬂect the activity of the
+fusimotor system. In order to decode these afferent signals, the central nervous system must have access to information regarding the level of
+fusimotor activity so that it can distinguish between changes in discharge rates that are proprioceptively signiﬁcant from those that are the
+result of fusimotor activity. It has been proposed that this is accomplished with corollaries of the motor command, which are transmitted to
+the sensory centers in the brain (McCloskey, 1981).
+The third class of mechanoreceptor found in muscle is the Golgi tendon organ, an encapsulated receptor about 0.2–1 mm long and 0.1 mm in
+diameter, normally found at the junction between muscle tendon and a small group of extrafusal muscle ﬁbers. This receptor is therefore “in
+series” with a small number (usually 10–20 in human muscles) of extrafusal muscle ﬁbers. It is selectively responsive to the forces these ﬁbers
+develop and has little or no response to the contraction of other muscle ﬁbers (Jami, 1992). Because tendon organs are very sensitive to the
+inseries forces, most tendon organs in a muscle discharge in all but the smallest contraction. A single Group Ib axon innervates each tendon
+organ. In primate muscles, Golgi tendon organs are less numerous and more variable in number than spindle receptors, and some muscles,
+such as the lumbrical muscles of the hand, do not appear to have any tendon organ receptors (Devanandan, Ghosh, & John, 1983).
+The distribution of tendon organs in a muscle is generally wide enough that every motor unit is included in the activity of the receptors at least
+once.
+
+
+
+
+Figure 3.8. Schematic summary of the discharge rates of primary and secondary spindle afferent ﬁbers to muscle length changes that occur
+either with or without concomitant fusimotor stimulation. Reprinted from Prochazka, 1996, with permission of Oxford University Press.
+36                                                Neurophysiology of Hand Function
+
+This suggests that the summed output of the Ib afferents from the tendon organs provides the central nervous system with an overall measure
+of muscle tension (Jami, 1992). The relation between the activity of a single motor unit and an isolated tendon organ afferent in human
+muscles is usually nonlinear, and may even be discontinuous, with steps in the frequency of discharge reﬂecting the contraction of individual
+motor units (Vallbo, 1974).
+Microneurographic recordings have provided valuable information about the activity of muscle receptors during voluntary movements and
+have had an important impact on hypotheses regarding muscle spindle function. Recordings from human subjects have shown that the
+position sensitivity of spindle receptors in ﬁnger ﬂexor muscles is remarkably low (less than 1 impulse/mm muscle length) and that both
+primary and secondary afferents have a low resting discharge and are silent at the muscle length that corresponds to the comfortable resting
+position of the human hand (Vallbo, 1974). It has also been shown that the discharge rates of primary and secondary afferents from the ﬁnger
+extensor muscles do not differ signiﬁcantly when the joint is actively maintained at different positions, as can be seen in ﬁgure 3.9. The absence
+of any position response in the discharge rates of muscle afferents suggests that changes in fusimotor activity compensate for variations in
+muscle length (Hulliger, Nordh, & Vallbo, 1982).
+There are limitations to the use of microneurography in muscle nerve fascicles, particularly with respect to the range of movement speeds,
+amplitudes, and forces that can be studied. Generally, the movements and forces generated are restricted to the lower end of the physiological
+range in order to prevent the microelectrode from dislodging and to limit interference from other active units. The low background ﬁring rates
+of human muscle spindle afferents (<20 impulses s-1) and the small changes in discharge rates attributed to fusimotor action (<30 impulses s-1)
+as compared to recordings made in alert cats have been ascribed to the restricted experimental conditions used in human studies and the
+heightened level of alertness of animals in the laboratory environment (Prochazka & Hulliger, 1998).
+In summary, muscle spindle receptors and Golgi tendon organs convey information about the length of muscles, the rates at which muscle
+lengths are changing, and the forces generated by muscles. This information provides the basis for the perception of the amplitude and
+velocity of ﬁnger movements and the static position of the hand. It also enables us to estimate the weight and compliance of objects supported
+by the hand. Information about changes in limb position and movement arises from other sensory sources, such as receptors in the skin and
+joints. Cutaneous afferents from the hand can reﬂexively affect fusimotor neurons innervating forearm extensor muscles and so make an
+indirect, as well as direct, contribution to proprioception (Gandevia, Wilson, Cordo, & Burke, 1994). In addition to these peripheral sources of
+proprioceptive information, there is a considerable body of evidence that suggests that central feedback, such as corollary discharges of the
+motor outﬂow, provide information that is used both to decode spindle afferent signals and to perceive force (McCloskey, 1981).
+
+
+
+Joint Receptors
+Several types of receptor are found in and around joint capsules, including Rufﬁni endings, Golgi endings,
+
+
+
+
+Figure 3.9. Response of the primary muscle spindle afferent in the extensor digitorum communis muscle during 1-s periods (upper trace)
+when the muscle was held at either a long (muscle length long, ﬁnger ﬂexion) or short (muscle length short, ﬁnger extension) length (bottom
+trace). Reprinted from Hulliger et al., 1982, with permission of Blackwell Publishers.
+                                                  Neurophysiology of Hand Function                                                          37
+
+encapsulated Paciniform endings, and free nerve endings. Paciniform endings are probably rapidly adapting, like their counterparts in skin,
+whereas Rufﬁni and Golgi endings are probably slowly adapting (Zimny, 1988). The distribution of these receptors is nonuniform in a joint,
+which may reﬂect the location of stresses during limb movements (Gandevia, 1996). Most articular receptors discharge near the extremes of
+joint movement and often are active during both extreme ﬂexion and extension and so do not provide an unambiguous signal related to joint
+position (Proske, Schaible, & Schmidt, 1988). Other joint afferents discharge during the midrange of joint movement, and estimates of the
+percentages of this class of receptor range from 5% to 18% in various animal species (Ferrell, 1980).
+These midrange joint receptors do respond to ﬁnger movements throughout the physiological range of joint rotation and so provide the
+central nervous system with some kinematic information (Edin, 1990). However, their capacity to signal the direction of joint movement is
+limited, and so it has been proposed that joint afferent input may only be signiﬁcant when muscle spindle afferents cannot contribute to
+proprioception (Burke, Gandevia, & Maceﬁeld, 1988). Studies of patients with rheumatoid arthritis who have undergone prosthetic
+replacement of the metacarpophalangeal joints in the hand suggest that whatever information is conveyed by joint receptors is adequately
+duplicated by other sensory sources. These patients have normal position sense in the absence of joint receptors (Cross & McCloskey, 1973)
+and are able to reproduce accurately the amplitude of movements made by ﬁngers with prosthetic joints (Kelso, Holt, & Flatt, 1980).
+An anatomical peculiarity of the hand has provided a preparation that has been used in numerous experiments to study the contribution of
+joint and cutaneous receptors to proprioception. When the ﬁngers surrounding the middle ﬁnger are all maximally extended and the middle
+ﬁnger is ﬂexed, the distal interphalangeal joint of the middle ﬁnger can no longer be voluntarily controlled as its tendon is slack because the
+muscles are decoupled from the joint (Gandevia & McCloskey, 1976). When the ﬁnger is positioned this way, only joint and cutaneous
+feedback can contribute to proprioception. The ability to detect the direction of applied ﬂexion and extension movements within the midrange
+of joint position is impaired with the muscles disengaged, and the residual ability to detect these movements does depend on joint afferent
+feedback. Clark, Grigg, and Chapin (1989) found that a local anesthetic block of the ﬁnger joint resulted in a further impairment in the ability
+to detect movements imposed on the joint. This indicates that when movement signals from muscle receptors are absent, articular receptors
+can provide cues that signal joint movement.
+
+
+
+Corollary Discharges
+The central nervous system appears to monitor its own activity in producing muscle contractions, and these correlates or copies of the motor
+command have been referred to historically as sensations of innervation (Helmholtz, 1866/1925) and more recently as corollary discharges or
+efference copies (McCloskey, 1981). The results from a number of experiments suggest that the perception of force is derived centrally from
+these internal neural correlates of the motor command and is not based on the activity of peripheral receptors in the muscle (Gandevia, 1996).
+Evidence to support this proposition comes from experiments in which it has been shown that as the motor command sent to a muscle
+increases, the perceived magnitude of the force of contraction also increases, even when the force exerted by the muscle remains constant
+(Jones & Hunter, 1983). This should not be interpreted as dismissing a role for peripheral receptors, such as Golgi tendon organs, in the
+perception of force as peripheral afferent activity is still required to indicate that the muscle force generated in response to the motor
+command is adequate to perform the task. A further role for corollary discharges is in the decoding of muscle spindle responses. The
+discharge rates of muscle spindle receptors are not only a function of changes in the length of the muscle but also reﬂect the activity of the
+fusimotor system. The central nervous system therefore needs to distinguish the spindle responses that are a consequence of fusimotor activity
+from those that are a result of an external perturbation and that have proprioceptive signiﬁcance.
+
+
+
+Sensory Cortical Projections
+Sensory information from receptors in the hand and from muscles controlling ﬁnger movements is
+38                                                Neurophysiology of Hand Function
+
+conveyed via afferent nerve ﬁbers to the dorsal root ganglion neurons which lie on the dorsal root of a spinal nerve. The cell bodies of these
+neurons have two branches, one that projects to the periphery and the other to the central nervous system. The nerve terminals of dorsal root
+ganglion neurons determine the function of the neuron. The area of skin innervated by a single dorsal root is known as a dermatome, which
+can be identiﬁed in animals by stimulating the skin with different probes and measuring the response from afferent ﬁbers in the dorsal root.
+Dermatomal maps are often used as a diagnostic aid for locating the site of injury in humans with damage to the spinal cord or dorsal roots.
+The large-diameter axons mediating touch and proprioception diverge from the smaller-diameter afferents subserving temperature and pain in
+the spinal cord, and they follow different pathways to the brain. Figure 3.10 depicts these two ascending pathways on a series of brain slices.
+The small-diameter ﬁbers terminate on second-order neurons in the dorsal horn of the spinal cord, and the axons of these neurons cross the
+midline to form the anterolateral system (Gardner, Martin, & Jessell, 2000). The axons serving these two modalities are segregated and are
+arranged somatotopically as they ascend the spinal cord. The anterolateral system has both direct and indirect connections to the thalamus via
+the reticular formation in the medulla and the pons. From the thalamus, there are projections to the primary somatosensory cortex, the dorsal
+anterior insular cortex, and the anterior cingulate gyrus (E. G. Jones, 1985).
+Tactile and proprioceptive information is transmitted to the cerebral cortex via the central axons of dorsal root ganglion cells, the ﬁrst-order
+neurons, that enter the spinal cord. These axons ascend directly to the medulla through the ipsilateral dorsal columns, in what is known as the
+dorsal column—medial lemniscal system. The two sensory modalities are segregated anatomically, with axons from proprioceptors being
+located more ventrally in the dorsal columns than are axons from tactile receptors, which are positioned dorsally. Not all of these primary
+afferent ﬁbers reach the medulla; some 50% terminate at spinal levels and are known as propriospinal ﬁbers. At higher spinal levels, the dorsal
+columns are divided into two fascicles: the gracile fascicle and the cuneate fascicle. The gracile fascicle ascends medially and includes ﬁbers
+from the ipsilateral sacral, lumbar, and lower thoracic segments, whereas the cuneate fascicle ascends laterally and contains ﬁbers from the
+upper thoracic and cervical segments. Axons in these fascicles terminate in the second-order neurons in the gracile nucleus and cuneate
+nucleus in the medulla (Florence, Wall, & Kaas, 1989). From there, they cross to the other side of the brain stem and ascend to the ventral
+posterior lateral nucleus of the thalamus in a ﬁber bundle known as the medial lemniscus.
+The third-order neurons in the thalamus that receive these inputs from the dorsal column—medial lemniscal system send axons to
+Brodmann's areas 3a, 3b, 1, and 2 in the primary somatosensory cortex in the postcentral gyrus of the parietal lobe (Paul, Merzenich, &
+Goodman, 1972). Most of the thalamic input terminates in areas 3a and 3b, and the cells in these areas then project to areas 1 and 2. There is
+also a direct, but much smaller, connection between thalamic neurons and areas 1 and 2. The four areas of the primary somatosensory cortex
+differ in terms of the inputs they receive from the thalamus. Sensory information from receptors in the skin is received in areas 3b and 1,
+whereas proprioceptive information is transmitted to areas 3a and 2 (Mima et al., 1997). Area 2 sends a signiﬁcant amount of efferent axons to
+the motor cortex, and loss of this cortical input has a striking effect on hand function, with impairments in coordinating the ﬁngers when
+grasping, even though there is no weakness of the hand nor change in simple ﬁnger movements (Hikosaka, Tanaka, Sakamoto, & Iwamura,
+1985). There are extensive interconnections between the primary sensory areas, and they in turn send connections to the secondary
+somatosensory cortex on the superior bank of the lateral sulcus (Burton, 2002).
+Each of the four areas within the human somatosensory cortex contains a full representation of the body but with different types of
+information depicted (Kurth et al., 2000). In addition, parts of the body with higher innervation densities, such as the ﬁngertips and the
+thumb, have disproportionately larger areas of cortex devoted to processing their sensory signals (Kaas, Nelson, Sur, & Merzenich, 1981).
+These cortical maps of the body surface are dynamic, not static, and are modiﬁed as a function of experience (Buonomano & Merzenich,
+1998; Kaas, 1991). It has been shown in monkeys that extensive use (over 3 months) of the ﬁngertips in a
+                                                Neurophysiology of Hand Function                                                        39
+
+
+
+
+Figure 3.10. Sensory pathways involved in transmitting information from the hand to the cerebral cortex. The dorsal column medial lemniscal
+system transmits proprioceptive and tactile information from the periphery to the thalamus, whereas pain and thermal sensations are
+transmitted to the thalamus via the anterolateral system. Reprinted from Gardner et al., 2000, with permission of McGraw-Hill.
+40                                                Neurophysiology of Hand Function
+
+task involving touching a rotating disk with the middle ﬁngers to obtain food pellets, results in a signiﬁcant enlargement of the cortical
+representation of the stimulated ﬁngers (Jenkins, Merzenich, Ochs, Allard, & Guic-Robles, 1990). Figure 3.11 shows the enlargement of the
+cortical territory of the stimulated ﬁnger as compared to its normal territory prior to differential stimulation. In a related human study of the
+cortical hand representation of proﬁcient Braille readers, Pascual-Leone and Torres (1993) used transcranial magnetic stimulation (TMS) to
+show that the cortical representation of the right index (reading) ﬁnger was signiﬁcantly larger than that of the left index ﬁnger of Braille
+readers and of the right index ﬁnger of control subjects. Moreover, representations of parts of the hand that were not involved in reading
+Braille were differentially smaller than those of control subjects. These results were conﬁrmed in another study that used magnetoen-
+cephalography (MEG) to image the cortical representations of the ﬁngers of string-instrument players (Elbert, Pantev, Wienbruch, Rockstroh,
+& Taub, 1995). When playing, these musicians are continuously ﬁngering the strings with the second through ﬁfth digits of the left hand, while
+the thumb grasps the neck of the instrument and so is not as active as the other digits. Elbert et al. (1995) found that the cortical
+representation of the digits of the left hand of string players was larger than that of controls and that this difference was smallest for the
+thumb. In addition, there was a negative correlation between the size of the cortical representation of the ﬁngers of the left hand (as inferred
+from dipole strength) and the age at which the person began to play the musical instrument.
+In contrast to this expansion of the cortical representation of the ﬁngers with training, when the hand area in the human somatosensory cortex
+becomes deafferented as a consequence of extensive peripheral deafferentation (spinal cord injury) or amputation, there is shrinkage in the
+area of the cortex devoted to processing information from the hand. In these cases, the cortical representation of adjacent areas expands to
+occupy the deafferented cortex (Kew et al., 1997; Ramachandran, 1993). The reorganization that results from deafferentation and training
+appears to takes place at a cortical and not a thalamic or spinal level (Garraghty & Kaas, 1991; Wang, Merzenich, Sameshima, & Jenkins,
+1995), although there is evidence of alterations in representational maps in dorsal column nuclei after deafferentation (Jain, Catania, & Kaas,
+1997). The
+
+
+
+
+Figure 3.11. Cortical representation of the ﬁnger in the adult owl monkey before (normal) and after (stimulation) differential stimulation of the
+tip of the index ﬁnger. Outlines of the territories for each of the digits are shown in area 3b of the somatosensory cortex, together with the
+area on the ﬁngertip that was stimulated. After stimulation, there was a substantial enlargement of the territory representing the surface of the
+index ﬁnger that was stimulated, as shown by the ﬁlled area in the digit 2 representation. Reprinted from Jenkins et al., 1990, with the
+permission of the American Physiological Society.
+                                                   Neurophysiology of Hand Function                                                             41
+
+mechanisms involved in dynamically allocating cortex to selected peripheral inputs are not fully understood, and many issues, such as the site
+of plasticity and the cellular mechanisms that determine synaptic competition, require further study (Buonomano & Merzenich, 1998; E. G.
+Jones, 2000).
+An interesting illusion that is related to the plasticity of cortical representation has been reported during acute anesthesia of the thumb or lips.
+Gandevia and Phegan (1999) observed that following complete anesthesia of the digital nerves that innervate the thumb, the perceived size of
+the thumb increased in magnitude by about 60–70%. In addition, the perceived size of the lips also increased (by 55%), even though the
+adjacent unanesthetized index ﬁnger did not change in perceived size. A similar result was found when the lips were anesthetized, with the
+effect on the thumb being much smaller (an increase in size by 5%), although still signiﬁcant. The latter ﬁnding may reﬂect the fact that the lips
+were anesthetized using topical anesthesia, which resulted in a marked but not complete loss of sensory function, unlike the digital nerve block
+that eliminated all sensory feedback from the thumb. This experience of increased size following anesthesia is often reported by people who
+have had dental anesthesia and feel that their lips and lower face are “swollen.”
+The sensory representations of the thumb and lips are anatomically close in subcortical and cortical sites, and some cells respond to inputs
+from both the thumb and lips, so it is not surprising that changes in sensory inputs affected both body parts. The absence of any effect of
+thumb anesthesia on the perceived size of the index ﬁnger is surprising, however, and suggests that the boundaries between the thumb and lip
+representations are less distinct than those between the thumb and index ﬁnger (Gandevia & Phegan, 1999). The increase in perceived size
+with anesthesia has been interpreted as resulting from the unmasking of sensory inputs to the primary somatosensory cortex and the
+enlargement in the size of the receptive ﬁelds of cortical cells representing skin areas adjacent to the anesthetized region, as has been shown to
+occur in monkeys (Calford & Tweedale, 1991). These illusory increases in size appear to be related to the extent of the area that is anesthetized,
+as they do not occur when the whole arm is anesthetized (Melzack & Bromage, 1973). In this situation, the somatosensory cortex devoted to
+the anesthetized region becomes “silent.”
+
+
+
+Motor Cortical Areas
+The areas of the cerebral cortex that contribute directly to the control of hand movements include the primary motor cortex (Ml, or area 4),
+the supplementary motor area (SMA, or medial part of area 6), the presupplementary motor area (pre-SMA, or part of area 6), and the
+premotor cortex (PM, or lateral part of area 6) as shown in ﬁgure 3.12. There is considerable debate about the number of motor areas in the
+human brain, and estimates range from a conservative count of four areas to a more liberal estimate of ten areas (Roland & Zilles, 1996). The
+motor cortical areas receive inputs from subcortical motor areas, such as the basal ganglia and cerebellum, via the thalamus. Intracortical
+microstimulation studies in primates have shown that a large area of the primary motor cortex is involved in controlling the distal muscles of
+the contralateral arm (Asanuma & Rosén, 1972; Donoghue, Leibovic, & Sanes, 1992). These studies have also revealed that there are multiple
+representations of each muscle and type of movement, and so the same muscle can be activated by stimulation at different foci within the hand
+area of the primary motor cortex. In addition, single-unit recordings from neurons in Ml in monkeys show that there is considerable spatial
+overlap in the cortical territories for movements of different ﬁngers. This indicates that many cortical motor neurons inﬂuence more than one
+ﬁnger muscle and that there are widespread horizontal connections throughout the M1 hand area (Donoghue et al., 1992; Schieber & Hibbard,
+1993).
+Similar results have been obtained from imaging studies of motor cortex organization in the human brain. Geyer et al. (1996) found two sets
+of representations for the thumb and index and middle ﬁngers within primary motor cortex, and Sanes, Donoghue, Thangaraj, Edelman, and
+Warach (1995) reported that movement of a single ﬁnger gave rise to several ﬁelds of activation within M1. In the latter study, the
+representations of the thumb and index and ring ﬁngers overlapped each other (as deﬁned by the volume of activation) by 40–70%. These
+ﬁndings are at variance with the classic motor homunculus derived from electrical stimulation of the cortical surface (Penﬁeld & Rasmussen,
+1950; Schott, 1993) and indicate that somatotopy in primary motor cortex may hold only for major divisions of the body, such as the arm,
+face, and leg.
+42                                                Neurophysiology of Hand Function
+
+
+
+
+Figure 3.12. Major motor areas of the human cerebral cortex, including the primary motor cortex, the supplementary motor area, and the
+premotor cortex. The somatotopy of the primary motor cortex is shown with the hand and arm occupying a relatively large area on the lateral
+surface. Reprinted from Krakauer & Ghez, 2000, with the permission of McGraw-Hill.
+There are additional representations of the hand in the supplementary motor and premotor areas. These nonprimary motor areas are believed
+to control different aspects of hand function but to operate cooperatively (Rouiller, 1996). In both human and nonhuman primates, the pre-
+SMA is now regarded as an area distinct from the caudally adjacent SMA on both anatomical and physiological grounds (Picard & Strick,
+1996; Tanji, 1996). The two areas differ in their anatomical connectivity in that only the pre-SMA receives substantial input from the
+dorsolateral prefrontal cortex, and only the SMA projects directly to the primary motor cortex (Tanji, 1996). Studies of neuronal activity in the
+pre-SMA in monkeys suggest that this area plays a role in updating the information that is required to perform an upcoming sequence of
+movements, and so the neurons in this area are more active during the preparation for upcoming movements (Matsuzaka, Aizawa, & Tanji,
+1992; Shima, Mushiake, Saito, & Tanji, 1996). Similar studies in the SMA reveal that it contributes to planning and controlling sequential
+movements that have multiple spatial components and in particular to arranging multiple movements in the correct temporal order (Shima &
+Tanji, 1998). The results from imaging studies in human subjects are consistent with this distinction in that they have shown that there is
+sharply localized activity in the pre-SMA while participants are learning a ﬁnger-sequencing task, whereas the SMA becomes more active
+during the performance of these sequential movements (Boecker et al., 1998; Hikosaka, Sakai, Miyauchi, Takino, Sasaki, & Pütz, 1996).
+The PM appears to be involved in the planning and control of movements that are guided by sensory information (Roland & Zilles, 1996).
+Several lines of evidence from nonhuman primate studies suggest that the ventral premotor cortex can be distinguished from the dorsal
+premotor cortex both functionally and structurally. In particular, the ventral premotor cortex participates in the visual guidance of hand
+movements, such as those involved in reaching for and manipulating objects (Ochiai, Mushiake, & Tanji, 2005; Wise, di Pellegrino, &
+Boussaoud, 1992). Behavioral and imaging studies in both human and nonhuman primates suggest that one role of this cortical area is the
+transformation of information about the location of objects in space, which is speciﬁed in an extrinsic visual frame of reference, into an
+intrinsic motor reference frame (Kakei, Hoffman, & Strick, 2001). In contrast, the dorsal premotor cortex is involved in movement planning
+and the mental rehearsal and observation of motor tasks (Ramnani & Miall, 2004). Many task-related neurons in this cortical area exhibit the
+same activity patterns during observation as during performance of a task (Cisek & Kalaska, 2004, 2005).
+All of these cortical motor areas project to the spinal cord, and in human and nonhuman primates, a subset of the neurons in the primary
+motor cortex, known as corticomotoneuronal cells, send their axons directly to the distal motoneurons that innervate hand and ﬁnger muscles.
+About 40% of the axons in the human corticospinal tract originate in the primary motor cortex, and these axons descend through the
+subcortical white matter, the internal
+                                                  Neurophysiology of Hand Function                                                           43
+
+capsule and cerebral peduncle, until they form the medullary pyramids. This entire projection is therefore often called the pyramidal tract. Only
+those ﬁbers constituting the corticospinal tract itself terminate in the spinal cord, and the other (approximately 50%) pyramidal tract ﬁbers
+terminate or send collateral branches to a number of supraspinal structures (Davidoff, 1990). The corticospinal tract is the least mature of the
+descending motor pathways and, as described in chapter 9, undergoes considerable changes during the early postnatal years.
+The contribution of the pyramidal tract, and in particular the corticospinal system, to skilled manual activities has been subject to much debate
+and experimentation (Lemon & Grifﬁths, 2005). Early animal experiments emphasized the loss of independent ﬁnger movements that
+occurred after complete transection of the pyramidal tract (Lawrence & Kuypers, 1968; Tower, 1940), although other studies showed that,
+following intensive retraining, discrete ﬁnger movements were possible after unilateral and bilateral le
