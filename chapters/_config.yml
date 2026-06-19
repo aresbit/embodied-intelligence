@@ -1,0 +1,26 @@
+# _config.yml — GitHub Pages 配置
+# 主题: jekyll-theme-minimal (或 docsify)
+# 适配 docs/ 或 chapters/ 目录发布
+
+title: 具身智能导论
+description: >-
+  《具身智能导论》—— UC Berkeley CS294-291 "Robots That Learn" 中文翻译与详解，
+  含完整数学推导、PyTorch 代码实现与 23 篇核心论文精读
+baseurl: ""
+url: ""
+
+# 导航
+show_downloads: false
+google_analytics:
+
+# 数学渲染
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+
+# 排除文件
+exclude:
+  - raw/
+  - task_plan.md
+  - findings.md
+  - progress.md
