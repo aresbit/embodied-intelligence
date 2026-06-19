@@ -13,5 +13,12 @@ show_downloads: false
 google_analytics:
 
 # 构建
-markdown: GFM
+markdown: kramdown
+kramdown:
+  input: GFM
+  # kramdown v2.3+ (GitHub Pages 现用版本) 的 mathjax 引擎会把
+  # $$...$$ 转为行内 \(...\) 或独占段落的块级 \[...\]，MathJax 3 可直接识别。
+  # 注意: 不能设为 nil —— 那会把公式包进 <pre>，反被 MathJax 跳过。
+  # 前提是公式必须用 $$ 分隔符 (kramdown 不识别单个 $)。
+  math_engine: mathjax
 encoding: UTF-8
